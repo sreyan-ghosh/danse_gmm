@@ -3,13 +3,13 @@
 # Creator: Anubhab Ghosh, Feb 2024.
 
 # The python kernel version e.g. to run on python 3.8 version use: python3.8
-PYTHON="python3.8"
+PYTHON="python"
 
 # The number of i.i.d. trajectories each of length T that constitute the training data
-N=1000
+N=500
 
 # Length of each such training data trajectory, default it is set to T=1000
-T=100
+T=1000
 
 # Number of hidden states in the process, usually for Lorenz (a.k.a. Lorenz-63), Chen 
 # attractors, the number of hidden states is equal to 3, while for Lorenz-96, this value must be changed to

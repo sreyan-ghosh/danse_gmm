@@ -1,0 +1,33 @@
+# Caching and Jupyter
+**/__pycache__/
+**/.ipynb_checkpoints/
+
+# synthetic data (self-generate)
+data/
+
+# Distribution / packaging
+.Python
+build/
+dist/
+downloads/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+.installed.cfg
+MANIFEST
+
+# env vars
+.env
+.env.*
+
+# Virtual environments
+venv/
+ENV/
+env/
+venv.bak/
+venv/
+.pip-selfcheck.json

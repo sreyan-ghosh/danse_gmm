@@ -73,9 +73,11 @@ class DANSE(nn.Module):
         """
         return torch.from_numpy(x).type(torch.FloatTensor).to(self.device)
 
+    # N x T x 3 x 3
+
     def compute_prior_mean_vars(self, mu_xt_yt_prev, L_xt_yt_prev):
 
-        self.mu_xt_yt_prev = mu_xt_yt_prev
+        self.mu_xt_yt_prev = mu_xt_yt_prev # x_t given y_1:t-1
         self.L_xt_yt_prev = create_diag(L_xt_yt_prev)
         return self.mu_xt_yt_prev, self.L_xt_yt_prev
 
@@ -119,6 +121,8 @@ class DANSE(nn.Module):
 
         return log_py_t_given_prev
     '''
+    
+    # Dimension of logprob is batch N
     def compute_logpdf_Gaussian(self, Y):
         
         _, T, _ = Y.shape 
@@ -129,6 +133,7 @@ class DANSE(nn.Module):
 
         return logprob
 
+    # Computes posterior
     def compute_predictions(self, Y_test_batch):
 
         mu_x_given_Y_test_batch, vars_x_given_Y_test_batch = self.rnn.forward(x=Y_test_batch)
@@ -139,13 +144,16 @@ class DANSE(nn.Module):
         mu_xt_yt_current_test, L_xt_yt_current_test = self.compute_posterior_mean_vars(Yi_batch=Y_test_batch)
         return mu_xt_yt_prev_test, L_xt_yt_prev_test, mu_xt_yt_current_test, L_xt_yt_current_test
 
+
+    # Sequence length does not depend of theta
+    # Normailizes when computing logprob_batch
     def forward(self, Yi_batch):
 
         mu_batch, vars_batch = self.rnn.forward(x=Yi_batch)
         mu_xt_yt_prev, L_xt_yt_prev = self.compute_prior_mean_vars(mu_xt_yt_prev=mu_batch, L_xt_yt_prev=vars_batch)
         self.compute_marginal_mean_vars(mu_xt_yt_prev=mu_xt_yt_prev, L_xt_yt_prev=L_xt_yt_prev)
         logprob_batch = self.compute_logpdf_Gaussian(Y=Yi_batch) / (Yi_batch.shape[1] * Yi_batch.shape[2]) # Per dim. and per sequence length
-        log_pYT_batch_avg = logprob_batch.mean(0)
+        log_pYT_batch_avg = logprob_batch.mean(0) # Avrage out over batch size N, logprob is of dimension batch size
 
         return log_pYT_batch_avg
 
@@ -230,10 +238,11 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
             
                 tr_Y_batch, tr_X_batch = data
                 optimizer.zero_grad()
+                # Can map it to a tensor without variable. Can just write .type and .to(device)
                 Y_train_batch = Variable(tr_Y_batch, requires_grad=False).type(torch.FloatTensor).to(device)
                 log_pY_train_batch = -model.forward(Y_train_batch)
-                log_pY_train_batch.backward()
-                optimizer.step()
+                log_pY_train_batch.backward() # Backward computes gradient
+                optimizer.step() # Add gradients to the weigths
 
                 # print statistics
                 tr_running_loss += log_pY_train_batch.item()
@@ -410,7 +419,7 @@ def test_danse(test_loader, options, device, model_file=None, test_logfile_path 
             Y_test_batch = Variable(te_Y_batch, requires_grad=False).type(torch.FloatTensor).to(device)
             te_mu_X_predictions_batch, te_var_X_predictions_batch, te_mu_X_filtered_batch, te_var_X_filtered_batch = model.compute_predictions(Y_test_batch)
             log_pY_test_batch = -model.forward(Y_test_batch)
-            test_mse_loss_batch = criterion(te_X_batch, te_mu_X_filtered_batch)
+            test_mse_loss_batch = criterion(te_X_batch[:,:-1,:], te_mu_X_filtered_batch) # Changed dimension of X_batch to get it to work
             # print statistics
             test_loss_epoch_sum += test_mse_loss_batch.item()
             te_log_pY_epoch_sum += log_pY_test_batch.item()

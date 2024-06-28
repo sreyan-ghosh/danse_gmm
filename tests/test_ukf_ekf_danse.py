@@ -294,6 +294,7 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     
     time_elapsed_knet = timer() - start_time_knet
 
+    # Will be changed. Right side is estimates
     nmse_ls = nmse_loss(X[:,1:,:], X_LS[:,0:,:])
     nmse_ls_std = nmse_loss_std(X[:,1:,:], X_LS[:,0:,:])
     nmse_ekf = nmse_loss(X[:,1:,:], X_estimated_ekf[:,1:,:])

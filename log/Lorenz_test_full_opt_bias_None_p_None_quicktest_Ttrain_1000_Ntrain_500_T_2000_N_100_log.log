@@ -1,0 +1,200 @@
+Dataset is not present, creating at ./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_2000_N_100_sigmae2_-10.0dB_smnr_-10.0dB.pkl
+Test data generated using sigma_e2: -10.0 dB, SMNR: -10.0 dB
+****************************************************************************************************
+sigma_e2: -10.0dB, smnr: -10.0dB
+Fed to Model-based filters: 
+sigma_e2: -10.0dB, smnr: -10.0dB, delta_t: 0.02
+EKF - MSE LOSS: tensor(22.3321) [dB]
+EKF - MSE STD: tensor(0.5031) [dB]
+UKF - MSE LOSS: tensor(18.2977) [dB]
+UKF - MSE STD: tensor(0.2677) [dB]
+DANSE Model file: ./models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_-10.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(18.2751) [dB]
+DANSE - MSE STD: tensor(0.2617) [dB]
+LS, batch size: 100, nmse: 8.8005 ± 0.1489[dB], mse: 33.4318 ± 0.1476[dB]
+ekf, batch size: 100, nmse: -2.2992 ± 0.5004[dB], mse: 22.3321 ± 0.5031[dB], time: 514.1280 secs
+ukf, batch size: 100, nmse: -6.3336 ± 0.2724[dB], mse: 18.2977 ± 0.2677[dB], time: 211.9761 secs
+Dataset at ./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_2000_N_100_sigmae2_-10.0dB_smnr_-10.0dB.pkl already present!
+****************************************************************************************************
+sigma_e2: -10.0dB, smnr: -10.0dB
+Fed to Model-based filters: 
+sigma_e2: -10.0dB, smnr: -10.0dB, delta_t: 0.02
+EKF - MSE LOSS: tensor(22.3321) [dB]
+EKF - MSE STD: tensor(0.5031) [dB]
+UKF - MSE LOSS: tensor(18.2977) [dB]
+UKF - MSE STD: tensor(0.2677) [dB]
+DANSE Model file: ./models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_-10.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(18.2751) [dB]
+DANSE - MSE STD: tensor(0.2617) [dB]
+LS, batch size: 100, nmse: 8.8005 ± 0.1489[dB], mse: 33.4318 ± 0.1476[dB]
+ekf, batch size: 100, nmse: -2.2992 ± 0.5004[dB], mse: 22.3321 ± 0.5031[dB], time: 496.8560 secs
+ukf, batch size: 100, nmse: -6.3336 ± 0.2724[dB], mse: 18.2977 ± 0.2677[dB], time: 213.8599 secs
+danse (pred.), batch size: 100, nmse: -6.3936 ± 0.2653[dB], mse: 18.2377 ± 0.2626[dB], time: 0.4226 secs
+danse (fil.), batch size: 100, nmse: -6.3562 ± 0.2640[dB], mse: 18.2751 ± 0.2617[dB], time: 0.4226 secs
+Chosen trajectory index for plots: 0
+Dataset at ./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_2000_N_100_sigmae2_-10.0dB_smnr_-10.0dB.pkl already present!
+****************************************************************************************************
+sigma_e2: -10.0dB, smnr: -10.0dB
+Fed to Model-based filters: 
+sigma_e2: -10.0dB, smnr: -10.0dB, delta_t: 0.02
+EKF - MSE LOSS: tensor(22.3321) [dB]
+EKF - MSE STD: tensor(0.5031) [dB]
+UKF - MSE LOSS: tensor(18.2977) [dB]
+UKF - MSE STD: tensor(0.2677) [dB]
+DANSE Model file: ./models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_-10.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(18.2751) [dB]
+DANSE - MSE STD: tensor(0.2617) [dB]
+LS, batch size: 100, nmse: 8.8005 ± 0.1489[dB], mse: 33.4318 ± 0.1476[dB]
+ekf, batch size: 100, nmse: -2.2992 ± 0.5004[dB], mse: 22.3321 ± 0.5031[dB], time: 477.3659 secs
+ukf, batch size: 100, nmse: -6.3336 ± 0.2724[dB], mse: 18.2977 ± 0.2677[dB], time: 211.3396 secs
+danse (pred.), batch size: 100, nmse: -6.3936 ± 0.2653[dB], mse: 18.2377 ± 0.2626[dB], time: 0.4208 secs
+danse (fil.), batch size: 100, nmse: -6.3562 ± 0.2640[dB], mse: 18.2751 ± 0.2617[dB], time: 0.4208 secs
+Chosen trajectory index for plots: 0
+Dataset at ./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_2000_N_100_sigmae2_-10.0dB_smnr_-10.0dB.pkl already present!
+****************************************************************************************************
+sigma_e2: -10.0dB, smnr: -10.0dB
+Fed to Model-based filters: 
+sigma_e2: -10.0dB, smnr: -10.0dB, delta_t: 0.02
+EKF - MSE LOSS: tensor(22.3321) [dB]
+EKF - MSE STD: tensor(0.5031) [dB]
+UKF - MSE LOSS: tensor(18.2977) [dB]
+UKF - MSE STD: tensor(0.2677) [dB]
+DANSE Model file: ./models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_-10.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(18.2751) [dB]
+DANSE - MSE STD: tensor(0.2617) [dB]
+LS, batch size: 100, nmse: 8.8005 ± 0.1489[dB], mse: 33.4318 ± 0.1476[dB]
+ekf, batch size: 100, nmse: -2.2992 ± 0.5004[dB], mse: 22.3321 ± 0.5031[dB], time: 483.3500 secs
+ukf, batch size: 100, nmse: -6.3336 ± 0.2724[dB], mse: 18.2977 ± 0.2677[dB], time: 212.9012 secs
+danse (pred.), batch size: 100, nmse: -6.3936 ± 0.2653[dB], mse: 18.2377 ± 0.2626[dB], time: 0.4238 secs
+danse (fil.), batch size: 100, nmse: -6.3562 ± 0.2640[dB], mse: 18.2751 ± 0.2617[dB], time: 0.4238 secs
+Chosen trajectory index for plots: 0
+Dataset at ./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_2000_N_100_sigmae2_-10.0dB_smnr_-10.0dB.pkl already present!
+****************************************************************************************************
+sigma_e2: -10.0dB, smnr: -10.0dB
+Fed to Model-based filters: 
+sigma_e2: -10.0dB, smnr: -10.0dB, delta_t: 0.02
+EKF - MSE LOSS: tensor(22.3321) [dB]
+EKF - MSE STD: tensor(0.5031) [dB]
+UKF - MSE LOSS: tensor(18.2977) [dB]
+UKF - MSE STD: tensor(0.2677) [dB]
+DANSE Model file: ./models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_-10.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(18.2751) [dB]
+DANSE - MSE STD: tensor(0.2617) [dB]
+LS, batch size: 100, nmse: 8.8005 ± 0.1489[dB], mse: 33.4318 ± 0.1476[dB]
+ekf, batch size: 100, nmse: -2.2992 ± 0.5004[dB], mse: 22.3321 ± 0.5031[dB], time: 454.2213 secs
+ukf, batch size: 100, nmse: -6.3336 ± 0.2724[dB], mse: 18.2977 ± 0.2677[dB], time: 235.4821 secs
+danse (pred.), batch size: 100, nmse: -6.3936 ± 0.2653[dB], mse: 18.2377 ± 0.2626[dB], time: 0.5402 secs
+danse (fil.), batch size: 100, nmse: -6.3562 ± 0.2640[dB], mse: 18.2751 ± 0.2617[dB], time: 0.5402 secs
+Chosen trajectory index for plots: 0
+Dataset at ./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_2000_N_100_sigmae2_-10.0dB_smnr_-10.0dB.pkl already present!
+****************************************************************************************************
+sigma_e2: -10.0dB, smnr: -10.0dB
+Fed to Model-based filters: 
+sigma_e2: -10.0dB, smnr: -10.0dB, delta_t: 0.02
+EKF - MSE LOSS: tensor(22.3321) [dB]
+EKF - MSE STD: tensor(0.5031) [dB]
+UKF - MSE LOSS: tensor(18.2977) [dB]
+UKF - MSE STD: tensor(0.2677) [dB]
+DANSE Model file: ./models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_-10.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(18.2751) [dB]
+DANSE - MSE STD: tensor(0.2617) [dB]
+LS, batch size: 100, nmse: 8.8005 ± 0.1489[dB], mse: 33.4318 ± 0.1476[dB]
+ekf, batch size: 100, nmse: -2.2992 ± 0.5004[dB], mse: 22.3321 ± 0.5031[dB], time: 578.2699 secs
+ukf, batch size: 100, nmse: -6.3336 ± 0.2724[dB], mse: 18.2977 ± 0.2677[dB], time: 233.1072 secs
+danse (pred.), batch size: 100, nmse: -6.3936 ± 0.2653[dB], mse: 18.2377 ± 0.2626[dB], time: 0.5252 secs
+danse (fil.), batch size: 100, nmse: -6.3562 ± 0.2640[dB], mse: 18.2751 ± 0.2617[dB], time: 0.5252 secs
+Chosen trajectory index for plots: 0
+Dataset at ./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_2000_N_100_sigmae2_-10.0dB_smnr_-10.0dB.pkl already present!
+****************************************************************************************************
+sigma_e2: -10.0dB, smnr: -10.0dB
+Fed to Model-based filters: 
+sigma_e2: -10.0dB, smnr: -10.0dB, delta_t: 0.02
+EKF - MSE LOSS: tensor(22.3321) [dB]
+EKF - MSE STD: tensor(0.5031) [dB]
+UKF - MSE LOSS: tensor(18.2977) [dB]
+UKF - MSE STD: tensor(0.2677) [dB]
+DANSE Model file: ./models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_-10.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(18.2751) [dB]
+DANSE - MSE STD: tensor(0.2617) [dB]
+LS, batch size: 100, nmse: 8.8005 ± 0.1489[dB], mse: 33.4318 ± 0.1476[dB]
+ekf, batch size: 100, nmse: -2.2992 ± 0.5004[dB], mse: 22.3321 ± 0.5031[dB], time: 571.0818 secs
+ukf, batch size: 100, nmse: -6.3336 ± 0.2724[dB], mse: 18.2977 ± 0.2677[dB], time: 230.3149 secs
+danse (pred.), batch size: 100, nmse: -6.3936 ± 0.2653[dB], mse: 18.2377 ± 0.2626[dB], time: 0.4886 secs
+danse (fil.), batch size: 100, nmse: -6.3562 ± 0.2640[dB], mse: 18.2751 ± 0.2617[dB], time: 0.4886 secs
+Chosen trajectory index for plots: 0
+Dataset is not present, creating at ./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_2000_N_100_sigmae2_-10.0dB_smnr_0.0dB.pkl
+Test data generated using sigma_e2: -10.0 dB, SMNR: 0.0 dB
+****************************************************************************************************
+sigma_e2: -10.0dB, smnr: 0.0dB
+Fed to Model-based filters: 
+sigma_e2: -10.0dB, smnr: 0.0dB, delta_t: 0.02
+EKF - MSE LOSS: tensor(15.8929) [dB]
+EKF - MSE STD: tensor(1.2217) [dB]
+UKF - MSE LOSS: tensor(12.3804) [dB]
+UKF - MSE STD: tensor(0.9982) [dB]
+DANSE Model file: ./models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_0.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(11.1204) [dB]
+DANSE - MSE STD: tensor(0.5072) [dB]
+LS, batch size: 100, nmse: -1.1742 ± 0.1346[dB], mse: 23.4569 ± 0.1392[dB]
+ekf, batch size: 100, nmse: -8.7382 ± 1.2318[dB], mse: 15.8929 ± 1.2217[dB], time: 584.1462 secs
+ukf, batch size: 100, nmse: -12.2507 ± 1.0020[dB], mse: 12.3804 ± 0.9982[dB], time: 229.0680 secs
+danse (pred.), batch size: 100, nmse: -13.2154 ± 0.5345[dB], mse: 11.4158 ± 0.5309[dB], time: 0.4683 secs
+danse (fil.), batch size: 100, nmse: -13.5108 ± 0.5102[dB], mse: 11.1204 ± 0.5072[dB], time: 0.4683 secs
+Chosen trajectory index for plots: 0
+Dataset is not present, creating at ./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_2000_N_100_sigmae2_-10.0dB_smnr_10.0dB.pkl
+Test data generated using sigma_e2: -10.0 dB, SMNR: 10.0 dB
+****************************************************************************************************
+sigma_e2: -10.0dB, smnr: 10.0dB
+Fed to Model-based filters: 
+sigma_e2: -10.0dB, smnr: 10.0dB, delta_t: 0.02
+EKF - MSE LOSS: tensor(5.7991) [dB]
+EKF - MSE STD: tensor(0.3776) [dB]
+UKF - MSE LOSS: tensor(5.9925) [dB]
+UKF - MSE STD: tensor(0.3656) [dB]
+DANSE Model file: ./models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_10.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(6.1264) [dB]
+DANSE - MSE STD: tensor(0.3605) [dB]
+LS, batch size: 100, nmse: -10.7449 ± 0.1269[dB], mse: 13.8860 ± 0.1273[dB]
+ekf, batch size: 100, nmse: -18.8318 ± 0.3733[dB], mse: 5.7991 ± 0.3776[dB], time: 580.1403 secs
+ukf, batch size: 100, nmse: -18.6384 ± 0.3604[dB], mse: 5.9925 ± 0.3656[dB], time: 229.9171 secs
+danse (pred.), batch size: 100, nmse: -18.2975 ± 0.3609[dB], mse: 6.3334 ± 0.3670[dB], time: 0.4290 secs
+danse (fil.), batch size: 100, nmse: -18.5045 ± 0.3545[dB], mse: 6.1264 ± 0.3605[dB], time: 0.4290 secs
+Chosen trajectory index for plots: 0
+Dataset is not present, creating at ./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_2000_N_100_sigmae2_-10.0dB_smnr_20.0dB.pkl
+Test data generated using sigma_e2: -10.0 dB, SMNR: 20.0 dB
+****************************************************************************************************
+sigma_e2: -10.0dB, smnr: 20.0dB
+Fed to Model-based filters: 
+sigma_e2: -10.0dB, smnr: 20.0dB, delta_t: 0.02
+EKF - MSE LOSS: tensor(4.2228) [dB]
+EKF - MSE STD: tensor(0.2376) [dB]
+UKF - MSE LOSS: tensor(4.2281) [dB]
+UKF - MSE STD: tensor(0.2356) [dB]
+DANSE Model file: ./models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_20.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(4.2495) [dB]
+DANSE - MSE STD: tensor(0.2407) [dB]
+LS, batch size: 100, nmse: -18.1258 ± 0.1566[dB], mse: 6.5001 ± 0.1469[dB]
+ekf, batch size: 100, nmse: -20.4030 ± 0.2476[dB], mse: 4.2228 ± 0.2376[dB], time: 574.2573 secs
+ukf, batch size: 100, nmse: -20.3977 ± 0.2461[dB], mse: 4.2281 ± 0.2356[dB], time: 231.3468 secs
+danse (pred.), batch size: 100, nmse: -20.1895 ± 0.2602[dB], mse: 4.4364 ± 0.2524[dB], time: 0.4939 secs
+danse (fil.), batch size: 100, nmse: -20.3764 ± 0.2496[dB], mse: 4.2495 ± 0.2407[dB], time: 0.4939 secs
+Chosen trajectory index for plots: 0
+Dataset is not present, creating at ./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_2000_N_100_sigmae2_-10.0dB_smnr_30.0dB.pkl
+Test data generated using sigma_e2: -10.0 dB, SMNR: 30.0 dB
+****************************************************************************************************
+sigma_e2: -10.0dB, smnr: 30.0dB
+Fed to Model-based filters: 
+sigma_e2: -10.0dB, smnr: 30.0dB, delta_t: 0.02
+EKF - MSE LOSS: tensor(3.7262) [dB]
+EKF - MSE STD: tensor(0.2331) [dB]
+UKF - MSE LOSS: tensor(3.7215) [dB]
+UKF - MSE STD: tensor(0.2329) [dB]
+DANSE Model file: ./models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_30.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(3.6860) [dB]
+DANSE - MSE STD: tensor(0.2356) [dB]
+LS, batch size: 100, nmse: -20.6772 ± 0.2326[dB], mse: 3.9593 ± 0.2263[dB]
+ekf, batch size: 100, nmse: -20.9103 ± 0.2395[dB], mse: 3.7262 ± 0.2331[dB], time: 585.6823 secs
+ukf, batch size: 100, nmse: -20.9150 ± 0.2395[dB], mse: 3.7215 ± 0.2329[dB], time: 225.5189 secs
+danse (pred.), batch size: 100, nmse: -20.8057 ± 0.2314[dB], mse: 3.8307 ± 0.2264[dB], time: 0.4646 secs
+danse (fil.), batch size: 100, nmse: -20.9505 ± 0.2418[dB], mse: 3.6860 ± 0.2356[dB], time: 0.4646 secs
+Chosen trajectory index for plots: 0

@@ -2,8 +2,6 @@
 **/__pycache__/
 **/.ipynb_checkpoints/
 
-# synthetic data (self-generate)
-data/
 
 # Distribution / packaging
 .Python

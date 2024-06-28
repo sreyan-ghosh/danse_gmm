@@ -196,6 +196,7 @@ def main():
     elif mode.lower() == "test":
 
         #model_file_saved = "./model_checkpoints/{}_usenorm_{}_ckpt_epoch_{}.pt".format(model_type, usenorm_flag, epoch_test)
+        #model_file_saved = "models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_-10.0dB/danse_gru_ckpt_epoch_671_best.pt"
         te_loss = test_danse(
             test_loader=test_loader,
             options=estimator_options,

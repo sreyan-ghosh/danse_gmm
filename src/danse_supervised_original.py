@@ -24,10 +24,10 @@ def push_model(nets, device='cpu'):
     nets = nets.to(device=device)
     return nets
 
-class DANSE(nn.Module):
+class DANSE_Supervised(nn.Module):
 
     def __init__(self, n_states, n_obs, mu_w, C_w, H, mu_x0, C_x0, batch_size, rnn_type, rnn_params_dict, device='cpu'):
-        super(DANSE, self).__init__()
+        super(DANSE_Supervised, self).__init__()
 
         self.device = device
 
@@ -89,12 +89,17 @@ class DANSE(nn.Module):
         Re_t_inv = torch.inverse(self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w)
         self.K_t = (self.L_xt_yt_prev @ (self.H.T @ Re_t_inv))
         self.mu_xt_yt_current = self.mu_xt_yt_prev + torch.einsum('ntij,ntj->nti',self.K_t,(Yi_batch - torch.einsum('ij,ntj->nti',self.H,self.mu_xt_yt_prev)))
-        #self.L_xt_yt_current = self.L_xt_yt_prev - torch.einsum('ntij,ntkl->ntik',
-        #torch.einsum('ntij,ntjk->ntik',
-        #self.K_t, self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w), 
-        #self.K_t)
+        #self.L_xt_yt_current = self.L_xt_yt_prev - self.K_t @ (self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w) @ self.K_t.T
         self.L_xt_yt_current = self.L_xt_yt_prev - (torch.einsum('ntij,ntjk->ntik',
                             self.K_t, self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w) @ torch.transpose(self.K_t, 2, 3))
+        #print('Likelihood cov:', (self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w).mean((0,1)))
+        #print(torch.einsum('ntij,ntjk->ntik',
+        #                self.K_t, self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w).shape)
+        #print(self.K_t.shape)
+        #print('Correction cov:',
+        #    (torch.einsum('ntij,ntjk->ntik',
+        #    self.K_t, self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w) @ torch.transpose(self.K_t, 2, 3)).mean((0,1)))
+                                        
         return self.mu_xt_yt_current, self.L_xt_yt_current
     '''
     def compute_logprob_batch(self, Yi_batch):
@@ -119,13 +124,13 @@ class DANSE(nn.Module):
 
         return log_py_t_given_prev
     '''
-    def compute_logpdf_Gaussian(self, Y):
+    def compute_logpdf_Gaussian(self, X):
         
-        _, T, _ = Y.shape 
-        logprob = 0.5 * self.n_obs * T * math.log(math.pi*2) - 0.5 * torch.logdet(self.L_yt_current).sum(1) \
+        _, T, _ = X.shape 
+        logprob = 0.5 * self.n_states * T * math.log(math.pi*2) - 0.5 * torch.logdet(self.L_xt_yt_current).sum(1) \
             - 0.5 * torch.einsum('nti,nti->nt',
-            (Y - self.mu_yt_current), 
-            torch.einsum('ntij,ntj->nti',torch.inverse(self.L_yt_current), (Y - self.mu_yt_current))).sum(1)
+            (X - self.mu_xt_yt_current), 
+            torch.einsum('ntij,ntj->nti',torch.inverse(self.L_xt_yt_current), (X - self.mu_xt_yt_current))).sum(1)
 
         return logprob
 
@@ -139,18 +144,22 @@ class DANSE(nn.Module):
         mu_xt_yt_current_test, L_xt_yt_current_test = self.compute_posterior_mean_vars(Yi_batch=Y_test_batch)
         return mu_xt_yt_prev_test, L_xt_yt_prev_test, mu_xt_yt_current_test, L_xt_yt_current_test
 
-    def forward(self, Yi_batch):
+    def forward(self, Yi_batch, Xi_batch):
 
         mu_batch, vars_batch = self.rnn.forward(x=Yi_batch)
         mu_xt_yt_prev, L_xt_yt_prev = self.compute_prior_mean_vars(mu_xt_yt_prev=mu_batch, L_xt_yt_prev=vars_batch)
-        self.compute_marginal_mean_vars(mu_xt_yt_prev=mu_xt_yt_prev, L_xt_yt_prev=L_xt_yt_prev)
-        logprob_batch = self.compute_logpdf_Gaussian(Y=Yi_batch) / (Yi_batch.shape[1] * Yi_batch.shape[2]) # Per dim. and per sequence length
-        log_pYT_batch_avg = logprob_batch.mean(0)
+        mu_xt_yt_current_test, L_xt_yt_current_test = self.compute_posterior_mean_vars(Yi_batch=Yi_batch)
+        #print("Prior", self.L_xt_yt_prev.mean((0,1)))
+        
+        #print("Posterior", self.L_xt_yt_current.mean((0,1)))
+        #print(torch.det(self.L_xt_yt_current).sum(1))
+        logprob_batch = self.compute_logpdf_Gaussian(X=Xi_batch)
+        log_pXT_YT_batch_avg = logprob_batch.mean(0)
 
-        return log_pYT_batch_avg
+        return log_pXT_YT_batch_avg
 
 
-def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path, modelfile_path, save_chkpoints, device='cpu', tr_verbose=False):
+def train_danse_supervised(model, options, train_loader, val_loader, nepochs, logfile_path, modelfile_path, save_chkpoints, device='cpu', tr_verbose=False):
     
     # Push the model to device and count parameters
     model = push_model(nets=model, device=device)
@@ -231,13 +240,14 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
                 tr_Y_batch, tr_X_batch = data
                 optimizer.zero_grad()
                 Y_train_batch = Variable(tr_Y_batch, requires_grad=False).type(torch.FloatTensor).to(device)
-                log_pY_train_batch = -model.forward(Y_train_batch)
-                log_pY_train_batch.backward()
+                X_train_batch = Variable(tr_X_batch[:, 1:, :], requires_grad=False).type(torch.FloatTensor).to(device)
+                log_pXY_train_batch = -model.forward(Y_train_batch, X_train_batch)
+                log_pXY_train_batch.backward()
                 optimizer.step()
 
                 # print statistics
-                tr_running_loss += log_pY_train_batch.item()
-                tr_loss_epoch_sum += log_pY_train_batch.item()
+                tr_running_loss += log_pXY_train_batch.item()
+                tr_loss_epoch_sum += log_pXY_train_batch.item()
 
                 if i % 100 == 99 and ((epoch + 1) % 100 == 0):    # print every 10 mini-batches
                     #print("Epoch: {}/{}, Batch index: {}, Training loss: {}".format(epoch+1, nepochs, i+1, tr_running_loss / 100))
@@ -256,11 +266,11 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
                     
                     val_Y_batch, val_X_batch = data
                     Y_val_batch = Variable(val_Y_batch, requires_grad=False).type(torch.FloatTensor).to(device)
+                    X_val_batch = Variable(val_X_batch[:, 1:, :], requires_grad=False).type(torch.FloatTensor).to(device)
                     val_mu_X_predictions_batch, val_var_X_predictions_batch, val_mu_X_filtered_batch, val_var_X_filtered_batch = model.compute_predictions(Y_val_batch)
-                    log_pY_val_batch = -model.forward(Y_val_batch)
+                    log_pY_val_batch = -model.forward(Y_val_batch, X_val_batch)
                     val_loss_epoch_sum += log_pY_val_batch.item()
-                    #val_mse_loss_batch = mse_criterion(val_X_batch[:,1:,:].to(device), val_mu_X_filtered_batch)
-                    val_mse_loss_batch = mse_criterion(val_X_batch.to(device), val_mu_X_filtered_batch)
+                    val_mse_loss_batch = mse_criterion(val_X_batch[:,1:,:].to(device), val_mu_X_filtered_batch)
                     # print statistics
                     val_mse_loss_epoch_sum += val_mse_loss_batch.item()
 
@@ -355,10 +365,10 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
         if save_chkpoints == "all" or save_chkpoints == "some":
             # Save the best model using the designated filename
             if not best_model_wts is None:
-                model_filename = "danse_{}_ckpt_epoch_{}_best.pt".format(model.rnn_type, best_val_epoch)
+                model_filename = "danse_supervised_{}_ckpt_epoch_{}_best.pt".format(model.rnn_type, best_val_epoch)
                 torch.save(best_model_wts, model_filepath + "/" + model_filename)
             else:
-                model_filename = "danse_{}_ckpt_epoch_{}_best.pt".format(model.rnn_type, epoch+1)
+                model_filename = "danse_supervised_{}_ckpt_epoch_{}_best.pt".format(model.rnn_type, epoch+1)
                 print("Saving last model as best...")
                 save_model(model, model_filepath + "/" + model_filename)
         #elif save_chkpoints == False:
@@ -383,14 +393,14 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
 
     return tr_losses, val_losses, best_val_loss, tr_loss_for_best_val_loss, model
 
-def test_danse(test_loader, options, device, model_file=None, test_logfile_path = None):
+def test_danse_supervised(test_loader, options, device, model_file=None, test_logfile_path = None):
 
     test_loss_epoch_sum = 0.0
     te_log_pY_epoch_sum = 0.0 
     print("################ Evaluation Begins ################ \n")    
     
     # Set model in evaluation mode
-    model = DANSE(**options)
+    model = DANSE_Supervised(**options)
     model.load_state_dict(torch.load(model_file))
     criterion = nn.MSELoss()
     model = push_model(nets=model, device=device)

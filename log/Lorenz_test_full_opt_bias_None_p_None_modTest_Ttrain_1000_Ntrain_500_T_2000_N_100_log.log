@@ -1,0 +1,10 @@
+Dataset at ./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_2000_N_100_sigmae2_-10.0dB_smnr_-10.0dB.pkl already present!
+****************************************************************************************************
+sigma_e2: -10.0dB, smnr: -10.0dB
+Fed to Model-based filters: 
+sigma_e2: -10.0dB, smnr: -10.0dB, delta_t: 0.02
+EKF - MSE LOSS: tensor(22.3048) [dB]
+EKF - MSE STD: tensor(0.4977) [dB]
+UKF - MSE LOSS: tensor(18.2478) [dB]
+UKF - MSE STD: tensor(0.2499) [dB]
+DANSE Model file: ./models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_-10.0dB/danse_gru_ckpt_epoch_671_best.pt

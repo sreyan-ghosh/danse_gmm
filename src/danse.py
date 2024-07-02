@@ -411,7 +411,7 @@ def test_danse(test_loader, options, device, model_file=None, test_logfile_path 
             Y_test_batch = Variable(te_Y_batch, requires_grad=False).type(torch.FloatTensor).to(device)
             te_mu_X_predictions_batch, te_var_X_predictions_batch, te_mu_X_filtered_batch, te_var_X_filtered_batch = model.compute_predictions(Y_test_batch)
             log_pY_test_batch = -model.forward(Y_test_batch)
-            test_mse_loss_batch = criterion(te_X_batch, te_mu_X_filtered_batch)
+            test_mse_loss_batch = criterion(te_X_batch[:,:-1,:], te_mu_X_filtered_batch)
             # print statistics
             test_loss_epoch_sum += test_mse_loss_batch.item()
             te_log_pY_epoch_sum += log_pY_test_batch.item()

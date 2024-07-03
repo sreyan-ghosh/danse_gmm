@@ -6,7 +6,7 @@
 """
 NOTE: You need to modify the test_ukf_ekf_danse_w_modifications.py
 file a bit to ensure that the corresponding covariance matrix of 
-the test set gets passed to the DANSE’s compute_predictions function during testing.
+the test set gets passed to the DANSEs compute_predictions function during testing.
 """
 
 import numpy as np
@@ -306,33 +306,30 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
                                                 device=device)
     '''
     #time_elapsed_knet = None #timer() - start_time_knet
-    print(f"X_dim: {X.shape}")
-    print(f"X_LS_dim: {X_LS.shape}")
-    are_shapes_equal = X.shape == X_LS.shape
-    print(f"Are the shapes equal?: {are_shapes_equal}")
-    nmse_ls = nmse_loss(X[:,:,:], X_LS[:,0:,:])
-    nmse_ls_std = nmse_loss_std(X[:,:,:], X_LS[:,0:,:])
+    #X=X[:,:-1,:]
+    nmse_ls = nmse_loss(X[:,:-1,:], X_LS[:,0:,:])
+    nmse_ls_std = nmse_loss_std(X[:,:-1,:], X_LS[:,0:,:])
     nmse_ekf = nmse_loss(X[:,:,:], X_estimated_ekf[:,:,:])
     nmse_ekf_std = nmse_loss_std(X[:,:,:], X_estimated_ekf[:,:,:])
     nmse_ukf = nmse_loss(X[:,:,:], X_estimated_ukf[:,:,:])
     nmse_ukf_std = nmse_loss_std(X[:,:,:], X_estimated_ukf[:,:,:])
-    nmse_danse = nmse_loss(X[:,:,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_std = nmse_loss_std(X[:,:,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_pred = nmse_loss(X[:,:,:], X_estimated_pred[:,0:,:])
-    nmse_danse_pred_std = nmse_loss_std(X[:,:,:], X_estimated_pred[:,0:,:])
+    nmse_danse = nmse_loss(X[:,:-1,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_std = nmse_loss_std(X[:,:-1,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_pred = nmse_loss(X[:,:-1,:], X_estimated_pred[:,0:,:])
+    nmse_danse_pred_std = nmse_loss_std(X[:,:-1,:], X_estimated_pred[:,0:,:])
     #nmse_knet = None #nmse_loss(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
     #nmse_knet_std = None #nmse_loss_std(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
     
-    mse_dB_ls = mse_loss_dB(X[:,:,:], X_LS[:,0:,:])
-    mse_dB_ls_std = mse_loss_dB_std(X[:,:,:], X_LS[:,0:,:])
+    mse_dB_ls = mse_loss_dB(X[:,:-1,:], X_LS[:,0:,:])
+    mse_dB_ls_std = mse_loss_dB_std(X[:,:-1,:], X_LS[:,0:,:])
     mse_dB_ekf = mse_loss_dB(X[:,:,:], X_estimated_ekf[:,:,:])
     mse_dB_ekf_std = mse_loss_dB_std(X[:,:,:], X_estimated_ekf[:,:,:])
     mse_dB_ukf = mse_loss_dB(X[:,:,:], X_estimated_ukf[:,:,:])
     mse_dB_ukf_std = mse_loss_dB_std(X[:,:,:], X_estimated_ukf[:,:,:])
-    mse_dB_danse = mse_loss_dB(X[:,:,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_std = mse_loss_dB_std(X[:,:,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_pred = mse_loss_dB(X[:,:,:], X_estimated_pred[:,0:,:])
-    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,:,:], X_estimated_pred[:,0:,:])
+    mse_dB_danse = mse_loss_dB(X[:,:-1,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_std = mse_loss_dB_std(X[:,:-1,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_pred = mse_loss_dB(X[:,:-1,:], X_estimated_pred[:,0:,:])
+    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,:-1,:], X_estimated_pred[:,0:,:])
     #mse_dB_knet = None #mse_loss_dB(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
     #mse_dB_knet_std = None #mse_loss_dB_std(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
     
@@ -557,7 +554,7 @@ if __name__ == "__main__":
     # Plotting the NMSE Curve
     plt.rcParams['font.family'] = 'serif'
     plt.figure()
-    #plt.errorbar(smnr_dB_arr, nmse_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, nmse_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, nmse_ekf_arr, fmt='rd--',  yerr=nmse_ekf_std_arr, linewidth=1.5, label="EKF")
     plt.errorbar(smnr_dB_arr, nmse_ukf_arr, fmt='ko-',  yerr=nmse_ukf_std_arr, linewidth=1.5, label="UKF")
     plt.errorbar(smnr_dB_arr, nmse_danse_arr, fmt='b*-', yerr=nmse_danse_std_arr, linewidth=2.0, label="DANSE")
@@ -592,7 +589,7 @@ if __name__ == "__main__":
 
     # Plotting the MSE Curve
     plt.figure()
-    #plt.errorbar(smnr_dB_arr, mse_ls_dB_arr, fmt='gp-.', yerr=mse_ls_dB_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, mse_ls_dB_arr, fmt='gp-.', yerr=mse_ls_dB_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, mse_ekf_dB_arr, fmt='rd--',  yerr=mse_ekf_dB_std_arr, linewidth=1.5, label="EKF")
     plt.errorbar(smnr_dB_arr, mse_ukf_dB_arr, fmt='ko-',  yerr=mse_ukf_dB_std_arr, linewidth=1.5, label="UKF")
     plt.errorbar(smnr_dB_arr, mse_danse_dB_arr, fmt='b*-', yerr=mse_danse_dB_std_arr, linewidth=2.0, label="DANSE")

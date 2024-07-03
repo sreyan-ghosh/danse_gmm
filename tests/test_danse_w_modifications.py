@@ -120,8 +120,8 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
         m, n, T_test, N_test, sigma_e2_dB_test, smnr_dB_test = parse("test_trajectories_m_{:d}_n_{:d}_LorenzSSM_data_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB.pkl", test_data_file.split('/')[-1])
 
         #N_test = 100 # No. of trajectories at test time / evaluation
-        #X = torch.zeros((N_test, T_test, m))
-        X = torch.zeros((N_test, T_test+1, m)) # Original
+        X = torch.zeros((N_test, T_test, m))
+        #X = torch.zeros((N_test, T_test+1, m)) # Original
         Y = torch.zeros((N_test, T_test, n))
 
         lorenz_model = LorenzSSM(n_states=m, n_obs=n, J=J, delta=delta, 
@@ -307,13 +307,11 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
                                                 device=device)
     '''
     #time_elapsed_knet = None #timer() - start_time_knet
-    print(f"X_dim: {X.shape}")
-    print(f"X_LS_dim: {X_LS.shape}")
-    X_shape = X.shape
-    print(X_shape)
-    print(f"Are the shapes equal?: {X[:,:,:].shape==X_LS[:,:,:].shape}")
+
+    X=X[:,:-1,:]
     nmse_ls = nmse_loss(X[:,:,:], X_LS[:,0:,:])
     nmse_ls_std = nmse_loss_std(X[:,:,:], X_LS[:,0:,:])
+    
     #nmse_ekf = nmse_loss(X[:,:,:], X_estimated_ekf[:,:,:])
     #nmse_ekf_std = nmse_loss_std(X[:,:,:], X_estimated_ekf[:,:,:])
     #nmse_ukf = nmse_loss(X[:,:,:], X_estimated_ukf[:,:,:])
@@ -559,11 +557,11 @@ if __name__ == "__main__":
     # Plotting the NMSE Curve
     plt.rcParams['font.family'] = 'serif'
     plt.figure()
-    #plt.errorbar(smnr_dB_arr, nmse_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, nmse_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
     #plt.errorbar(smnr_dB_arr, nmse_ekf_arr, fmt='rd--',  yerr=nmse_ekf_std_arr, linewidth=1.5, label="EKF")
     #plt.errorbar(smnr_dB_arr, nmse_ukf_arr, fmt='ko-',  yerr=nmse_ukf_std_arr, linewidth=1.5, label="UKF")
     plt.errorbar(smnr_dB_arr, nmse_danse_arr, fmt='b*-', yerr=nmse_danse_std_arr, linewidth=2.0, label="DANSE")
-    plt.errorbar(smnr_dB_arr, nmse_knet_arr, fmt='ys-', yerr=nmse_knet_std_arr,  linewidth=1.0, label="KalmanNet")
+    #plt.errorbar(smnr_dB_arr, nmse_knet_arr, fmt='ys-', yerr=nmse_knet_std_arr,  linewidth=1.0, label="KalmanNet")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('NMSE (in dB)')
     plt.grid(True)
@@ -594,7 +592,7 @@ if __name__ == "__main__":
 
     # Plotting the MSE Curve
     plt.figure()
-    #plt.errorbar(smnr_dB_arr, mse_ls_dB_arr, fmt='gp-.', yerr=mse_ls_dB_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, mse_ls_dB_arr, fmt='gp-.', yerr=mse_ls_dB_std_arr,  linewidth=1.5, label="LS")
     #plt.errorbar(smnr_dB_arr, mse_ekf_dB_arr, fmt='rd--',  yerr=mse_ekf_dB_std_arr, linewidth=1.5, label="EKF")
     #plt.errorbar(smnr_dB_arr, mse_ukf_dB_arr, fmt='ko-',  yerr=mse_ukf_dB_std_arr, linewidth=1.5, label="UKF")
     plt.errorbar(smnr_dB_arr, mse_danse_dB_arr, fmt='b*-', yerr=mse_danse_dB_std_arr, linewidth=2.0, label="DANSE")

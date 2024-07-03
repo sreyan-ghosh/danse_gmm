@@ -1,0 +1,52 @@
+% This file was created with tikzplotlib v0.10.1.
+\begin{tikzpicture}
+
+\definecolor{darkgray176}{RGB}{176,176,176}
+\definecolor{lightgray204}{RGB}{204,204,204}
+
+\begin{axis}[
+legend cell align={left},
+legend style={fill opacity=0.8, draw opacity=1, text opacity=1, draw=lightgray204},
+tick align=outside,
+tick pos=left,
+x grid style={darkgray176},
+xlabel={SMNR (in dB)},
+xmajorgrids,
+xmin=-12, xmax=32,
+xtick style={color=black},
+y grid style={darkgray176},
+ylabel={Inference time (in s)},
+ymajorgrids,
+ymin=-54.5085610449999, ymax=1152.306950945,
+ytick style={color=black}
+]
+\addplot [semithick, red, dashed, mark=diamond*, mark size=3, mark options={solid}]
+table {%
+-10 468.6390685
+0 1097.4517004
+10 976.250524
+20 476.5323556
+30 673.0725375
+};
+\addlegendentry{EKF}
+\addplot [semithick, black, dashed, mark=square*, mark size=3, mark options={solid}]
+table {%
+-10 218.2173923
+0 1004.6739654
+10 202.7958266
+20 205.8450112
+30 212.6859281
+};
+\addlegendentry{UKF}
+\addplot [thick, blue, mark=*, mark size=3, mark options={solid}]
+table {%
+-10 1.16411390000007
+0 0.901883200000157
+10 0.355087100000219
+20 0.346689500000139
+30 0.426145600000382
+};
+\addlegendentry{DANSE}
+\end{axis}
+
+\end{tikzpicture}

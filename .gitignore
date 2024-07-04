@@ -2,9 +2,12 @@
 **/__pycache__/
 **/.ipynb_checkpoints/
 
+# RotNIST Data and Figs
+data/rotnist/
 
 # Distribution / packaging
 .Python
+.vscode/
 build/
 dist/
 downloads/

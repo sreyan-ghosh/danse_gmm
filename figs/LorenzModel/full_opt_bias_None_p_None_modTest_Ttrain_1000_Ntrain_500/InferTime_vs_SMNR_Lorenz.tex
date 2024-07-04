@@ -6,7 +6,14 @@
 
 \begin{axis}[
 legend cell align={left},
-legend style={fill opacity=0.8, draw opacity=1, text opacity=1, draw=lightgray204},
+legend style={
+  fill opacity=0.8,
+  draw opacity=1,
+  text opacity=1,
+  at={(0.91,0.5)},
+  anchor=east,
+  draw=lightgray204
+},
 tick align=outside,
 tick pos=left,
 x grid style={darkgray176},
@@ -17,34 +24,34 @@ xtick style={color=black},
 y grid style={darkgray176},
 ylabel={Inference time (in s)},
 ymajorgrids,
-ymin=-54.5085610449999, ymax=1152.306950945,
+ymin=-52.3736595447519, ymax=1116.12372432775,
 ytick style={color=black}
 ]
 \addplot [semithick, red, dashed, mark=diamond*, mark size=3, mark options={solid}]
 table {%
--10 468.6390685
-0 1097.4517004
-10 976.250524
-20 476.5323556
-30 673.0725375
+-10 923.015070755
+0 936.830970405999
+10 923.019953801
+20 908.985431313999
+30 901.690474337001
 };
 \addlegendentry{EKF}
 \addplot [semithick, black, dashed, mark=square*, mark size=3, mark options={solid}]
 table {%
--10 218.2173923
-0 1004.6739654
-10 202.7958266
-20 205.8450112
-30 212.6859281
+-10 1052.451318527
+0 1063.010206879
+10 1042.847042213
+20 1047.90733044
+30 1048.068988802
 };
 \addlegendentry{UKF}
 \addplot [thick, blue, mark=*, mark size=3, mark options={solid}]
 table {%
--10 1.16411390000007
-0 0.901883200000157
-10 0.355087100000219
-20 0.346689500000139
-30 0.426145600000382
+-10 0.944899386999168
+0 0.900453295000261
+10 0.811405892998664
+20 0.7398579039982
+30 0.796212429999287
 };
 \addlegendentry{DANSE}
 \end{axis}

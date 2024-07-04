@@ -6,7 +6,7 @@
 """
 NOTE: You need to modify the test_ukf_ekf_danse_w_modifications.py
 file a bit to ensure that the corresponding covariance matrix of 
-the test set gets passed to the DANSE’s compute_predictions function during testing.
+the test set gets passed to the DANSE's compute_predictions function during testing.
 """
 
 import numpy as np

@@ -24,6 +24,7 @@ from PIL import Image
 # from scipy.misc import imsave
 from imageio import imwrite
 
+
 #Url for downloading MNIST dataset
 URL = 'http://yann.lecun.com/exdb/mnist/'
 #Data Directory where all data is saved
@@ -106,9 +107,9 @@ def expand_training_data(images, labels, T=10):
         #print(x)
         image = np.reshape(x, (-1, 28))
         
-        padded_image = np.pad(image, ((10, 10), (10, 10)), mode='constant', constant_values=bg_value)
+        #padded_image = np.pad(image, ((10, 10), (10, 10)), mode='constant', constant_values=bg_value)
         
-        scl_down_img = (padded_image - (255/2))/255
+        #scl_down_img = (padded_image - (255/2))/255
         
         #time.sleep(3)
         # print(f"Shape of img: {image.shape}")
@@ -116,22 +117,22 @@ def expand_training_data(images, labels, T=10):
         for i in range(T-1):
             # rotate the image with random degree
             angle = int(360/T)*(i+1)
-            rotated_padded_img = ndimage.rotate(scl_down_img, angle, reshape=False, cval=bg_value, order=3)
+            rotated_padded_img = ndimage.rotate(image, angle, reshape=False, cval=bg_value, order=3)
             #new_img2 = np.reshape(new_img,(28,28,1))
             # print(f"Shape of rotated img: {new_img2.shape}")
 
-            crop_x1 = (rotated_padded_img.shape[0] - 28) // 2
-            crop_y1 = (rotated_padded_img.shape[1] - 28) // 2
-            new_img = rotated_padded_img[crop_x1:crop_x1 + 28, crop_y1:crop_y1 + 28]
+            #crop_x1 = (rotated_padded_img.shape[0] - 28) // 2
+            #crop_y1 = (rotated_padded_img.shape[1] - 28) // 2
+            #new_img = rotated_padded_img[crop_x1:crop_x1 + 28, crop_y1:crop_y1 + 28]
 
-            
+            new_img = np.clip(rotated_padded_img, 0, 255)
 
-            new_img_scl_up = (new_img * 255) + (255/2)
+            #new_img_scl_up = (new_img * 255) + (255/2)
 
             #new_img_scl_up[new_img < 0.1] = bg_value
 
             # register new training data
-            expanded_images.append(np.reshape(new_img_scl_up, (28, 28, 1)))
+            expanded_images.append(np.reshape(new_img, (28, 28, 1)))
             #expanded_images.append(np.reshape(new_img_scl_up, 784))
             expanded_labels.append(y)
 

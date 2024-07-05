@@ -4,6 +4,7 @@
 
 # RotNIST Data and Figs
 data/rotnist/
+reconstructed_images.pdf
 
 # Distribution / packaging
 .Python

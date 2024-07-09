@@ -306,30 +306,32 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
                                                 device=device)
     '''
     #time_elapsed_knet = None #timer() - start_time_knet
-    #X=X[:,:-1,:]
-    nmse_ls = nmse_loss(X[:,:-1,:], X_LS[:,0:,:])
-    nmse_ls_std = nmse_loss_std(X[:,:-1,:], X_LS[:,0:,:])
+   
+    
+    
+    nmse_ls = nmse_loss(X[:,:,:], X_LS[:,0:,:])
+    nmse_ls_std = nmse_loss_std(X[:,:,:], X_LS[:,0:,:])
     nmse_ekf = nmse_loss(X[:,:,:], X_estimated_ekf[:,:,:])
     nmse_ekf_std = nmse_loss_std(X[:,:,:], X_estimated_ekf[:,:,:])
     nmse_ukf = nmse_loss(X[:,:,:], X_estimated_ukf[:,:,:])
     nmse_ukf_std = nmse_loss_std(X[:,:,:], X_estimated_ukf[:,:,:])
-    nmse_danse = nmse_loss(X[:,:-1,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_std = nmse_loss_std(X[:,:-1,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_pred = nmse_loss(X[:,:-1,:], X_estimated_pred[:,0:,:])
-    nmse_danse_pred_std = nmse_loss_std(X[:,:-1,:], X_estimated_pred[:,0:,:])
+    nmse_danse = nmse_loss(X[:,:,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_std = nmse_loss_std(X[:,:,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_pred = nmse_loss(X[:,:,:], X_estimated_pred[:,0:,:])
+    nmse_danse_pred_std = nmse_loss_std(X[:,:,:], X_estimated_pred[:,0:,:])
     #nmse_knet = None #nmse_loss(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
     #nmse_knet_std = None #nmse_loss_std(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
     
-    mse_dB_ls = mse_loss_dB(X[:,:-1,:], X_LS[:,0:,:])
-    mse_dB_ls_std = mse_loss_dB_std(X[:,:-1,:], X_LS[:,0:,:])
+    mse_dB_ls = mse_loss_dB(X[:,:,:], X_LS[:,0:,:])
+    mse_dB_ls_std = mse_loss_dB_std(X[:,:,:], X_LS[:,0:,:])
     mse_dB_ekf = mse_loss_dB(X[:,:,:], X_estimated_ekf[:,:,:])
     mse_dB_ekf_std = mse_loss_dB_std(X[:,:,:], X_estimated_ekf[:,:,:])
     mse_dB_ukf = mse_loss_dB(X[:,:,:], X_estimated_ukf[:,:,:])
     mse_dB_ukf_std = mse_loss_dB_std(X[:,:,:], X_estimated_ukf[:,:,:])
-    mse_dB_danse = mse_loss_dB(X[:,:-1,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_std = mse_loss_dB_std(X[:,:-1,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_pred = mse_loss_dB(X[:,:-1,:], X_estimated_pred[:,0:,:])
-    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,:-1,:], X_estimated_pred[:,0:,:])
+    mse_dB_danse = mse_loss_dB(X[:,:,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_std = mse_loss_dB_std(X[:,:,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_pred = mse_loss_dB(X[:,:,:], X_estimated_pred[:,0:,:])
+    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,:,:], X_estimated_pred[:,0:,:])
     #mse_dB_knet = None #mse_loss_dB(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
     #mse_dB_knet_std = None #mse_loss_dB_std(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
     

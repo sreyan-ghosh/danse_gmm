@@ -135,13 +135,14 @@ def generate_SSM_data(model, T, sigma_e2_dB, smnr_dB):
         Y_arr: numpy array of size (T, model.n_obs)
     """
 
-    X_arr, Y_arr = model.generate_single_sequence(
+    # Added Cw_arr
+    X_arr, Y_arr, Cw_arr = model.generate_single_sequence(
                 T=T,
                 sigma_e2_dB = sigma_e2_dB,
                 smnr_dB = smnr_dB
             )
         
-    return X_arr, Y_arr
+    return X_arr, Y_arr, Cw_arr
 
 def generate_state_observation_pairs(type_, parameters, T=100, N_samples=1000, sigma_e2_dB=-10.0, smnr_dB=10.0):
     """ This function generate several state trajectory and measurement trajectory pairs 
@@ -164,22 +165,25 @@ def generate_state_observation_pairs(type_, parameters, T=100, N_samples=1000, s
     #Z_XY_data = []
     Z_X_data = []
     Z_Y_data = []
+    Z_Cw_data = [] # Added Cw_data
 
     ssm_model = initialize_model(type_, parameters)
     Z_XY['ssm_model'] = ssm_model
     
     for i in range(N_samples):
         
-        Xi, Yi = generate_SSM_data(ssm_model, T, sigma_e2_dB, smnr_dB)
+        Xi, Yi, Cw_i = generate_SSM_data(ssm_model, T, sigma_e2_dB, smnr_dB)
         Z_XY_data_lengths.append(T)
         #Z_XY_data.append([Xi, Yi])
         Z_X_data.append(Xi)
         Z_Y_data.append(Yi)
+        Z_Cw_data.append(Cw_i)
 
     #Z_XY["data"] = np.row_stack(Z_XY_data).astype(object)
     #Z_XY["data"] = np.asarray(Z_XY_data)
     Z_XY["dataX"] = np.asarray(Z_X_data)
     Z_XY["dataY"] = np.asarray(Z_Y_data)
+    Z_XY["dataCw"] = np.asarray(Z_Cw_data)
     #Z_pM["data"] = Z_pM_data
     Z_XY["trajectory_lengths"] = np.vstack(Z_XY_data_lengths)
 

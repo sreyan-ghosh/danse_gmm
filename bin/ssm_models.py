@@ -240,8 +240,9 @@ class LorenzSSM(object):
         x_lorenz = self.generate_state_sequence(T=T, sigma_e2_dB=sigma_e2_dB)
         y_lorenz = self.generate_measurement_sequence(x_lorenz=x_lorenz, T=T, smnr_dB=smnr_dB)
 
-        return x_lorenz, y_lorenz
-
+        return x_lorenz, y_lorenz, self.Cw # Added the self.Cw
+    # Change ssm, models, utils
+    
 def L96(t, x, N=20, F_mu=8, sigma_e2=.1):
     """Lorenz 96 model with constant forcing
     Adapted from: https://www.wikiwand.com/en/Lorenz_96_model 

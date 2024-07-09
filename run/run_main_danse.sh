@@ -40,10 +40,10 @@ sigma_e2_dB=-10.0
 # RNN model type (e.g. GRU / LSTM)
 rnn_model_type="gru"
 
-for smnr_dB in -10.0 0.0 10.0 20.0 30.0
+for smnr_dB in -10.0 0.0 10.0 20.0 30.0 
 do
 	${PYTHON} ${script_name} \
-	--mode test \
+	--mode train \
 	--rnn_model_type ${rnn_model_type} \
 	--model_file_saved "models\LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_$(echo $smnr_dB)dB\danse_gru_ckpt_epoch_671_best.pt"\
 	--dataset_type ${dataset_type} \

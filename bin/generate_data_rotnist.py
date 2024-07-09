@@ -162,7 +162,10 @@ def prepare_MNIST_data(use_data_augmentation=True, T=None, N=None, output_path=N
             gray_img = cur_img.convert("L")
             imwrite(DATADIR + "/train-images/" + f"{imnum}_{j}" + ".jpg", gray_img)
             writer.writerow(["train-images/" + f"{imnum}_{j}" + ".jpg", train_labels[i]])
+            if i%T == 0:
+                print(f"Generated {imnum} set of images...")
 
+    print("---------Completed Generating ROTNIST Data-----------")
     # repeat for test data
     # with open(f"{output_path}/test-labels.csv", 'w') as csvFile:
     #     writer = csv.writer(csvFile, delimiter=',', quotechar='"')
@@ -187,7 +190,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Input arguments related to creating a dataset for ROTNIST")
     
     # N
-    parser.add_argument("--num_samples", help="denotes the number of trajectories to be simulated for each realization", type=int, default=1000)
+    parser.add_argument("--num_samples", help="denotes the number of trajectories to be simulated for each realization", type=int, default=10)
     # T
     parser.add_argument("--sequence_length", help="denotes the length of each trajectory", type=int, default=10)
     parser.add_argument("--output_path", help="Enter full path to store the data file", type=str, default="data/rotnist")

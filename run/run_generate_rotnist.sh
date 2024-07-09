@@ -6,7 +6,7 @@
 PYTHON="python"
 
 # The number of i.i.d. trajectories each of length T that constitute the training data
-N=10
+N=1000
 
 # Length of each such training data trajectory, default it is set to T=1000
 T=10

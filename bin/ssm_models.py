@@ -119,7 +119,7 @@ class LinearSSM(object):
         x_arr = self.generate_state_sequence(T=T, sigma_e2_dB=sigma_e2_dB)
         y_arr = self.generate_measurement_sequence(x_arr=x_arr, T=T, smnr_dB=smnr_dB)
 
-        return x_arr, y_arr
+        return x_arr, y_arr, self.Cw
 
 class LorenzSSM(object):
     """ 
@@ -239,8 +239,9 @@ class LorenzSSM(object):
 
         x_lorenz = self.generate_state_sequence(T=T, sigma_e2_dB=sigma_e2_dB)
         y_lorenz = self.generate_measurement_sequence(x_lorenz=x_lorenz, T=T, smnr_dB=smnr_dB)
+        Cw_lorenz = self.Cw
 
-        return x_lorenz, y_lorenz, self.Cw # Added the self.Cw
+        return x_lorenz, y_lorenz, Cw_lorenz # Added the self.Cw
     # Change ssm, models, utils
     
 def L96(t, x, N=20, F_mu=8, sigma_e2=.1):
@@ -350,4 +351,4 @@ class Lorenz96SSM(object):
         x_lorenz = self.generate_state_sequence(T_time=T_time, sigma_e2_dB=sigma_e2_dB)
         y_lorenz = self.generate_measurement_sequence(T=T, x_lorenz=x_lorenz, smnr_dB=smnr_dB)
 
-        return x_lorenz, y_lorenz
+        return x_lorenz, y_lorenz, self.Cw

@@ -174,19 +174,19 @@ def generate_state_observation_pairs(type_, parameters, T=100, N_samples=1000, s
         
         Xi, Yi, Cw_i = generate_SSM_data(ssm_model, T, sigma_e2_dB, smnr_dB)
         Z_XY_data_lengths.append(T)
-        #Z_XY_data.append([Xi, Yi])
         Z_X_data.append(Xi)
         Z_Y_data.append(Yi)
-        Z_Cw_data.append(Cw_i)
+    
+    Z_Cw_data.append(Cw_i)
 
     #Z_XY["data"] = np.row_stack(Z_XY_data).astype(object)
     #Z_XY["data"] = np.asarray(Z_XY_data)
     Z_XY["dataX"] = np.asarray(Z_X_data)
     Z_XY["dataY"] = np.asarray(Z_Y_data)
-    Z_XY["dataCw"] = np.asarray(Z_Cw_data)
+    Z_XY["dataCw"] = np.asarray(Z_Cw_data) # Added Cw
     #Z_pM["data"] = Z_pM_data
     Z_XY["trajectory_lengths"] = np.vstack(Z_XY_data_lengths)
-
+    
     return Z_XY
 
 def create_filename(T=100, N_samples=1000, m=3, n=3, dataset_basepath="./data/", type_="LorenzSSM", sigma_e2_dB=-10, smnr_dB=10):

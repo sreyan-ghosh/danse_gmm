@@ -118,8 +118,8 @@ def initialize_model(type_, parameters):
     return model
 
 def generate_SSM_data(model, T, sigma_e2_dB, smnr_dB):
-    """ This function generates a single pair 
-    (state trajectory, measurement trajectory) for the given ssm_model
+    """ This function generates a single triplet 
+    (state trajectory, measurement trajectory, msrmnt covariance) for the given ssm_model
     where the state trajectory has been generated using process noise corresponding to 
     `sigma_e2_dB` and the measurement trajectory has been generated using measurement noise 
     corresponding to `smnr_dB`. 
@@ -131,8 +131,9 @@ def generate_SSM_data(model, T, sigma_e2_dB, smnr_dB):
         smnr_dB (float): measurement noise in dB scale
 
     Returns:
-        X_arr: numpy array of size (T+1, model.n_states)
+        X_arr: numpy array of size (T, model.n_states)
         Y_arr: numpy array of size (T, model.n_obs)
+        Cw_arr: numpy array of size (model.n_obs, model.n_obs)
     """
 
     # Added Cw_arr
@@ -184,14 +185,16 @@ def generate_state_observation_pairs(type_, parameters, T=100, N_samples=1000, s
     Z_XY["dataX"] = np.asarray(Z_X_data)
     Z_XY["dataY"] = np.asarray(Z_Y_data)
     Z_XY["dataCw"] = np.asarray(Z_Cw_data) # Added Cw
-    #Z_pM["data"] = Z_pM_data
+    # print(f"ZXY X Shape: {np.shape(Z_XY['dataX'])}")
+    # print(f"ZXY Y Shape: {np.shape(Z_XY['dataY'])}")
+    # print(f"ZXY Cw Shape: {np.shape(Z_XY['dataCw'])}")
     Z_XY["trajectory_lengths"] = np.vstack(Z_XY_data_lengths)
     
     return Z_XY
 
 def create_filename(T=100, N_samples=1000, m=3, n=3, dataset_basepath="./data/", type_="LorenzSSM", sigma_e2_dB=-10, smnr_dB=10):
     """ Create the dataset based on the dataset parameters, currently this name is partially hard-coded and should be the same in the
-    correspodning parsing function for the `main`.py files. 
+    corresponding parsing function for the `main`.py files. 
 
     Args:
         T (int, optional): Sequence length of trajectories. Defaults to 100.

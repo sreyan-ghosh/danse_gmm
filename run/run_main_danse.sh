@@ -40,7 +40,7 @@ sigma_e2_dB=-10.0
 # RNN model type (e.g. GRU / LSTM)
 rnn_model_type="gru"
 
-for smnr_dB in -10.0 #0.0 10.0 20.0 30.0 
+for smnr_dB in -10.0 0.0 10.0 20.0 30.0 
 do
 	${PYTHON} ${script_name} \
 	--mode train \

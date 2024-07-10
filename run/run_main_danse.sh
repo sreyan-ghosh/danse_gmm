@@ -45,7 +45,7 @@ do
 	${PYTHON} ${script_name} \
 	--mode train \
 	--rnn_model_type ${rnn_model_type} \
-	--model_file_saved models/LorenzSSM_danse_opt_gru_m_${n_states}_n_${n_obs}_T_${T}_N_${N}_sigmae2_-10.0dB_smnr_$(echo $smnr_dB)dB/danse_gru_ckpt_epoch_671_best.pt\
+	--model_file_saved models/LorenzSSM_danse_opt_gru_m_${n_states}_n_${n_obs}_T_${T}_N_${N}_sigmae2_-10.0dB_smnr_$(echo $smnr_dB)dB/*best* \
 	--dataset_type ${dataset_type} \
 	--datafile ${output_path}/trajectories_m_${n_states}_n_${n_obs}_${dataset_type}_data_T_${T}_N_${N}_sigmae2_${sigma_e2_dB}dB_smnr_$(echo $smnr_dB)dB.pkl \
 	--splits ${output_path}/splits_m_${n_states}_n_${n_obs}_${dataset_type}_data_T_${T}_N_${N}_sigmae2_${sigma_e2_dB}dB_smnr_$(echo $smnr_dB)dB.pkl

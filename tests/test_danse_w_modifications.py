@@ -54,32 +54,6 @@ def test_danse_lorenz(danse_model, saved_model_file, Y, device='cpu'):
     
     return X_estimated_pred, Pk_estimated_pred, X_estimated_filtered, Pk_estimated_filtered
 
-"""
-def test_knet_lorenz(knet_model, saved_model_file, Y, device='cpu'):
-
-    knet_model.load_state_dict(torch.load(saved_model_file, map_location=device))
-    knet_model = push_model(nets=knet_model, device=device)
-    knet_model.eval()
-
-    with torch.no_grad():
-
-        Y_test_batch = Variable(Y, requires_grad=False).type(torch.FloatTensor).to(device)
-        X_estimated_filtered_knet = knet_model.compute_predictions(Y_test_batch)
-    
-    X_estimated_filtered_knet = torch.transpose(X_estimated_filtered_knet, 1, 2)
-    return X_estimated_filtered_knet
-"""
-"""
-def test_ukf_lorenz(X, Y, ukf_model):
-
-    X_estimated_ukf, Pk_estimated_ukf, mse_arr_uk_lin, mse_arr_ukf = ukf_model.run_mb_filter(X, Y)
-    return X_estimated_ukf, Pk_estimated_ukf, mse_arr_uk_lin, mse_arr_ukf
-
-def test_ekf_lorenz(X, Y, ekf_model):
-
-    X_estimated_ekf, Pk_estimated_ekf, mse_arr_ekf = ekf_model.run_mb_filter(X, Y)
-    return X_estimated_ekf, Pk_estimated_ekf, mse_arr_ekf
-"""
 def f_lorenz_danse_knet(x, device='cpu'):
 
     B = torch.Tensor([[[0,  0, 0],[0, 0, -1],[0,  1, 0]], torch.zeros(3,3), torch.zeros(3,3)]).type(torch.FloatTensor).to(device)
@@ -131,14 +105,17 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
 
         print("Test data generated using sigma_e2: {} dB, SMNR: {} dB".format(sigma_e2_dB_test, smnr_dB_test))
         
+        # Added Cw
         for i in range(N_test):
-            x_lorenz_i, y_lorenz_i = lorenz_model.generate_single_sequence(T=T_test, sigma_e2_dB=sigma_e2_dB_test, smnr_dB=smnr_dB_test)
+            x_lorenz_i, y_lorenz_i, Cw_i = lorenz_model.generate_single_sequence(T=T_test, sigma_e2_dB=sigma_e2_dB_test, smnr_dB=smnr_dB_test)
             X[i, :, :] = torch.from_numpy(x_lorenz_i).type(torch.FloatTensor)
             Y[i, :, :] = torch.from_numpy(y_lorenz_i).type(torch.FloatTensor)
+
 
         test_data_dict = {}
         test_data_dict["X"] = X
         test_data_dict["Y"] = Y
+        test_data_dict["Cw"] = Cw_i
         test_data_dict["model"] = lorenz_model
         save_dataset(Z_XY=test_data_dict, filename=test_data_file)
 
@@ -150,6 +127,7 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
         test_data_dict = load_saved_dataset(filename=test_data_file)
         X = test_data_dict["X"]
         Y = test_data_dict["Y"]
+        Cw_i = test_data_dict["Cw"] # Added Cw
         lorenz_model = test_data_dict["model"]
 
     print("*"*100)
@@ -197,54 +175,6 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
     lorenz_model.sigma_e2 = dB_to_lin(sigma_e2_dB_test)
     lorenz_model.setStateCov(sigma_e2=dB_to_lin(sigma_e2_dB_test))
 
-    """
-    # Initialize the extended Kalman filter model in PyTorch
-    print("Testing EKF ...", file=orig_stdout)
-    ekf_model = EKF(
-        n_states=lorenz_model.n_states,
-        n_obs=lorenz_model.n_obs,
-        J=J_test,
-        f=f_lorenz_danse,#lorenz_model.A_fn, f_lorenz for KalmanNet paper, f_lorenz_danse for our work
-        h=lorenz_model.h_fn,
-        delta=lorenz_model.delta,
-        Q=lorenz_model.Ce, #For KalmanNet
-        R=lorenz_model.Cw, # For KalmanNet
-        device=device,
-        use_Taylor=use_Taylor
-    )
-
-    # Get the estimates using an extended Kalman filter model
-    
-    X_estimated_ekf = None
-    Pk_estimated_ekf = None
-
-    start_time_ekf = timer()
-    X_estimated_ekf, Pk_estimated_ekf, mse_arr_ekf = test_ekf_lorenz(X=X, Y=Y, ekf_model=ekf_model)
-    time_elapsed_ekf = timer() - start_time_ekf
-    
-    print("Testing UKF ...", file=orig_stdout)
-    # Initialize the Kalman filter model in PyTorch
-    ukf_model = UKF_Aliter(
-        n_states=lorenz_model.n_states,
-        n_obs=lorenz_model.n_obs,
-        f=f_lorenz_danse_ukf,
-        h=lorenz_model.h_fn,
-        Q=lorenz_model.Ce, # For KalmanNet, else None
-        R=lorenz_model.Cw, # For KalmanNet, else None,
-        kappa=-1, # Usually kept 0
-        alpha=0.1, # Usually small 1e-3
-        delta_t=lorenz_model.delta,
-        beta=2,
-        device=device
-    )
-
-    # Get the estimates using an extended Kalman filter model
-    X_estimated_ukf = None
-    Pk_estimated_ukf = None
-    start_time_ukf = timer()
-    X_estimated_ukf, Pk_estimated_ukf, mse_arr_ukf_lin, mse_arr_ukf = test_ukf_lorenz(X=X, Y=Y, ukf_model=ukf_model)
-    time_elapsed_ukf = timer() - start_time_ukf
-    """
     print("Testing DANSE ...", file=orig_stdout)
     # Initialize the DANSE model in PyTorch
     ssm_dict, est_dict = get_parameters(n_states=lorenz_model.n_states,
@@ -257,7 +187,7 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
         n_states=lorenz_model.n_states,
         n_obs=lorenz_model.n_obs,
         mu_w=lorenz_model.mu_w,
-        C_w=lorenz_model.Cw,
+        C_w=Cw_i, # Added Cw
         batch_size=1,
         H=lorenz_model.H,#jacobian(h_fn, torch.randn(lorenz_model.n_states,)).numpy(),
         mu_x0=np.zeros((lorenz_model.n_states,)),
@@ -279,36 +209,7 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
                                                                                                 Y=Y,
                                                                                                 device=device)
     time_elapsed_danse = timer() - start_time_danse
-    '''
-    print("Testing KalmanNet ...", file=orig_stdout)
-    # Initialize the KalmanNet model in PyTorch
-    knet_model = KalmanNetNN(
-        n_states=lorenz_model.n_states,
-        n_obs=lorenz_model.n_obs,
-        n_layers=1,
-        device=device
-    )
-
-    def fn(x):
-        return f_lorenz_danse_knet(x, device=device)
-        
-    def hn(x):
-        #return x
-        return lorenz_model.h_fn(x)
     
-    knet_model.Build(f=fn, h=hn)
-    knet_model.ssModel = lorenz_model
-
-    start_time_knet = timer()
-
-    X_estimated_filtered_knet = test_knet_lorenz(knet_model=knet_model, 
-                                                saved_model_file=model_file_saved_knet,
-                                                Y=Y,
-                                                device=device)
-    '''
-    #time_elapsed_knet = None #timer() - start_time_knet
-
-    #X=X[:,:-1,:]
     nmse_ls = nmse_loss(X[:,:,:], X_LS[:,0:,:])
     nmse_ls_std = nmse_loss_std(X[:,:,:], X_LS[:,0:,:])
     
@@ -424,7 +325,7 @@ if __name__ == "__main__":
     else:
         bias = None
         p = None
-        evaluation_mode = 'full_opt_bias_{}_p_{}_modTest_Ttrain_{}_Ntrain_{}'.format(None, None, T_train, N_train)
+        evaluation_mode = 'full_opt_bias_{}_p_{}_modTest_danseOnly_Ttrain_{}_Ntrain_{}'.format(None, None, T_train, N_train)
         # Original: evaluation_mode = 'full_opt_bias_{}_p_{}_quicktest_Ttrain_{}_Ntrain_{}'.format(None, None, T_train, N_train)
 
     os.makedirs('./figs/LorenzModel/{}'.format(evaluation_mode), exist_ok=True)
@@ -462,8 +363,6 @@ if __name__ == "__main__":
 
     for smnr_dB in smnr_dB_arr:
         model_file_saved_dict["{}dB".format(smnr_dB)] = glob.glob(r"./models/*LorenzSSM_danse_opt_*n_3_T_{}_N_{}*sigmae2_{}dB_smnr_{}dB*/*best*".format(T_train, N_train, sigma_e2_dB_test, smnr_dB))[-1]
-
-        #model_file_saved_dict_knet["{}dB".format(smnr_dB)] = glob.glob("./models/*Lorenz*KNetUoffline_*n_3_T_{}_N_{}*sigmae2_{}dB_smnr_{}dB*/*best*".format(T_train, N_train, sigma_e2_dB_test, smnr_dB))[-1]
 
     test_data_file_dict = {}
 

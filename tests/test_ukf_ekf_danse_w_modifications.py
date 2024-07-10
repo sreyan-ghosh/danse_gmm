@@ -54,22 +54,6 @@ def test_danse_lorenz(danse_model, saved_model_file, Y, device='cpu'):
     
     return X_estimated_pred, Pk_estimated_pred, X_estimated_filtered, Pk_estimated_filtered
 
-"""
-def test_knet_lorenz(knet_model, saved_model_file, Y, device='cpu'):
-
-    knet_model.load_state_dict(torch.load(saved_model_file, map_location=device))
-    knet_model = push_model(nets=knet_model, device=device)
-    knet_model.eval()
-
-    with torch.no_grad():
-
-        Y_test_batch = Variable(Y, requires_grad=False).type(torch.FloatTensor).to(device)
-        X_estimated_filtered_knet = knet_model.compute_predictions(Y_test_batch)
-    
-    X_estimated_filtered_knet = torch.transpose(X_estimated_filtered_knet, 1, 2)
-    return X_estimated_filtered_knet
-"""
-
 def test_ukf_lorenz(X, Y, ukf_model):
 
     X_estimated_ukf, Pk_estimated_ukf, mse_arr_uk_lin, mse_arr_ukf = ukf_model.run_mb_filter(X, Y)
@@ -79,22 +63,6 @@ def test_ekf_lorenz(X, Y, ekf_model):
 
     X_estimated_ekf, Pk_estimated_ekf, mse_arr_ekf = ekf_model.run_mb_filter(X, Y)
     return X_estimated_ekf, Pk_estimated_ekf, mse_arr_ekf
-
-def f_lorenz_danse_knet(x, device='cpu'):
-
-    B = torch.Tensor([[[0,  0, 0],[0, 0, -1],[0,  1, 0]], torch.zeros(3,3), torch.zeros(3,3)]).type(torch.FloatTensor).to(device)
-    C = torch.Tensor([[-10, 10,    0],
-                      [ 28, -1,    0],
-                      [  0,  0, -8/3]]).type(torch.FloatTensor).to(device)
-    A = torch.einsum('kn,nij->ij',x.reshape((1,-1)),B) + C
-    #delta_t = 0.02 # Hardcoded for now
-    # Taylor Expansion for F    
-    F = torch.eye(3).type(torch.FloatTensor).to(device)
-    J = J_test # Hardcoded for now
-    for j in range(1,J+1):
-        F_add = (torch.matrix_power(A*delta_t, j)/math.factorial(j))
-        F = torch.add(F, F_add)
-    return torch.matmul(F, x)
 
 # Deleted: model_file_saved_knet=None,
 def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_logfile=None, evaluation_mode='Full', p=0.5, bias=30):
@@ -120,8 +88,8 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
         m, n, T_test, N_test, sigma_e2_dB_test, smnr_dB_test = parse("test_trajectories_m_{:d}_n_{:d}_LorenzSSM_data_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB.pkl", test_data_file.split('/')[-1])
 
         #N_test = 100 # No. of trajectories at test time / evaluation
-        #X = torch.zeros((N_test, T_test, m))
-        X = torch.zeros((N_test, T_test+1, m)) # Original
+        X = torch.zeros((N_test, T_test, m))
+        # X = torch.zeros((N_test, T_test+1, m)) # Original
         Y = torch.zeros((N_test, T_test, n))
 
         lorenz_model = LorenzSSM(n_states=m, n_obs=n, J=J, delta=delta, 
@@ -132,13 +100,14 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
         print("Test data generated using sigma_e2: {} dB, SMNR: {} dB".format(sigma_e2_dB_test, smnr_dB_test))
         
         for i in range(N_test):
-            x_lorenz_i, y_lorenz_i = lorenz_model.generate_single_sequence(T=T_test, sigma_e2_dB=sigma_e2_dB_test, smnr_dB=smnr_dB_test)
+            x_lorenz_i, y_lorenz_i, Cw_i = lorenz_model.generate_single_sequence(T=T_test, sigma_e2_dB=sigma_e2_dB_test, smnr_dB=smnr_dB_test)
             X[i, :, :] = torch.from_numpy(x_lorenz_i).type(torch.FloatTensor)
             Y[i, :, :] = torch.from_numpy(y_lorenz_i).type(torch.FloatTensor)
 
         test_data_dict = {}
         test_data_dict["X"] = X
         test_data_dict["Y"] = Y
+        test_data_dict["Cw"] = Cw_i
         test_data_dict["model"] = lorenz_model
         save_dataset(Z_XY=test_data_dict, filename=test_data_file)
 
@@ -150,6 +119,7 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
         test_data_dict = load_saved_dataset(filename=test_data_file)
         X = test_data_dict["X"]
         Y = test_data_dict["Y"]
+        Cw_i = test_data_dict["Cw"]
         lorenz_model = test_data_dict["model"]
 
     print("*"*100)
@@ -256,7 +226,7 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
         n_states=lorenz_model.n_states,
         n_obs=lorenz_model.n_obs,
         mu_w=lorenz_model.mu_w,
-        C_w=lorenz_model.Cw,
+        C_w=Cw_i,
         batch_size=1,
         H=lorenz_model.H,#jacobian(h_fn, torch.randn(lorenz_model.n_states,)).numpy(),
         mu_x0=np.zeros((lorenz_model.n_states,)),
@@ -277,36 +247,7 @@ def test_lorenz(device='cpu', model_file_saved=None, test_data_file=None, test_l
                                                                                                 saved_model_file=model_file_saved,
                                                                                                 Y=Y,
                                                                                                 device=device)
-    time_elapsed_danse = timer() - start_time_danse
-    '''
-    print("Testing KalmanNet ...", file=orig_stdout)
-    # Initialize the KalmanNet model in PyTorch
-    knet_model = KalmanNetNN(
-        n_states=lorenz_model.n_states,
-        n_obs=lorenz_model.n_obs,
-        n_layers=1,
-        device=device
-    )
-
-    def fn(x):
-        return f_lorenz_danse_knet(x, device=device)
-        
-    def hn(x):
-        #return x
-        return lorenz_model.h_fn(x)
-    
-    knet_model.Build(f=fn, h=hn)
-    knet_model.ssModel = lorenz_model
-
-    start_time_knet = timer()
-
-    X_estimated_filtered_knet = test_knet_lorenz(knet_model=knet_model, 
-                                                saved_model_file=model_file_saved_knet,
-                                                Y=Y,
-                                                device=device)
-    '''
-    #time_elapsed_knet = None #timer() - start_time_knet
-   
+    time_elapsed_danse = timer() - start_time_danse 
     
     
     nmse_ls = nmse_loss(X[:,:,:], X_LS[:,0:,:])

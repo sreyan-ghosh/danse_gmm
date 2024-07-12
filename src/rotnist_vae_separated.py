@@ -38,18 +38,6 @@ class RotatedMNISTDataset(Dataset):
             set_counts[set_number] += 1
         return set_counts
 
-# Define transforms
-transform = transforms.Compose([
-    transforms.Grayscale(),  # Convert to grayscale
-    transforms.ToTensor(),   # Convert to tensor
-    transforms.Lambda(lambda x: x.view(-1))  # Flatten the tensor
-])
-
-# Load dataset
-train_dataset = RotatedMNISTDataset(root_dir='data/rotnist/train-images/', transform=transform)
-T = train_dataset.T
-train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
-
 class VAE(nn.Module):
     def __init__(self, input_dim=784, hidden_dim=400, latent_dim=9):
         super(VAE, self).__init__()
@@ -88,10 +76,6 @@ def loss_function(recon_x, x, mu, logvar):
     KLD = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
     return BCE + KLD
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-model = VAE().to(device)
-optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
 def train(epoch):
     model.train()
@@ -165,7 +149,12 @@ def run_decoding(encoded_dir):
 
 # Save reconstructed images to PDF
 def save_reconstructed_images(original_images_paths, decoded_images, filename='reconstructed_images_enc_dec.pdf'):
-    original_images_paths.sort(key=lambda x: (int(x.split('/')[-1].split('_')[0]), int(x.split('/')[-1].split('_')[1].split('.')[0])))
+    def sort_key(path):
+        basename = os.path.basename(path).split('.')[0]
+        set_number, image_number = map(int, basename.split('_'))
+        return set_number, image_number
+
+    original_images_paths.sort(key=sort_key)
     
     model.eval()
     with torch.no_grad():
@@ -196,6 +185,23 @@ if __name__ == "__main__":
     args = parser.parse_args() 
     mode = args.mode
     enc_img_output_dir = args.output_path
+    
+    # Define transforms
+    transform = transforms.Compose([
+        transforms.Grayscale(),  # Convert to grayscale
+        transforms.ToTensor(),   # Convert to tensor
+        transforms.Lambda(lambda x: x.view(-1))  # Flatten the tensor
+    ])
+
+    # Load dataset
+    train_dataset = RotatedMNISTDataset(root_dir='data/rotnist/train-images/', transform=transform)
+    T = train_dataset.T
+    train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
+    
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    model = VAE().to(device)
+    optimizer = optim.Adam(model.parameters(), lr=1e-3)
     
     if mode.lower() == 'encode':
         # Training loop

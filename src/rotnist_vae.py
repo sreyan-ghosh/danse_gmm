@@ -109,7 +109,7 @@ def save_reconstructed_images(model, data_loader, filename='reconstructed_images
             for batch_idx, data in enumerate(data_loader):
                 data = data.to(device)
                 recon_batch, _, _ = model(data)
-                for i in range(min(len(recon_batch), 2)):  # Save only 2 images per batch for brevity
+                for i in range(min(len(recon_batch), 5)):  # Save only 2 images per batch for brevity
                     plt.figure(figsize=(4, 2))
                     # Original Image
                     plt.subplot(1, 2, 1)

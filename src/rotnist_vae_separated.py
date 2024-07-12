@@ -109,11 +109,7 @@ def train(epoch):
                   f'({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item() / len(data):.6f}')
 
     print(f'====> Epoch: {epoch} Average loss: {train_loss / len(train_loader.dataset):.4f}')
-"""
-# Training loop
-for epoch in range(1, 11):
-    train(epoch)
-"""
+
 def encode_data(model, data_loader, device):
     model.eval()
     encoded_mu = []
@@ -135,7 +131,7 @@ def decode_data(model, z, device):
         decoded = model.decode(z)
     return decoded
 
-def run_encoding(encoded_dir='data/encoded_data/'):
+def run_encoding(encoded_dir=None):
     # Save encoded data
     encoded_mu, encoded_logvar, original_images_paths = encode_data(model, train_loader, device)
     os.makedirs(encoded_dir, exist_ok=True)
@@ -169,40 +165,44 @@ def run_decoding(encoded_dir):
 
 # Save reconstructed images to PDF
 def save_reconstructed_images(original_images_paths, decoded_images, filename='reconstructed_images_enc_dec.pdf'):
-    with PdfPages(filename) as pdf:
-        for i in range(min(len(decoded_images), 5)):  # Save only 5 images
-            original_image = Image.open(original_images_paths[i]).convert('L')
-            original_image = transforms.ToTensor()(original_image).view(28, 28)
-            plt.figure(figsize=(8, 4))
-            # Original Image
-            plt.subplot(1, 2, 1)
-            plt.imshow(original_image, cmap='gray')
-            plt.title('Original')
-            plt.axis('off')
-            # Reconstructed Image
-            plt.subplot(1, 2, 2)
-            plt.imshow(decoded_images[i].cpu().view(28, 28), cmap='gray')
-            plt.title('Reconstructed')
-            plt.axis('off')
-            pdf.savefig()
-            plt.close()
+    original_images_paths.sort(key=lambda x: (int(x.split('/')[-1].split('_')[0]), int(x.split('/')[-1].split('_')[1].split('.')[0])))
+    
+    model.eval()
+    with torch.no_grad():
+        with PdfPages(filename) as pdf:
+            for i in range(min(len(decoded_images), 5)):  # Save only 5 images
+                original_image = Image.open(original_images_paths[i]).convert('L')
+                original_image = transforms.ToTensor()(original_image).view(28, 28)
+                plt.figure(figsize=(8, 4))
+                # Original Image
+                plt.subplot(1, 2, 1)
+                plt.imshow(original_image, cmap='gray')
+                plt.title('Original')
+                plt.axis('off')
+                # Reconstructed Image
+                plt.subplot(1, 2, 2)
+                plt.imshow(decoded_images[i].to(device).view(28, 28), cmap='gray')
+                plt.title('Reconstructed')
+                plt.axis('off')
+                pdf.savefig()
+                plt.close()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Input arguments related to creating a dataset for ROTNIST")
-    parser.add_argument("--mode", help="Enter 'encode' or 'decode' mode", type=str, default="encode")
+    parser.add_argument("--mode", help="Enter 'encode' or 'decode' mode", type=str, default="decode")
     parser.add_argument("--output_path", help="Enter full path to store the data file", type=str, default='data/encoded_data/')
 
     args = parser.parse_args() 
     mode = args.mode
-    output_path = args.output_path
+    enc_img_output_dir = args.output_path
     
     if mode.lower() == 'encode':
         # Training loop
         for epoch in range(1, 11):
             train(epoch)
-        run_encoding(output_path)
+        run_encoding(enc_img_output_dir)
     
     elif mode.lower() == 'decode':
-        decoded_images, original_image_path_loaded = run_decoding(output_path)
+        decoded_images, original_image_path_loaded = run_decoding(enc_img_output_dir)
         save_reconstructed_images(original_image_path_loaded, decoded_images)

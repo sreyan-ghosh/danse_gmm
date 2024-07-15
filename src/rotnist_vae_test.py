@@ -6,7 +6,6 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
-import torchvision
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -25,17 +24,6 @@ class RotatedMNISTDataset(Dataset):
         if self.transform:
             image = self.transform(image)
         return image
-
-# Define transforms
-transform = transforms.Compose([
-    transforms.Grayscale(),  # Convert to grayscale
-    transforms.ToTensor(),   # Convert to tensor
-    transforms.Lambda(lambda x: x.view(-1))  # Flatten the tensor
-])
-
-# Load dataset
-train_dataset = RotatedMNISTDataset(root_dir='data/rotnist/train-images/', transform=transform)
-train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
 
 class VAE(nn.Module):
     def __init__(self, input_dim=784, hidden_dim=400, latent_dim=9):
@@ -75,12 +63,7 @@ def loss_function(recon_x, x, mu, logvar):
     KLD = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
     return BCE + KLD
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-model = VAE().to(device)
-optimizer = optim.Adam(model.parameters(), lr=1e-3)
-
-def train(epoch):
+def train(model, device, train_loader, optimizer, epoch):
     model.train()
     train_loss = 0
     for batch_idx, data in enumerate(train_loader):
@@ -97,19 +80,15 @@ def train(epoch):
 
     print(f'====> Epoch: {epoch} Average loss: {train_loss / len(train_loader.dataset):.4f}')
 
-# Training loop
-for epoch in range(1, 11):
-    train(epoch)
-
 # Save reconstructed images to PDF
-def save_reconstructed_images(model, data_loader, filename='reconstructed_images_test.pdf'):
+def save_reconstructed_images(model, data_loader, device, filename='reconstructed_images.pdf'):
     model.eval()
     with torch.no_grad():
         with PdfPages(filename) as pdf:
             for batch_idx, data in enumerate(data_loader):
                 data = data.to(device)
                 recon_batch, _, _ = model(data)
-                for i in range(min(len(recon_batch), 5)):  # Save only 2 images per batch for brevity
+                for i in range(min(len(recon_batch), 5)):  # Save only 5 images for brevity
                     plt.figure(figsize=(4, 2))
                     # Original Image
                     plt.subplot(1, 2, 1)
@@ -124,5 +103,28 @@ def save_reconstructed_images(model, data_loader, filename='reconstructed_images
                     pdf.savefig()
                     plt.close()
 
-save_reconstructed_images(model, train_loader)
+def main():
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    model = VAE().to(device)
+    optimizer = optim.Adam(model.parameters(), lr=1e-3)
+    
+    # Define transforms
+    transform = transforms.Compose([
+        transforms.Grayscale(),  # Convert to grayscale
+        transforms.ToTensor(),   # Convert to tensor
+        transforms.Lambda(lambda x: x.view(-1))  # Flatten the tensor
+    ])
+
+    # Load dataset
+    train_dataset = RotatedMNISTDataset(root_dir='data/rotnist/train-images/', transform=transform)
+    train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
+    
+    # Training loop
+    for epoch in range(1, 11):
+        train(model, device, train_loader, optimizer, epoch)
+        
+    save_reconstructed_images(model, train_loader, device)
+
+if __name__ == "__main__":
+    main()

@@ -94,17 +94,18 @@ def train(model, device, train_loader, optimizer, epoch):
 
 def encode_data(model, data_loader, device):
     model.eval()
-    encoded_mu = []
-    encoded_logvar = []
+    latent_array = []
     original_images_paths = []
     with torch.no_grad():
         for data, paths in data_loader:
             data = data.to(device)
             mu, logvar = model.encode(data)
-            encoded_mu.append(mu)
-            encoded_logvar.append(logvar)
+            z = model.reparameterize(mu, logvar)
+            latent_array.append(z)
             original_images_paths.extend(paths)
-    return torch.cat(encoded_mu), torch.cat(encoded_logvar), original_images_paths
+    concat_latent_array = torch.cat(latent_array)
+    print(f"concat latent array shape: {concat_latent_array.shape}")
+    return concat_latent_array, original_images_paths
 
 def decode_data(model, z, device):
     model.eval()
@@ -115,13 +116,13 @@ def decode_data(model, z, device):
 
 def run_encoding(model, device, train_loader, encoded_dir):
     # Save encoded data
-    encoded_mu, encoded_logvar, original_images_paths = encode_data(model, train_loader, device)
+    latent_array, original_images_paths = encode_data(model, train_loader, device)
     os.makedirs(encoded_dir, exist_ok=True)
 
     set_index = 1
-    for i in range(encoded_mu.size(0)):
+    for i in range(latent_array.size(0)):
         set_image_index = (i % T) + 1
-        torch.save((encoded_mu[i], encoded_logvar[i], original_images_paths[i]), os.path.join(encoded_dir, f'enc_img_{set_index}_{set_image_index}.pt'))
+        torch.save((latent_array[i], original_images_paths[i]), os.path.join(encoded_dir, f'enc_img_{set_index}_{set_image_index}.pt'))
         if set_image_index == T:
             set_index += 1
 
@@ -133,16 +134,15 @@ def run_decoding(model, device, encoded_dir):
             encoded_images.append(torch.load(os.path.join(encoded_dir, f'enc_img_{set_index}_{set_image_index}.pt')))
 
     # Load encoded data and decode
-    encoded_mu_loaded = torch.stack([img[0] for img in encoded_images])
-    encoded_logvar_loaded = torch.stack([img[1] for img in encoded_images])
-    original_images_paths_loaded = [img[2] for img in encoded_images]
+    latent_array_loaded = torch.stack([img[0] for img in encoded_images])
+    original_images_paths_loaded = [img[1] for img in encoded_images]
 
-
+    print(f"loaded latent array shape: {latent_array_loaded.shape}")
     with torch.no_grad():
-        # Reparameterize
-        z = model.reparameterize(encoded_mu_loaded, encoded_logvar_loaded)
         # Decode
+        z = latent_array_loaded
         decoded_images = decode_data(model, z, device)
+        print(f"decoded images shape: {decoded_images.shape}")
     
     return decoded_images, original_images_paths_loaded
 
@@ -176,7 +176,7 @@ def save_reconstructed_images(original_images_paths, decoded_images, filename='r
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Input arguments related to creating a dataset for ROTNIST")
-    parser.add_argument("--mode", help="Enter 'encode' or 'decode' mode", type=str, default="decode")
+    parser.add_argument("--mode", help="Enter 'encode' or 'decode' mode", type=str, default="encode")
     parser.add_argument("--output_path", help="Enter full path to store the data file", type=str, default='data/encoded_data/')
 
     args = parser.parse_args() 

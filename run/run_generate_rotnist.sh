@@ -1,6 +1,6 @@
 #!/bin/bash
 # This script is used to run the generate_data.py file for creating training data.
-# Creator: Anubhab Ghosh, Feb 2024.
+# Creator: Kasper Malm & Sreyan Ghosh, July 2024.
 
 # The python kernel version e.g. to run on python 3.8 version use: python3.8
 PYTHON="python"

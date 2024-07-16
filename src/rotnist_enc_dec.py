@@ -195,6 +195,40 @@ def run_decoding(model, device, encoded_dir):
     
     return decoded_images, original_images_paths_loaded
 
+def generate_danse_input(encoded_dir, output_dir, smnr_db=10):
+    os.makedirs(output_dir, exist_ok=True)
+    
+    encoded_images = []
+    for set_index in range(1, (len(glob.glob(os.path.join(encoded_dir, '*.pt'))) // T) + 1):
+        for set_image_index in range(1, T + 1):
+            encoded_images.append(torch.load(os.path.join(encoded_dir, f'enc_img_{set_index}_{set_image_index}.pt')))
+    
+    N = len(encoded_images)
+    
+    for i, (latent_vector, path) in enumerate(encoded_images):
+        # Calculate signal power using variance
+        signal_power = torch.var(latent_vector)
+        
+        # Calculate noise power from SMNR in dB
+        noise_power = signal_power / (10**(smnr_db / 10))
+        
+        # Generate Gaussian noise with the calculated noise power
+        noise_std = torch.sqrt(noise_power)
+        noisy_latent_vector = latent_vector + noise_std * torch.randn_like(latent_vector)
+        
+        # Determine the set_index and set_image_index based on the current index
+        set_index = (i // T) + 1
+        set_image_index = (i % T) + 1
+        
+        new_subfolder = f'y_T_{T}_N_{N}_smnr_{smnr_db}dB'
+        temp_folder = os.path.join(output_dir, new_subfolder)
+        os.makedirs(temp_folder, exist_ok=True)
+        
+        # Save the noisy latent vector with the new nomenclature
+        new_filename = f'y_{set_index}_{set_image_index}.pt'
+        torch.save(noisy_latent_vector, os.path.join(temp_folder, new_filename))
+
+
 # Save reconstructed images to PDF
 def save_reconstructed_images(original_images_paths, decoded_images, filename='reconstructed_images.pdf'):
     # def sort_key(path):
@@ -217,7 +251,7 @@ def save_reconstructed_images(original_images_paths, decoded_images, filename='r
                 plt.axis('off')
                 # Reconstructed Image
                 plt.subplot(1, 2, 2)
-                plt.imshow(decoded_images[i].cpu().view(28, 28), cmap='gray')
+                plt.imshow(decoded_images[i].to(device).view(28, 28), cmap='gray')
                 plt.title('Reconstructed')
                 plt.axis('off')
                 pdf.savefig()
@@ -228,13 +262,18 @@ if __name__ == "__main__":
     parser.add_argument("--mode", help="Enter 'encode' or 'decode' mode", type=str, default="train")
     parser.add_argument("--model_type", help="Enter 'ae' or 'vae' model", type=str, default="ae")
     parser.add_argument("--output_path", help="Enter full path to store the data file", type=str, default='data/encoded_data/')
+    parser.add_argument("--danse_input_path", help="Enter full path to store the danse input files", type=str, default='data/encoded_noise_data')
     parser.add_argument("--saved_model_path", help="Enter full path to save the AR/VAE model", type=str, default='models/rotnist_models/')
+    parser.add_argument("--smnr_db", help="For the smnr", type=float, default=20.0)
+
 
     args = parser.parse_args() 
     mode = args.mode
     model_type = args.model_type
     enc_img_output_dir = args.output_path
     saved_model_path = args.saved_model_path
+    danse_input_path = args.danse_input_path
+    smnr_db = args.smnr_db
     
     # Define transforms
     transform = transforms.Compose([
@@ -273,7 +312,12 @@ if __name__ == "__main__":
         model = torch.load(os.path.join(saved_model_path, f"{model_type}_model"))
         run_encoding(model, device, train_loader, model_type, enc_img_output_dir)
         print(f"Saved encodings to: {enc_img_output_dir}")
+        
+    elif mode.lower() == 'noise':
+        generate_danse_input(enc_img_output_dir, danse_input_path, smnr_db=smnr_db)
+        print(f"Saved noisy encodings to: {danse_input_path}")
     
+    # Change it to decode the processed danse output
     elif mode.lower() == 'decode':
         model = torch.load(os.path.join(saved_model_path, f"{model_type}_model"))
         decoded_images, original_image_path_loaded = run_decoding(model, device, enc_img_output_dir)

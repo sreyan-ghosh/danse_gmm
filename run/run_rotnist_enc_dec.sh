@@ -8,21 +8,28 @@ PYTHON="python"
 # The name of the script for generating data with full path name
 script_name="./src/rotnist_enc_dec.py"
 
-# Output path to store the encoded data
+# Output path to store the encoded data: encoded_data, encoded_noise_data
 output_path="./data/encoded_data"
+
+danse_input_path="./data/encoded_noise_data"
 
 # Output path to store the model
 saved_model_path="./models/rotnist_models"
 
 # train, encode, decode
-mode="decode"
+mode="noise"
 
 # vae, ae
 model_type="ae"
 
+for smnr_dB in 10.0 20.0 30.0 
+do
+    ${PYTHON} ${script_name} \
+    --output_path ${output_path} \
+    --danse_input_path ${danse_input_path} \
+    --saved_model_path ${saved_model_path} \
+    --mode ${mode} \
+    --smnr_db ${smnr_dB} \
+    --model_type ${model_type} 
+done
 
-${PYTHON} ${script_name} \
---output_path ${output_path} \
---saved_model_path ${saved_model_path} \
---mode ${mode} \
---model_type ${model_type} 

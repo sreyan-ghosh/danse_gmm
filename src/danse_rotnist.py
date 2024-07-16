@@ -149,7 +149,7 @@ class DANSE(nn.Module):
 
         return log_pYT_batch_avg
 
-
+# Rotnist Update: Change for rotnist
 def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path, modelfile_path, save_chkpoints, device='cpu', tr_verbose=False):
     
     # Push the model to device and count parameters

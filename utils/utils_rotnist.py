@@ -152,6 +152,7 @@ def obtain_tr_val_test_idx(dataset, tr_to_test_split=0.9, tr_to_val_split=0.83):
 
     return tr_indices, val_indices, test_indices
 
+# Rotnist Update: inputs = y and targets = z
 def my_collate_fn(batch):
     inputs = [item["inputs"] for item in batch]
     targets = [item["targets"] for item in batch]
@@ -271,7 +272,7 @@ def load_splits_file(splits_filename):
         splits = pkl.load(handle)
     return splits
 
-
+# Rotnist Update: Add new function to load rotnist dataset, handle for each smnr
 def load_saved_dataset(filename):
 
     with open(filename, 'rb') as handle:

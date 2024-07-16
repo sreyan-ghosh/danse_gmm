@@ -300,6 +300,7 @@ def get_H_DANSE(type_, n_states, n_obs):
     elif type_ == "SinusoidalSSM":
         return jacobian(h_sinssm_fn, torch.randn(n_states,)).numpy()
 
+# Rotnist Update: Add a key value for rotnist
 def get_parameters(n_states=5, n_obs=5, device='cpu'):
 
     ssm_parameters_dict = {

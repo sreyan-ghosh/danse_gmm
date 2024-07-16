@@ -45,7 +45,7 @@ def main():
     args = parser.parse_args() 
     mode = args.mode
     model_type = args.rnn_model_type
-    datafile = args.datafile
+    datafile = args.datafile # Rotnist Update: Datafile should now reference encoded_noise_data
     dataset_type = args.dataset_type
     datafolder = "".join(datafile.split("/")[i]+"/" for i in range(len(datafile.split("/")) - 1))
     model_file_saved = args.model_file_saved
@@ -60,6 +60,7 @@ def main():
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu>0) else "cpu")
     print("Device Used:{}".format(device))
 
+    # Rotnist Update: ssm_parameters_dict will change in get_parameters
     ssm_parameters_dict, est_parameters_dict = get_parameters(
                                             n_states=n_states,
                                             n_obs=n_obs,
@@ -71,21 +72,20 @@ def main():
 
     if not os.path.isfile(datafile):
         
-        print("Dataset is not present, run 'generate_data.py / run_generate_data.sh' to create the dataset")
+        print("Dataset is not present, run 'rotnist_enc_dec.py / run_rotnist_enc_dec.sh (in noise mode)' to create the dataset")
         #plot_trajectories(Z_pM, ncols=1, nrows=10)
     else:
 
         print("Dataset already present!")
         Z_XY = load_saved_dataset(filename=datafile)
     
+    # Rotnist Update: Change
     Z_XY_dataset = Series_Dataset(Z_XY_dict=Z_XY)
     ssm_model = Z_XY["ssm_model"]
     print(f"Cw ssm_model: {ssm_model.Cw.shape}")
     estimator_options['C_w'] = Z_XY['dataCw'] # Added Cw
-    # estimator_options['C_w'] = ssm_model.Cw # Get the covariance matrix of the measurement noise from the model information
-    estimator_options['H'] = get_H_DANSE(type_=dataset_type, n_states=n_states, n_obs=n_obs) # Get the sensing matrix from the model info
     
-    print(estimator_options['H'])
+    # Rotnist Update: Change to handle the torch files
     if not os.path.isfile(splits_file):
         tr_indices, val_indices, test_indices = obtain_tr_val_test_idx(dataset=Z_XY_dataset,
                                                                     tr_to_test_split=0.9,
@@ -107,6 +107,7 @@ def main():
         splits = load_splits_file(splits_filename=splits_file)
         tr_indices, val_indices, test_indices = splits["train"], splits["val"], splits["test"]
 
+    # Rotnist Update: Change in get_dataloader
     train_loader, val_loader, test_loader = get_dataloaders(dataset=Z_XY_dataset, 
                                                             batch_size=batch_size, 
                                                             tr_indices=tr_indices, 
@@ -117,13 +118,14 @@ def main():
                                                                                 len(val_loader), 
                                                                                 len(test_loader)))
 
-    #ngpu = 1 # Comment this out if you want to run on cpu and the next line just set device to "cpu"
-    #device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu>0) else "cpu")
-    #print("Device Used:{}".format(device))
+    ngpu = 1 # Comment this out if you want to run on cpu and the next line just set device to "cpu"
+    device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu>0) else "cpu")
+    print("Device Used:{}".format(device))
     
     logfile_path = "./log/"
     modelfile_path = "./models/"
 
+    # Rotnist Update: Change name
     #NOTE: Currently this is hardcoded into the system
     main_exp_name = "{}_danse_opt_{}_m_{}_n_{}_T_{}_N_{}_sigmae2_{}dB_smnr_{}dB".format(
                                                             dataset_type,

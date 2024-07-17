@@ -1,6 +1,6 @@
 #####################################################
-# Creator: Anubhab Ghosh 
-# Feb 2023
+# Creator: Anubhab Ghosh, Sreyan Ghosh, Kasper Malm
+# Feb 2023, Updated: Jul 2024
 #####################################################
 # This function is used to define the parameters of the model
 import sys

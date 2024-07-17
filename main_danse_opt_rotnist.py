@@ -1,6 +1,6 @@
 #####################################################
-# Creator: Anubhab Ghosh 
-# Feb 2023
+# Creator: Anubhab Ghosh, Sreyan Ghosh, Kasper Malm
+# Feb 2023, Updated: Jul 2024
 #####################################################
 # Import necessary libraries
 import sys
@@ -29,8 +29,8 @@ from src.danse import DANSE, train_danse, test_danse
 
 def main():
 
-    usage = "Train DANSE using trajectories of SSMs \n"\
-        "python3.8 main_danse.py --mode [train/test] --model_type [gru/lstm/rnn] --dataset_mode [LinearSSM/LorenzSSM] \n"\
+    usage = "Train DANSE using sequence of ROTNIST \n"\
+        "python3.8 main_danse.py --mode [train/test] --model_type [gru/lstm/rnn] --dataset_mode [LinearSSM/LorenzSSM/ROTNIST] \n"\
         "--datafile [fullpath to datafile] --splits [fullpath to splits file]"
     
     parser = argparse.ArgumentParser(description="Input a string indicating the mode of the script \n"\
@@ -51,6 +51,7 @@ def main():
     model_file_saved = args.model_file_saved
     splits_file = args.splits
     
+    # Rotnist Update: Need to think of converting .pt to .pkl format for each smnr
     print("datafile: {}".format(datafile))
     print(datafile.split('/')[-1])
     # Dataset parameters obtained from the 'datafile' variable
@@ -61,6 +62,7 @@ def main():
     print("Device Used:{}".format(device))
 
     # Rotnist Update: ssm_parameters_dict will change in get_parameters
+    # Rotnist Update: Also think of how to pass n_states in the filename of the new .pkl file
     ssm_parameters_dict, est_parameters_dict = get_parameters(
                                             n_states=n_states,
                                             n_obs=n_obs,
@@ -71,21 +73,18 @@ def main():
     estimator_options = est_parameters_dict["danse"] # Get the options for the estimator
 
     if not os.path.isfile(datafile):
-        
         print("Dataset is not present, run 'rotnist_enc_dec.py / run_rotnist_enc_dec.sh (in noise mode)' to create the dataset")
-        #plot_trajectories(Z_pM, ncols=1, nrows=10)
     else:
-
         print("Dataset already present!")
         Z_XY = load_saved_dataset(filename=datafile)
     
-    # Rotnist Update: Change
+    # Rotnist Update: Change Series Dataset to accomodate Z and Y from Z_XY dict
     Z_XY_dataset = Series_Dataset(Z_XY_dict=Z_XY)
-    ssm_model = Z_XY["ssm_model"]
-    print(f"Cw ssm_model: {ssm_model.Cw.shape}")
+    ssm_model = Z_XY["ssm_model"] # Rotnist Update: investigate possible removal
+    # print(f"Cw ssm_model: {ssm_model.Cw.shape}")
     estimator_options['C_w'] = Z_XY['dataCw'] # Added Cw
     
-    # Rotnist Update: Change to handle the torch files
+    # Rotnist Update: Change to handle the torch files (redundant)
     if not os.path.isfile(splits_file):
         tr_indices, val_indices, test_indices = obtain_tr_val_test_idx(dataset=Z_XY_dataset,
                                                                     tr_to_test_split=0.9,

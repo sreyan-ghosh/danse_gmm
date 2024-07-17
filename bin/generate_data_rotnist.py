@@ -165,7 +165,7 @@ def prepare_MNIST_data(use_data_augmentation=True, T=None, N=None, output_path=N
             if i%T == 0:
                 print(f"Generated {imnum} set of images...")
 
-    print("---------Completed Generating ROTNIST Data-----------")
+    print("----------Completed Generating ROTNIST Data-----------")
     # repeat for test data
     # with open(f"{output_path}/test-labels.csv", 'w') as csvFile:
     #     writer = csv.writer(csvFile, delimiter=',', quotechar='"')

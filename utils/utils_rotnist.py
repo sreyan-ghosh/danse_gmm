@@ -273,6 +273,7 @@ def load_splits_file(splits_filename):
     return splits
 
 # Rotnist Update: Add new function to load rotnist dataset, handle for each smnr
+# Rotnist Update: Might not be required if we can retrofit .pt to .pkl
 def load_saved_dataset(filename):
 
     with open(filename, 'rb') as handle:

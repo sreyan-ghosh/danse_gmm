@@ -22,6 +22,9 @@ mode="noise"
 # vae, ae
 model_type="ae"
 
+# n_obs and m_states
+latent_dim="32"
+
 for smnr_dB in 10.0 20.0 30.0 
 do
     ${PYTHON} ${script_name} \
@@ -30,6 +33,7 @@ do
     --saved_model_path ${saved_model_path} \
     --mode ${mode} \
     --smnr_db ${smnr_dB} \
-    --model_type ${model_type} 
+    --model_type ${model_type} \
+    --latent_dim ${latent_dim}
 done
 

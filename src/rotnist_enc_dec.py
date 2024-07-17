@@ -1,11 +1,16 @@
 import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
 import glob
 from PIL import Image
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
+from utils.utils_rotnist import save_dataset
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import argparse
@@ -197,37 +202,60 @@ def run_decoding(model, device, encoded_dir):
 
 def generate_danse_input(encoded_dir, output_dir, smnr_db=10):
     os.makedirs(output_dir, exist_ok=True)
-    
+    Z_XY = dict()
+    Z_arr = list()
+    Y_arr = list()
+    Cw_arr = list()
+    # encoded_images = []
+    # for set_index in range(1, (len(glob.glob(os.path.join(encoded_dir, '*.pt'))) // T) + 1):
+    #     for set_image_index in range(1, T + 1):
+    #         encoded_images.append(torch.load(os.path.join(encoded_dir, f'enc_img_{set_index}_{set_image_index}.pt')))
     encoded_images = []
-    for set_index in range(1, (len(glob.glob(os.path.join(encoded_dir, '*.pt'))) // T) + 1):
-        for set_image_index in range(1, T + 1):
-            encoded_images.append(torch.load(os.path.join(encoded_dir, f'enc_img_{set_index}_{set_image_index}.pt')))
+    pt_files = sorted(glob.glob(os.path.join(encoded_dir, '*.pt')))
     
-    N = len(encoded_images)
-    
-    for i, (latent_vector, path) in enumerate(encoded_images):
+    for file_path in pt_files:
+        data = torch.load(file_path)
+        encoded_img = data[0]
+        encoded_images.append(encoded_img)
+        
+        # Check if we have collected T encoded images
+        if len(encoded_images) == T:
+            Z_arr.append(encoded_images)
+            encoded_images = []
+
+    # Check if there are any remaining images that were not added
+    if encoded_images:
+        Z_arr.append(encoded_images)
+
+    for z_vector in Z_arr:
+        z_tensor = torch.stack(z_vector)
+        
         # Calculate signal power using variance
-        signal_power = torch.var(latent_vector)
+        signal_power = torch.var(z_tensor)
         
         # Calculate noise power from SMNR in dB
         noise_power = signal_power / (10**(smnr_db / 10))
         
         # Generate Gaussian noise with the calculated noise power
         noise_std = torch.sqrt(noise_power)
-        noisy_latent_vector = latent_vector + noise_std * torch.randn_like(latent_vector)
+        noise = noise_std * torch.randn_like(z_tensor[0])  # Generate noise for one element
         
-        # Determine the set_index and set_image_index based on the current index
-        set_index = (i // T) + 1
-        set_image_index = (i % T) + 1
+        # Add the same noise to each element of the z_vector
+        y_vector = [latent_vector + noise for latent_vector in z_tensor]
         
-        new_subfolder = f'y_T_{T}_N_{N}_smnr_{smnr_db}dB'
-        temp_folder = os.path.join(output_dir, new_subfolder)
-        os.makedirs(temp_folder, exist_ok=True)
-        
-        # Save the noisy latent vector with the new nomenclature
-        new_filename = f'y_{set_index}_{set_image_index}.pt'
-        torch.save(noisy_latent_vector, os.path.join(temp_folder, new_filename))
+        # Append to Y_arr and add the variance to Cw_arr
+        Y_arr.append(y_vector)
+        Cw_arr.append(noise_power.item())
+    
+    num_samples = len(Z_arr)
+    Z_XY["dataZ"] = Z_arr
+    Z_XY["dataY"] = Y_arr
+    Z_XY["dataCw"] = Cw_arr
 
+    filename = f"sequence_m_{latent_dim}_n_{latent_dim}_rotnist_T_{T}_N_{num_samples}_smnr_{smnr_db}dB.pkl"
+    savepath = os.path.join(output_dir, filename)
+    save_dataset(Z_XY=Z_XY, filename=savepath)
+    print(f"Saved .pkl file to: {savepath}")
 
 # Save reconstructed images to PDF
 def save_reconstructed_images(original_images_paths, decoded_images, filename='reconstructed_images.pdf'):
@@ -265,6 +293,7 @@ if __name__ == "__main__":
     parser.add_argument("--danse_input_path", help="Enter full path to store the danse input files", type=str, default='data/encoded_noise_data')
     parser.add_argument("--saved_model_path", help="Enter full path to save the AR/VAE model", type=str, default='models/rotnist_models/')
     parser.add_argument("--smnr_db", help="For the smnr", type=float, default=20.0)
+    parser.add_argument("--latent_dim", help="For the latent dimension", type=int, default=32)
 
 
     args = parser.parse_args() 
@@ -274,6 +303,7 @@ if __name__ == "__main__":
     saved_model_path = args.saved_model_path
     danse_input_path = args.danse_input_path
     smnr_db = args.smnr_db
+    latent_dim = args.latent_dim
     
     # Define transforms
     transform = transforms.Compose([
@@ -290,10 +320,10 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     if model_type.lower() == 'vae':
-        model = VAE().to(device)
+        model = VAE(latent_dim=latent_dim).to(device)
         train = vae_train
     elif model_type.lower() == 'ae':
-        model = AE().to(device)
+        model = AE(latent_dim=latent_dim).to(device)
         train = ae_train
 
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
@@ -314,6 +344,7 @@ if __name__ == "__main__":
         print(f"Saved encodings to: {enc_img_output_dir}")
         
     elif mode.lower() == 'noise':
+        print("Adding noise for {}dB SMNR".format(smnr_db))
         generate_danse_input(enc_img_output_dir, danse_input_path, smnr_db=smnr_db)
         print(f"Saved noisy encodings to: {danse_input_path}")
     

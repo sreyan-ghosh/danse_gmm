@@ -299,6 +299,8 @@ def get_H_DANSE(type_, n_states, n_obs):
         return np.concatenate((np.zeros((1,2)), np.eye(1)), axis=1)
     elif type_ == "SinusoidalSSM":
         return jacobian(h_sinssm_fn, torch.randn(n_states,)).numpy()
+    elif type_ == "rotnist":
+        return np.eye(n_obs, n_states)
 
 # Rotnist Update: Add a key value for rotnist
 def get_parameters(n_states=5, n_obs=5, device='cpu'):

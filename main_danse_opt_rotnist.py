@@ -1,6 +1,6 @@
 #####################################################
-# Creator: Anubhab Ghosh, Sreyan Ghosh, Kasper Malm
-# Feb 2023, Updated: Jul 2024
+# Creator: Anubhab Ghosh 
+# Feb 2023
 #####################################################
 # Import necessary libraries
 import sys
@@ -11,14 +11,13 @@ import argparse
 from parse import parse
 import numpy as np
 import json
-from utils.utils import NDArrayEncoder
 import scipy
 #import matplotlib.pyplot as plt
 import torch
 import pickle as pkl
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
-from utils.utils import load_saved_dataset, Series_Dataset, obtain_tr_val_test_idx, create_splits_file_name, \
+from utils.utils_rotnist import load_saved_dataset, Series_Dataset, obtain_tr_val_test_idx, create_splits_file_name, \
     create_file_paths, check_if_dir_or_file_exists, load_splits_file, get_dataloaders, NDArrayEncoder
 # Import the parameters
 from config.parameters_opt import get_parameters, get_H_DANSE
@@ -45,7 +44,7 @@ def main():
     args = parser.parse_args() 
     mode = args.mode
     model_type = args.rnn_model_type
-    datafile = args.datafile # Rotnist Update: Datafile should now reference encoded_noise_data
+    datafile = args.datafile
     dataset_type = args.dataset_type
     datafolder = "".join(datafile.split("/")[i]+"/" for i in range(len(datafile.split("/")) - 1))
     model_file_saved = args.model_file_saved
@@ -55,14 +54,12 @@ def main():
     print("datafile: {}".format(datafile))
     print(datafile.split('/')[-1])
     # Dataset parameters obtained from the 'datafile' variable
-    _, n_states, n_obs, _, T, N_samples, sigma_e2_dB, smnr_dB = parse("{}_m_{:d}_n_{:d}_{}_data_T_{:d}_N_{:d}_sigmae2_{:f}dB_smnr_{:f}dB.pkl", datafile.split('/')[-1])
+    _, n_states, n_obs, _, T, N_samples, smnr_dB = parse("{}_m_{:d}_n_{:d}_{}_T_{:d}_N_{:d}_smnr_{:f}dB.pkl", datafile.split('/')[-1])
     
     ngpu = 1 # Comment this out if you want to run on cpu and the next line just set device to "cpu"
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu>0) else "cpu")
     print("Device Used:{}".format(device))
 
-    # Rotnist Update: ssm_parameters_dict will change in get_parameters
-    # Rotnist Update: Also think of how to pass n_states in the filename of the new .pkl file
     ssm_parameters_dict, est_parameters_dict = get_parameters(
                                             n_states=n_states,
                                             n_obs=n_obs,
@@ -73,18 +70,20 @@ def main():
     estimator_options = est_parameters_dict["danse"] # Get the options for the estimator
 
     if not os.path.isfile(datafile):
-        print("Dataset is not present, run 'rotnist_enc_dec.py / run_rotnist_enc_dec.sh (in noise mode)' to create the dataset")
+        print("Dataset is not present, run 'generate_data_rotnist.py / run_generate_data_rotnist.sh' to create the dataset")
     else:
+
         print("Dataset already present!")
         Z_XY = load_saved_dataset(filename=datafile)
     
-    # Rotnist Update: Change Series Dataset to accomodate Z and Y from Z_XY dict
     Z_XY_dataset = Series_Dataset(Z_XY_dict=Z_XY)
-    ssm_model = Z_XY["ssm_model"] # Rotnist Update: investigate possible removal
-    # print(f"Cw ssm_model: {ssm_model.Cw.shape}")
-    estimator_options['C_w'] = Z_XY['dataCw'] # Added Cw
+    # ssm_model = Z_XY["ssm_model"]
+    estimator_options['C_w'] = np.asarray(Z_XY['dataCw']) # Added Cw
+    # estimator_options['C_w'] = ssm_model.Cw # Get the covariance matrix of the measurement noise from the model information
+    estimator_options['H'] = get_H_DANSE(type_=dataset_type, n_states=n_states, n_obs=n_obs) # Get the sensing matrix from the model info
     
-    # Rotnist Update: Change to handle the torch files (redundant)
+    print(estimator_options['H'])
+    
     if not os.path.isfile(splits_file):
         tr_indices, val_indices, test_indices = obtain_tr_val_test_idx(dataset=Z_XY_dataset,
                                                                     tr_to_test_split=0.9,
@@ -106,7 +105,6 @@ def main():
         splits = load_splits_file(splits_filename=splits_file)
         tr_indices, val_indices, test_indices = splits["train"], splits["val"], splits["test"]
 
-    # Rotnist Update: Change in get_dataloader
     train_loader, val_loader, test_loader = get_dataloaders(dataset=Z_XY_dataset, 
                                                             batch_size=batch_size, 
                                                             tr_indices=tr_indices, 
@@ -117,23 +115,21 @@ def main():
                                                                                 len(val_loader), 
                                                                                 len(test_loader)))
 
-    ngpu = 1 # Comment this out if you want to run on cpu and the next line just set device to "cpu"
-    device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu>0) else "cpu")
-    print("Device Used:{}".format(device))
+    #ngpu = 1 # Comment this out if you want to run on cpu and the next line just set device to "cpu"
+    #device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu>0) else "cpu")
+    #print("Device Used:{}".format(device))
     
     logfile_path = "./log/"
     modelfile_path = "./models/"
 
-    # Rotnist Update: Change name
     #NOTE: Currently this is hardcoded into the system
-    main_exp_name = "{}_danse_opt_{}_m_{}_n_{}_T_{}_N_{}_sigmae2_{}dB_smnr_{}dB".format(
+    main_exp_name = "{}_danse_opt_{}_m_{}_n_{}_T_{}_N_{}_smnr_{}dB".format(
                                                             dataset_type,
                                                             model_type,
                                                             n_states,
                                                             n_obs,
                                                             T,
                                                             N_samples,
-                                                            sigma_e2_dB,
                                                             smnr_dB
                                                             )
 

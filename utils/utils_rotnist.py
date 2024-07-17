@@ -111,10 +111,11 @@ class Series_Dataset(Dataset):
     def __init__(self, Z_XY_dict):
 
         self.data_dict = Z_XY_dict
-        self.trajectory_lengths = Z_XY_dict["trajectory_lengths"]
+        # Rotnist Update: commented out traj len. If needed, add to pkl
+        # self.trajectory_lengths = Z_XY_dict["trajectory_lengths"]
 
     def __len__(self):
-        return len(self.data_dict["dataX"])
+        return len(self.data_dict["dataZ"])
 
     def __getitem__(self, idx):
 
@@ -125,11 +126,16 @@ class Series_Dataset(Dataset):
         #          "targets": np.expand_dims(self.data_dict["data"][idx][0], axis=0)
         #          }
         
-        # Added Cw
+        # Rotnist Update: Changed from np.expand_dims to torch.unsqueeze
+        #inputs = torch.tensor(self.data_dict["dataY"][idx])
+        #targets = torch.tensor(self.data_dict["dataZ"][idx])
+        #inputs = self.data_dict["dataY"][idx]
+        #targets = self.data_dict["dataZ"][idx]
+        #sample = {"inputs": inputs.unsqueeze(0), 
+        #          "targets": targets.unsqueeze(0)
+        #          }
         sample = {"inputs": np.expand_dims(self.data_dict["dataY"][idx], axis=0), 
-                  "targets": np.expand_dims(self.data_dict["dataX"][idx], axis=0)
-                  #"Cw": np.expand_dims(self.data_dict["dataX"][idx], axis=0)
-                  }
+                   "targets": np.expand_dims(self.data_dict["dataZ"][idx], axis=0)}
 
         return sample
     
@@ -157,6 +163,7 @@ def my_collate_fn(batch):
     inputs = [item["inputs"] for item in batch]
     targets = [item["targets"] for item in batch]
     #Cw = [item["Cw"] for item in batch]
+    # Rotnist Update: inputs and targets are already torch tensors
     targets = torch.from_numpy(np.row_stack(targets))
     inputs = torch.from_numpy(np.row_stack(inputs))
     #Cw = torch.from_numpy(np.row_stack(Cw))

@@ -14,10 +14,10 @@ T=10
 # Number of hidden states in the process, usually for Lorenz (a.k.a. Lorenz-63), Chen 
 # attractors, the number of hidden states is equal to 3, while for Lorenz-96, this value must be changed to
 # n_states= 20 (currently hardcoded in this manner) but can be in general n_states >= 4
-n_states=3
+n_states=9
 
 # Number of observations in the measurement system
-n_obs=3
+n_obs=9
 
 # dataset_type defines the type of dynamical system, the general terminology, e.g. for the Lorenz 63 system, 
 # the type is LorenzSSM, similarly for Chen attractor we have ChenSSM.
@@ -26,7 +26,7 @@ n_obs=3
 # Lorenz96SSMrn${n_obs} with deterministic matrix subsampled measurements: LorenzSSMn${n_obs}, ChenSSMn${n_obs}, 
 # Lorenz96SSMn${n_obs}.
 # For the linear system, we have LinearSSM (can handle both full-rank, deterministic downsampled case).
-dataset_type="LorenzSSM"
+dataset_type="rotnist"
 
 # The name of the script for generating data with full path name. 
 script_name="./main_danse_opt_rotnist.py" # Rotnist Update
@@ -35,18 +35,18 @@ script_name="./main_danse_opt_rotnist.py" # Rotnist Update
 output_path="./data/encoded_noise_data/" # Rotnist Update
 
 # Set the process noise level (in dB)
-sigma_e2_dB=-10.0
+#sigma_e2_dB=-10.0
 
 # RNN model type (e.g. GRU / LSTM)
 rnn_model_type="gru"
 
-for smnr_dB in -10.0 0.0 10.0 20.0 30.0 
+for smnr_dB in 10.0 #20.0 30.0 
 do
 	${PYTHON} ${script_name} \
 	--mode train \
 	--rnn_model_type ${rnn_model_type} \
-	--model_file_saved models/LorenzSSM_danse_opt_gru_m_${n_states}_n_${n_obs}_T_${T}_N_${N}_sigmae2_-10.0dB_smnr_$(echo $smnr_dB)dB/*best* \
+	--model_file_saved models/rotnist_danse_opt_gru_m_${n_states}_n_${n_obs}_T_${T}_N_${N}_smnr_$(echo $smnr_dB)dB/*best* \
 	--dataset_type ${dataset_type} \
-	--datafile ${output_path}/trajectories_m_${n_states}_n_${n_obs}_${dataset_type}_data_T_${T}_N_${N}_sigmae2_${sigma_e2_dB}dB_smnr_$(echo $smnr_dB)dB.pkl \
-	--splits ${output_path}/splits_m_${n_states}_n_${n_obs}_${dataset_type}_data_T_${T}_N_${N}_sigmae2_${sigma_e2_dB}dB_smnr_$(echo $smnr_dB)dB.pkl
+	--datafile ${output_path}/sequence_m_${n_states}_n_${n_obs}_${dataset_type}_T_${T}_N_${N}_smnr_$(echo $smnr_dB)dB.pkl \
+	--splits ${output_path}/splits_m_${n_states}_n_${n_obs}_${dataset_type}_T_${T}_N_${N}_smnr_$(echo $smnr_dB)dB.pkl
 done

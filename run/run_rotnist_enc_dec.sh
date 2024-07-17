@@ -16,14 +16,26 @@ danse_input_path="./data/encoded_noise_data"
 # Output path to store the model
 saved_model_path="./models/rotnist_models"
 
-# train, encode, decode
+# train, encode, decode, noise
 mode="noise"
 
 # vae, ae
 model_type="ae"
 
 # n_obs and m_states
-latent_dim="32"
+latent_dim="9"
+
+# Run the training process once
+if [ "$mode" == "train" ]; then
+    ${PYTHON} ${script_name} \
+    --output_path ${output_path} \
+    --danse_input_path ${danse_input_path} \
+    --saved_model_path ${saved_model_path} \
+    --mode ${mode} \
+    --model_type ${model_type} \
+    --latent_dim ${latent_dim}
+    mode="encode"  # Change mode to "encode" for subsequent runs
+fi
 
 for smnr_dB in 10.0 20.0 30.0 
 do

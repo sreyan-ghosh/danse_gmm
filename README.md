@@ -8,6 +8,7 @@ Things to do before Friday 19/7
     - [ ]	Main_danse_opt_rotnist.py
     - [ ]	Utils_rotnist.py
     - [ ]	Parameters_opt.py
-- [ ]	Decoding to show y for different smnr
+- [ ] Decoding to show y for different smnr
+- [ ] Look into the C_w matrix size
 
 

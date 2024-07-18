@@ -10,7 +10,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
-from utils.utils_rotnist import save_dataset
+from utils.utils_rotnist import save_dataset, load_saved_dataset
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import argparse
@@ -180,25 +180,39 @@ def run_encoding(model, device, train_loader, model_type, encoded_dir):
         if set_image_index == T:
             set_index += 1
 
-def run_decoding(model, device, encoded_dir):
-    # Load encoded data with new name format
-    encoded_images = []
-    for set_index in range(1, (len(glob.glob(os.path.join(encoded_dir, '*.pt'))) // T) + 1):
-        for set_image_index in range(1, T + 1):
-            encoded_images.append(torch.load(os.path.join(encoded_dir, f'enc_img_{set_index}_{set_image_index}.pt')))
-
-    # Load encoded data and decode
-    latent_array_loaded = torch.stack([img[0] for img in encoded_images])
-    original_images_paths_loaded = [img[1] for img in encoded_images]
-
-    print(f"loaded latent array shape: {latent_array_loaded.shape}")
-    with torch.no_grad():
-        # Decode
-        z = latent_array_loaded
-        decoded_images = decode_data(model, z, device)
-        print(f"decoded images shape: {decoded_images.shape}")
+def run_decoding(model, device, pkl_path, latent_dim, T, smnr_db):
+    pkl_file = sorted(glob.glob(os.path.join(pkl_path, f"sequence_m_{latent_dim}_n_{latent_dim}_rotnist_T_{T}_*_smnr_{smnr_db}dB.pkl")))
+    Z_XY_dict = load_saved_dataset(str(pkl_file[0]))
+    y_array = Z_XY_dict["dataY"]
+    z_array = Z_XY_dict["dataZ"]
+    fp_arr = Z_XY_dict["img_fpaths"]
+    decoded_z_list = list()
+    decoded_y_list = list()
+    reqd_fpaths = list()
+    cnt = 0
+    for noise_vector in y_array:
+        decoded_y = decode_data(model, torch.tensor(noise_vector[0]), device)
+        decoded_y_list.append(decoded_y)
+        cnt += 1
+        if cnt == 5:
+            cnt = 0
+            break
     
-    return decoded_images, original_images_paths_loaded
+    for latent_vector in z_array:
+        decoded_z = decode_data(model, torch.tensor(latent_vector[0]), device)
+        decoded_z_list.append(decoded_z)
+        cnt += 1
+        if cnt == 5:
+            cnt = 0
+            break
+
+    for fpath in fp_arr:
+        reqd_fpaths.append(fpath[0])
+        cnt += 1
+        if cnt == 5:
+            break
+    
+    return decoded_y_list, decoded_z_list, reqd_fpaths
 
 def generate_danse_input(encoded_dir, output_dir, smnr_db=10):
     os.makedirs(output_dir, exist_ok=True)
@@ -206,22 +220,28 @@ def generate_danse_input(encoded_dir, output_dir, smnr_db=10):
     Z_arr = list()
     Y_arr = list()
     Cw_arr = list()
+    fp_arr = list()
     # encoded_images = []
     # for set_index in range(1, (len(glob.glob(os.path.join(encoded_dir, '*.pt'))) // T) + 1):
     #     for set_image_index in range(1, T + 1):
     #         encoded_images.append(torch.load(os.path.join(encoded_dir, f'enc_img_{set_index}_{set_image_index}.pt')))
     encoded_images = []
+    og_img_fpaths = []
     pt_files = sorted(glob.glob(os.path.join(encoded_dir, '*.pt')))
     
     for file_path in pt_files:
         data = torch.load(file_path)
         encoded_img = data[0]
+        og_img_fp = data[1]
         encoded_images.append(encoded_img)
+        og_img_fpaths.append(og_img_fp)
         
         # Check if we have collected T encoded images
         if len(encoded_images) == T:
             Z_arr.append(encoded_images)
+            fp_arr.append(og_img_fpaths)
             encoded_images = []
+            og_img_fpaths = []
 
     # Check if there are any remaining images that were not added
     if encoded_images:
@@ -251,38 +271,38 @@ def generate_danse_input(encoded_dir, output_dir, smnr_db=10):
     
     num_samples = len(Z_arr)
     Z_XY["dataZ"] = np.asarray([[latent_vector.cpu().numpy() for latent_vector in z_list] for z_list in Z_arr])
-    Z_XY["dataY"] = np.asarray([[latent_vector.cpu().numpy() for latent_vector in y_list] for y_list in Y_arr])
+    Z_XY["dataY"] = np.asarray([[latent_vector.cpu().numpy() for latent_vector in decoded_list] for decoded_list in Y_arr])
     Z_XY["dataCw"] = np.asarray(Cw_arr)
+    Z_XY["img_fpaths"] = fp_arr
 
     filename = f"sequence_m_{latent_dim}_n_{latent_dim}_rotnist_T_{T}_N_{num_samples}_smnr_{smnr_db}dB.pkl"
     savepath = os.path.join(output_dir, filename)
     save_dataset(Z_XY=Z_XY, filename=savepath)
     print(f"Saved .pkl file to: {savepath}")
+    
 
 # Save reconstructed images to PDF
-def save_reconstructed_images(original_images_paths, decoded_images, filename='reconstructed_images.pdf'):
-    # def sort_key(path):
-    #     basename = os.path.basename(path).split('.')[0]
-    #     set_number, image_number = map(int, basename.split('_'))
-    #     return set_number, image_number
-
-    # original_images_paths.sort(key=sort_key)
-    
+def save_reconstructed_images(decoded_y_list, decoded_z_list, reqd_fpaths, filename='reconstructed_images.pdf'):
     with torch.no_grad():
         with PdfPages(filename) as pdf:
-            for i in range(min(len(decoded_images), 5)):  # Save only 5 images
-                original_image = Image.open(original_images_paths[i]).convert('L')
+            for i in range(len(decoded_y_list)):  # Save only 5 images
+                original_image = Image.open(reqd_fpaths[i]).convert('L')
                 original_image = transforms.ToTensor()(original_image).view(28, 28)
                 plt.figure(figsize=(8, 4))
                 # Original Image
-                plt.subplot(1, 2, 1)
+                plt.subplot(1, 3, 1)
                 plt.imshow(original_image, cmap='gray')
                 plt.title('Original')
                 plt.axis('off')
-                # Reconstructed Image
-                plt.subplot(1, 2, 2)
-                plt.imshow(decoded_images[i].to(device).view(28, 28), cmap='gray')
-                plt.title('Reconstructed')
+                # Reconstructed Latent Image
+                plt.subplot(1, 3, 2)
+                plt.imshow(decoded_z_list[i].cpu().view(28, 28), cmap='gray')
+                plt.title('Reconstructed Latent')
+                plt.axis('off')
+                # Reconstructed Noised Image
+                plt.subplot(1, 3, 3)
+                plt.imshow(decoded_y_list[i].cpu().view(28, 28), cmap='gray')
+                plt.title('Reconstructed Noised')
                 plt.axis('off')
                 pdf.savefig()
                 plt.close()
@@ -318,7 +338,6 @@ if __name__ == "__main__":
     train_dataset = RotatedMNISTDataset(root_dir='data/rotnist/train-images/', transform=transform)
     T = train_dataset.T
     train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
-    
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     if model_type.lower() == 'vae':
@@ -353,8 +372,8 @@ if __name__ == "__main__":
     # Change it to decode the processed danse output
     elif mode.lower() == 'decode':
         model = torch.load(os.path.join(saved_model_path, f"{model_type}_model"))
-        decoded_images, original_image_path_loaded = run_decoding(model, device, enc_img_output_dir)
-        save_reconstructed_images(original_image_path_loaded, decoded_images)
+        decoded_y_list, decoded_z_list, reqd_fpaths = run_decoding(model, device, danse_input_path, latent_dim, T, smnr_db)
+        save_reconstructed_images(decoded_y_list, decoded_z_list, reqd_fpaths)
         print("Decoded from latent space succesfully. Check plots!")
 
     else:

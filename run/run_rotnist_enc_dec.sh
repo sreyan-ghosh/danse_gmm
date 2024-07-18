@@ -17,7 +17,7 @@ danse_input_path="./data/encoded_noise_data"
 saved_model_path="./models/rotnist_models"
 
 # train, encode, decode, noise
-mode="noise"
+mode="decode"
 
 # vae, ae
 model_type="ae"
@@ -37,7 +37,7 @@ if [ "$mode" == "train" ]; then
     mode="encode"  # Change mode to "encode" for subsequent runs
 fi
 
-for smnr_dB in 10.0 20.0 30.0 
+for smnr_dB in 30.0
 do
     ${PYTHON} ${script_name} \
     --output_path ${output_path} \

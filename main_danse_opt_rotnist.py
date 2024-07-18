@@ -78,7 +78,7 @@ def main():
     
     Z_XY_dataset = Series_Dataset(Z_XY_dict=Z_XY)
     # ssm_model = Z_XY["ssm_model"]
-    estimator_options['C_w'] = np.asarray(Z_XY['dataCw']) # Added Cw
+    estimator_options['C_w'] = np.asarray(Z_XY['dataCw'][-1]) # Added Cw
     # estimator_options['C_w'] = ssm_model.Cw # Get the covariance matrix of the measurement noise from the model information
     estimator_options['H'] = get_H_DANSE(type_=dataset_type, n_states=n_states, n_obs=n_obs) # Get the sensing matrix from the model info
     

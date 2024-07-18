@@ -231,7 +231,7 @@ def generate_danse_input(encoded_dir, output_dir, smnr_db=10):
         z_tensor = torch.stack(z_vector)
         
         # Calculate signal power using variance
-        signal_power = torch.var(z_tensor)
+        signal_power = torch.var(z_tensor.cpu())
         
         # Calculate noise power from SMNR in dB
         noise_power = signal_power / (10**(smnr_db / 10))
@@ -245,12 +245,14 @@ def generate_danse_input(encoded_dir, output_dir, smnr_db=10):
         
         # Append to Y_arr and add the variance to Cw_arr
         Y_arr.append(y_vector)
-        Cw_arr.append(noise_power.item())
+        #Cw_arr.append(noise_power.item())
+        Cw_matrix = noise_power.item()*np.eye(latent_dim)
+        Cw_arr.append(Cw_matrix)
     
     num_samples = len(Z_arr)
-    Z_XY["dataZ"] = Z_arr
-    Z_XY["dataY"] = Y_arr
-    Z_XY["dataCw"] = Cw_arr
+    Z_XY["dataZ"] = np.asarray([[latent_vector.cpu().numpy() for latent_vector in z_list] for z_list in Z_arr])
+    Z_XY["dataY"] = np.asarray([[latent_vector.cpu().numpy() for latent_vector in y_list] for y_list in Y_arr])
+    Z_XY["dataCw"] = np.asarray(Cw_arr)
 
     filename = f"sequence_m_{latent_dim}_n_{latent_dim}_rotnist_T_{T}_N_{num_samples}_smnr_{smnr_db}dB.pkl"
     savepath = os.path.join(output_dir, filename)

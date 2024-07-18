@@ -97,3 +97,19 @@ Training convergence attained at Epoch: 671!
 Saving the best model at epoch=671, with training loss=2.301756183306376, validation loss=2.3021174669265747
 ------------------------------ Training ends --------------------------------- 
 
+------------------------------ Training begins --------------------------------- 
+
+Config: {'n_states': 3, 'n_obs': 3, 'mu_w': array([0., 0., 0.]), 'C_w': array([[[217.36015952,   0.        ,   0.        ],
+        [  0.        , 217.36015952,   0.        ],
+        [  0.        ,   0.        , 217.36015952]]]), 'H': array([[1., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.]]), 'mu_x0': array([0., 0., 0.]), 'C_x0': array([[1., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.]]), 'batch_size': 64, 'rnn_type': 'gru', 'device': device(type='cuda', index=0), 'rnn_params_dict': {'gru': {'model_type': 'gru', 'input_size': 3, 'output_size': 3, 'n_hidden': 30, 'n_layers': 1, 'lr': 0.01, 'num_epochs': 2000, 'min_delta': 0.05, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'rnn': {'model_type': 'gru', 'input_size': 3, 'output_size': 3, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'lstm': {'model_type': 'lstm', 'input_size': 3, 'output_size': 3, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}}} 
+
+No. of trainable parameters: 4340
+
+Epoch: 1/2000, Training NLL:2.912396073, Val. NLL:2.840478778, Val. MSE: 240.608936920, Time_Elapsed:0.6393 secs
+Interrupted!! ...saving the model at epoch:2
+------------------------------ Training ends --------------------------------- 
+

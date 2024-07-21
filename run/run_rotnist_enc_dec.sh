@@ -17,13 +17,13 @@ danse_input_path="./data/encoded_noise_data"
 saved_model_path="./models/rotnist_models"
 
 # train, encode, decode, noise
-mode="decode"
+mode="train"
 
 # vae, ae
 model_type="ae"
 
 # n_obs and m_states
-latent_dim="9"
+latent_dim="32"
 
 # Run the training process once
 if [ "$mode" == "train" ]; then
@@ -37,15 +37,32 @@ if [ "$mode" == "train" ]; then
     mode="encode"  # Change mode to "encode" for subsequent runs
 fi
 
-for smnr_dB in 30.0
-do
+# Run the encode process once
+if [ "$mode" == "encode" ]; then
     ${PYTHON} ${script_name} \
     --output_path ${output_path} \
     --danse_input_path ${danse_input_path} \
     --saved_model_path ${saved_model_path} \
     --mode ${mode} \
-    --smnr_db ${smnr_dB} \
     --model_type ${model_type} \
     --latent_dim ${latent_dim}
-done
+    mode="noise"  # Change mode to "noise" for the next run
+fi
 
+# Run the noise process 3 times
+if [ "$mode" == "noise" ]; then
+    for smnr_dB in 0.0 10.0 20.0
+    do
+        ${PYTHON} ${script_name} \
+        --output_path ${output_path} \
+        --danse_input_path ${danse_input_path} \
+        --saved_model_path ${saved_model_path} \
+        --mode ${mode} \
+        --smnr_db ${smnr_dB} \
+        --model_type ${model_type} \
+        --latent_dim ${latent_dim}
+    done
+
+    # Delete files in the encoded_data directory
+    rm -f ${output_path}/*
+fi

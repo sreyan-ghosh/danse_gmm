@@ -24,7 +24,7 @@ from config.parameters_opt import get_parameters, get_H_DANSE
 #from utils.plot_functions import plot_measurement_data, plot_measurement_data_axes, plot_state_trajectory, plot_state_trajectory_axes
 
 # Import estimator model and functions
-from src.danse import DANSE, train_danse, test_danse
+from src.danse_rotnist import DANSE, train_danse
 
 def main():
 
@@ -78,7 +78,7 @@ def main():
     
     Z_XY_dataset = Series_Dataset(Z_XY_dict=Z_XY)
     # ssm_model = Z_XY["ssm_model"]
-    estimator_options['C_w'] = np.asarray(Z_XY['dataCw'][-1]) # Added Cw
+    # estimator_options['C_w'] = np.asarray(Z_XY['dataCw']) # Added Cw
     # estimator_options['C_w'] = ssm_model.Cw # Get the covariance matrix of the measurement noise from the model information
     estimator_options['H'] = get_H_DANSE(type_=dataset_type, n_states=n_states, n_obs=n_obs) # Get the sensing matrix from the model info
     
@@ -191,20 +191,6 @@ def main():
             'danse_{}_losses_eps{}.json'.format(estimator_options['rnn_type'], 
             estimator_options['rnn_params_dict'][model_type]['num_epochs'])), 'w') as f:
             f.write(json.dumps(losses_model, cls=NDArrayEncoder, indent=2))
-
-    elif mode.lower() == "test":
-
-        #model_file_saved = "./model_checkpoints/{}_usenorm_{}_ckpt_epoch_{}.pt".format(model_type, usenorm_flag, epoch_test)
-        #model_file_saved = "models/LorenzSSM_danse_opt_gru_m_3_n_3_T_1000_N_500_sigmae2_-10.0dB_smnr_-10.0dB/danse_gru_ckpt_epoch_671_best.pt"
-        te_loss = test_danse(
-            test_loader=test_loader,
-            options=estimator_options,
-            device=device,
-            model_file=model_file_saved,
-            test_logfile_path=te_logfile_name_with_path
-            )
-    
-    return None
 
 if __name__ == "__main__":
     main()

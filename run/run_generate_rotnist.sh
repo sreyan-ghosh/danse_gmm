@@ -6,10 +6,10 @@
 PYTHON="python"
 
 # The number of i.i.d. trajectories each of length T that constitute the training data
-N=1000
+N=500
 
 # Length of each such training data trajectory, default it is set to T=1000
-T=10
+T=20
 
 # The name of the script for generating data with full path name
 script_name="./bin/generate_data_rotnist.py"
@@ -17,6 +17,7 @@ script_name="./bin/generate_data_rotnist.py"
 # Output path to store the data
 output_path="./data/rotnist"
 
+rm -r ${output_path}/*
 
 ${PYTHON} ${script_name} \
 --num_samples $N \

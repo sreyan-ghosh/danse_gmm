@@ -87,7 +87,7 @@ Augment training data with rotated digits
 images: training images
 labels: training labels
 '''
-def expand_training_data(images, labels, T=10):
+def expand_training_data(images, labels, T=None):
 
     expanded_images = []
     expanded_labels = []
@@ -142,7 +142,7 @@ def prepare_MNIST_data(use_data_augmentation=True, T=None, N=None, output_path=N
     DATADIR = output_path
 
     if use_data_augmentation:
-        train_data, train_labels = expand_training_data(train_data, train_labels)
+        train_data, train_labels = expand_training_data(train_data, train_labels, T)
 
     if not os.path.isdir(os.path.join(DATADIR, "train-images")):
         os.makedirs(os.path.join(DATADIR, "train-images"))

@@ -136,8 +136,10 @@ class Series_Dataset(Dataset):
         #          "targets": targets.unsqueeze(0)
         #          }
         sample = {"inputs": np.expand_dims(self.data_dict["dataY"][idx], axis=0), 
-                   "targets": np.expand_dims(self.data_dict["dataZ"][idx], axis=0)}
+                "targets": np.expand_dims(self.data_dict["dataZ"][idx], axis=0),
+                "Cw": np.expand_dims(self.data_dict["dataCw"][idx], axis=0)}
 
+    
         return sample
     
 def obtain_tr_val_test_idx(dataset, tr_to_test_split=0.9, tr_to_val_split=0.83):
@@ -163,12 +165,12 @@ def obtain_tr_val_test_idx(dataset, tr_to_test_split=0.9, tr_to_val_split=0.83):
 def my_collate_fn(batch):
     inputs = [item["inputs"] for item in batch]
     targets = [item["targets"] for item in batch]
-    #Cw = [item["Cw"] for item in batch]
+    Cw = [item["Cw"] for item in batch]
     # Rotnist Update: inputs and targets are already torch tensors
     targets = torch.from_numpy(np.row_stack(targets))
     inputs = torch.from_numpy(np.row_stack(inputs))
-    #Cw = torch.from_numpy(np.row_stack(Cw))
-    return (inputs, targets)
+    Cw = torch.from_numpy(np.row_stack(Cw))
+    return (inputs, targets, Cw)
 
 def get_dataloaders(dataset, batch_size, tr_indices, val_indices, test_indices=None, val_batch_size=None, te_batch_size=None):
 

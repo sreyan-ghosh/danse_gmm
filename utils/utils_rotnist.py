@@ -8,6 +8,7 @@ from torch import nn
 import os
 from torch.distributions import MultivariateNormal
 from torch.utils.data import Dataset, DataLoader
+from torch.autograd import Variable
 from collections import deque
 import pickle as pkl
 import json
@@ -44,6 +45,11 @@ def count_params(model):
     total_num_params = sum(p.numel() for p in model.parameters())
     total_num_trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad == True)
     return total_num_params, total_num_trainable_params
+
+def push_to_device(x, device=None):
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    x_device = Variable(x, requires_grad=False).type(torch.FloatTensor).to(device)
+    return x_device
 
 def mse_loss(x, xhat):
     loss = nn.MSELoss(reduction='none')

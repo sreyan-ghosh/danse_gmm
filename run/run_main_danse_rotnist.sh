@@ -6,18 +6,18 @@
 PYTHON="python"
 
 # The number of i.i.d. trajectories each of length T that constitute the training data
-N=1000
+N=500
 
 # Length of each such training data trajectory, default it is set to T=1000
-T=10
+T=20
 
 # Number of hidden states in the process, usually for Lorenz (a.k.a. Lorenz-63), Chen 
 # attractors, the number of hidden states is equal to 3, while for Lorenz-96, this value must be changed to
 # n_states= 20 (currently hardcoded in this manner) but can be in general n_states >= 4
-n_states=9
+n_states=32
 
 # Number of observations in the measurement system
-n_obs=9
+n_obs=32
 
 # dataset_type defines the type of dynamical system, the general terminology, e.g. for the Lorenz 63 system, 
 # the type is LorenzSSM, similarly for Chen attractor we have ChenSSM.

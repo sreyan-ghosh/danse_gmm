@@ -17,7 +17,7 @@ danse_input_path="./data/encoded_noise_data"
 saved_model_path="./models/rotnist_models"
 
 # train, encode, decode, noise
-mode="train"
+mode="decode"
 
 # vae, ae
 model_type="ae"
@@ -65,4 +65,18 @@ if [ "$mode" == "noise" ]; then
 
     # Delete files in the encoded_data directory
     rm -f ${output_path}/*
+fi
+
+if [ "$mode" == "decode" ]; then
+    for smnr_dB in 0.0 10.0 20.0
+    do
+        ${PYTHON} ${script_name} \
+        --output_path ${output_path} \
+        --danse_input_path ${danse_input_path} \
+        --saved_model_path ${saved_model_path} \
+        --mode ${mode} \
+        --smnr_db ${smnr_dB} \
+        --model_type ${model_type} \
+        --latent_dim ${latent_dim}
+    done
 fi

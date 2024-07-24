@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 import glob
@@ -19,10 +20,11 @@ class RotatedMNISTDataset(Dataset):
     def __init__(self, root_dir, transform=None):
         self.root_dir = root_dir
         self.transform = transform
-        self.image_paths = sorted(glob.glob(os.path.join(root_dir, '*.jpg')))
+        # Extract filenames and sort
+        self.image_paths = glob.glob(os.path.join(root_dir, '*.jpg'))
         self.set_counts = self.count_sets()
-        self.T = self.set_counts['1']
-        
+        self.T = self.set_counts.get('1', 0)  # Default to 0 if '1' is not in set_counts
+
     def __len__(self):
         return len(self.image_paths)
 
@@ -34,14 +36,12 @@ class RotatedMNISTDataset(Dataset):
         return image, img_path
 
     def count_sets(self):
-        set_counts = {}
-        for img_path in self.image_paths:
-            filename = os.path.basename(img_path)
-            set_number = filename.split('_')[0]
-            if set_number not in set_counts:
-                set_counts[set_number] = 0
-            set_counts[set_number] += 1
-        return set_counts
+        counts = {}
+        for path in self.image_paths:
+            base = os.path.basename(path)
+            set_id = base.split('_')[0]
+            counts[set_id] = counts.get(set_id, 0) + 1
+        return counts
 
 class VAE(nn.Module):
     def __init__(self, input_dim=784, hidden_dim=400, latent_dim=32):
@@ -173,13 +173,21 @@ def run_encoding(model, device, train_loader, model_type, encoded_dir):
     latent_array, original_images_paths = encode_data(model, train_loader, model_type, device)
     os.makedirs(encoded_dir, exist_ok=True)
 
-    set_index = 1
+    # set_index = 1
     for i in range(latent_array.size(0)):
-        set_image_index = (i % T) + 1
-        torch.save((latent_array[i], original_images_paths[i]), os.path.join(encoded_dir, f'enc_img_{set_index}_{set_image_index}.pt'))
-        if set_image_index == T:
-            set_index += 1
+        n_num, t_num = extract_N_T(original_images_paths[i])
+        torch.save((latent_array[i], original_images_paths[i]), os.path.join(encoded_dir, f'enc_img_{n_num}_{t_num}.pt'))
 
+def extract_N_T(filename):
+        # Extract base filename without directory path
+        match = re.search(r'(\d+)_(\d+)\.', filename) # generalised, check later
+        if match:
+            N = int(match.group(1))
+            T = int(match.group(2))
+            return N, T
+        else:
+            return float('inf'), float('inf')
+        
 def run_decoding(model, device, pkl_path, latent_dim, T, smnr_db):
     pkl_file = sorted(glob.glob(os.path.join(pkl_path, f"sequence_m_{latent_dim}_n_{latent_dim}_rotnist_T_{T}_*_smnr_{smnr_db}dB.pkl")))
     Z_XY_dict = load_saved_dataset(str(pkl_file[0]))
@@ -221,13 +229,11 @@ def generate_danse_input(encoded_dir, output_dir, smnr_db=10):
     Y_arr = list()
     Cw_arr = list()
     fp_arr = list()
-    # encoded_images = []
-    # for set_index in range(1, (len(glob.glob(os.path.join(encoded_dir, '*.pt'))) // T) + 1):
-    #     for set_image_index in range(1, T + 1):
-    #         encoded_images.append(torch.load(os.path.join(encoded_dir, f'enc_img_{set_index}_{set_image_index}.pt')))
+    
     encoded_images = []
     og_img_fpaths = []
-    pt_files = sorted(glob.glob(os.path.join(encoded_dir, '*.pt')))
+    all_pt_files = glob.glob(os.path.join(encoded_dir, '*.pt'))
+    pt_files = sorted(all_pt_files, key=lambda x: extract_N_T(os.path.basename(x)))
     
     for file_path in pt_files:
         data = torch.load(file_path)

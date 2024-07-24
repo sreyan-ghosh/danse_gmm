@@ -3,12 +3,17 @@ This README is a temporary one to keep abreast of the changes and progress maded
 
 Things to do before Friday 19/7
 - [x]	Consider if we should change to pkl from pt
-- [ ]	Fix DANSE for rotnist by changing:
-    - [ ]	Danse_rotnist.py
-    - [ ]	Main_danse_opt_rotnist.py
-    - [ ]	Utils_rotnist.py
-    - [ ]	Parameters_opt.py
+- [x]	Fix DANSE for rotnist by changing:
+    - [x]	Danse_rotnist.py (check if the data is being loaded in sequenceor is it shuffled)
+    - [x]	Main_danse_opt_rotnist.py
+    - [x]	Utils_rotnist.py
+    - [x]	Parameters_opt.py (tweak for rotnist)
 - [ ] Decoding to show y for different smnr
-- [ ] Look into the C_w matrix size
+- [x] Look into the C_w matrix size
 
+Things to do before Friday 26/7
+- [ ] Plot X sequence,  z sequence and y sequence for LS in a separate file
+- [ ] Modify `parameters_opt.py` and tweak rnn params
+    - [ ] Plot log files loss trend by taking the json outputs
+- [ ] Change the recreate_latent_values in test_danse_rotnist.py to use posterior mean for z
 

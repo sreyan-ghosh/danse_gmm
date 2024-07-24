@@ -19,11 +19,11 @@ from timeit import default_timer as timer
 import json
 import tikzplotlib
 
-# Import for decoding:
-from src.rotnist_enc_dec import decode_data
-
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
+
+# Import for decoding:
+from src.rotnist_enc_dec import AE, decode_data
 
 from utils.plot_functions import *
 from utils.utils_rotnist import generate_normal, dB_to_lin, lin_to_dB, mse_loss, nmse_loss, \
@@ -33,7 +33,10 @@ from utils.utils_rotnist import generate_normal, dB_to_lin, lin_to_dB, mse_loss,
 from config.parameters_opt import get_parameters, A_fn, h_fn, f_lorenz_danse, f_lorenz_danse_ukf, delta_t, J_test, get_H_DANSE
 #from src.k_net import KalmanNetNN
 from src.danse_rotnist import DANSE, push_model
+import argparse
+from matplotlib.backends.backend_pdf import PdfPages
 
+# Change:
 def recreate_latent_values(mean, covariance, device):
     """
     Recreates latent dimension values from the given mean and covariance.
@@ -46,6 +49,7 @@ def recreate_latent_values(mean, covariance, device):
     Returns:
         torch.Tensor: The sampled latent dimension values of shape (N, latent_dim).
     """
+    # Can directly use the posterior mean as the estimate, z_hat is the posterior mean
     N, T, latent_dim = mean.shape
 
     # Ensure the covariance matrix is positive semi-definite
@@ -323,7 +327,62 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
         mse_dB_danse, mse_dB_danse_std, mse_dB_ls, mse_dB_ls_std, \
         time_elapsed_danse, smnr_dB_test, z_samples, test_data_dict
 
+"""
+def run_decoding(model, device, pkl_path, latent_dim, T, smnr_db):
+    pkl_file = sorted(glob.glob(os.path.join(pkl_path, f"sequence_m_{latent_dim}_n_{latent_dim}_rotnist_T_{T}_*_smnr_{smnr_db}dB.pkl")))
+    Z_XY_dict = load_saved_dataset(str(pkl_file[0]))
+    y_array = Z_XY_dict["dataY"]
+    z_array = Z_XY_dict["dataZ"]
+    fp_arr = Z_XY_dict["img_fpaths"]
+    decoded_z_list = list()
+    decoded_y_list = list()
+    reqd_fpaths = list()
+    cnt = 0
+    for noise_vector in y_array:
+        decoded_y = decode_data(model, torch.tensor(noise_vector[0]), device)
+        decoded_y_list.append(decoded_y)
+        cnt += 1
+        if cnt == 5:
+            cnt = 0
+            break
+    
+    for latent_vector in z_array:
+        decoded_z = decode_data(model, torch.tensor(latent_vector[0]), device)
+        decoded_z_list.append(decoded_z)
+        cnt += 1
+        if cnt == 5:
+            cnt = 0
+            break
+
+    for fpath in fp_arr:
+        reqd_fpaths.append(fpath[0])
+        cnt += 1
+        if cnt == 5:
+            break
+    
+    return decoded_y_list, decoded_z_list, reqd_fpaths
+"""
+
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description="Input arguments related to creating a dataset for ROTNIST")
+    parser.add_argument("--mode", help="Enter 'encode' or 'decode' mode", type=str, default="train")
+    parser.add_argument("--model_type", help="Enter 'ae' or 'vae' model", type=str, default="ae")
+    parser.add_argument("--output_path", help="Enter full path to store the data file", type=str, default='data/encoded_data/')
+    parser.add_argument("--danse_input_path", help="Enter full path to store the danse input files", type=str, default='data/encoded_noise_data')
+    parser.add_argument("--saved_model_path", help="Enter full path to save the AR/VAE model", type=str, default='models/rotnist_models/')
+    parser.add_argument("--smnr_db", help="For the smnr", type=float, default=20.0)
+    parser.add_argument("--latent_dim", help="For the latent dimension", type=int, default=32)
+
+
+    args = parser.parse_args() 
+    mode = args.mode
+    model_type = args.model_type
+    enc_img_output_dir = args.output_path
+    saved_model_path = args.saved_model_path
+    danse_input_path = args.danse_input_path
+    smnr_db = args.smnr_db
+    latent_dim = args.latent_dim
 
     # Testing parameters 
     T_test = 20
@@ -346,6 +405,7 @@ if __name__ == "__main__":
     os.makedirs('./figs/rotnist_figs/{}'.format(evaluation_mode), exist_ok=True)
 
     smnr_dB_arr = np.array([0.0,10.0,20.0])
+    #smnr_dB_arr = np.array([20.0])
 
     nmse_ls_arr = np.zeros((len(smnr_dB_arr,)))
     #nmse_ekf_arr = np.zeros((len(smnr_dB_arr,)))
@@ -395,6 +455,12 @@ if __name__ == "__main__":
     test_logfile = "./log/Rotnist_test_{}_T_{}_N_{}_log.log".format(evaluation_mode, T_test, N_test) # Original
     test_jsonfile = "./log/Rotnist_test_{}_T_{}_N_{}_results.json".format(evaluation_mode, T_test, N_test) # Original
 
+    saved_model_path="./models/rotnist_models"
+    model_type = 'ae'
+    device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
+    model = torch.load(os.path.join(saved_model_path, f"{model_type}_model")).to(device)
+
+    recon_img_dict = dict()
 
     for i, smnr_dB in enumerate(smnr_dB_arr):
         
@@ -402,22 +468,37 @@ if __name__ == "__main__":
         test_data_file_i = test_data_file_dict['{}dB'.format(smnr_dB)]
         #model_file_saved_knet_i = model_file_saved_dict_knet['{}dB'.format(smnr_dB)]
 
-        # Deleted knet
         nmse_danse_i, nmse_danse_i_std, nmse_ls_i, nmse_ls_i_std, \
             mse_dB_danse_i, mse_dB_danse_std_i, mse_dB_ls_i, mse_dB_ls_std_i, \
             time_elapsed_danse_i, smnr_dB_i, z_samples_i, test_data_dict_i = test_rotnist(device=device, 
             model_file_saved=model_file_saved_i, test_data_file=test_data_file_i, test_logfile=test_logfile, 
             evaluation_mode=evaluation_mode, bias=bias, p=p)
 
-        # Fix this tomorrow
-        outer_list = []
-        inner_list = []
-        for num_sample in z_samples_i.shape[0]:
-            for t_sample in z_samples_i.shape[1]:
+# Run decoding
+#-------------------------------------------------------------------------------
+
+        n_list = []   
+        for num_sample in range(z_samples_i.shape[0]):
+            t_list = []
+            for t_sample in range(z_samples_i.shape[1]):
                 elem = z_samples_i[num_sample, t_sample]
-                x_hat = decode_data(elem)
-                inner_list.append(x_hat)
-            outer_list.append(inner_list)
+                x_hat = decode_data(model, elem, device) # x_hat = 784
+                t_list.append(x_hat) 
+            n_list.append(t_list) # n_list len = 50
+        
+        recon_img_dict[str(smnr_dB)] = n_list
+        recon_img_dict["dataZ"] = test_data_dict_i["Z"]
+        # print(f"Size of n_list: {len(n_list)}")
+        # if len(n_list) > 0:
+        #     print(f"First element of n_list: {n_list[0]}")
+        #     print(f"Size of first element of n_list: {len(n_list[0])}")
+
+        # print(f"\nSize of t_list: {len(n_list[0])}")
+        # if len(n_list[0]) > 0:
+        #     print(f"First element of t_list: {n_list[0][0]}")
+        #     print(f"Size of first element of t_list: {len(n_list[0][0])}")
+    
+#-------------------------------------------------------------------------------
 
         # Store the NMSE values and std devs of the NMSE values
         nmse_ls_arr[i] = nmse_ls_i.item()
@@ -448,6 +529,39 @@ if __name__ == "__main__":
         #t_ukf_arr[i] = time_elapsed_ukf_i
         t_danse_arr[i] = time_elapsed_danse_i
         #t_knet_arr[i] = time_elapsed_knet_i
+    
+    with torch.no_grad():
+        with PdfPages('reconstructed_images_danse.pdf') as pdf:
+            keys = ['dataZ', '0.0', '10.0', '20.0']
+            fig, axs = plt.subplots(len(keys), len(n_list[0]), figsize=(20, 4 * len(keys)))
+
+            for i, key in enumerate(keys):
+                if key == "dataZ":
+                    dataZ_list = []
+                    for num_sample in range(recon_img_dict["dataZ"].shape[0]):
+                        t_list = []
+                        for t_sample in range(recon_img_dict["dataZ"].shape[1]):
+                            elem = recon_img_dict["dataZ"][num_sample, t_sample]
+                            x_hat = decode_data(model, elem, device)
+                            t_list.append(x_hat)
+                        dataZ_list.append(t_list)
+                    
+                    for k in range(len(dataZ_list[0])):
+                        decoded_img = dataZ_list[0][k]
+                        axs[i, k].imshow(decoded_img.cpu().view(28, 28), cmap='gray')
+                        axs[i, k].set_title(f'dataZ {k}')
+                        axs[i, k].axis('off')
+                else:
+                    for k in range(len(recon_img_dict[key][0])):
+                        reconstructed_image = recon_img_dict[key][0][k].cpu().view(28, 28)
+                        axs[i, k].imshow(reconstructed_image, cmap='gray')
+                        axs[i, k].set_title(f'{key} dB {k}')
+                        axs[i, k].axis('off')
+
+            pdf.savefig(fig)
+            plt.close(fig)
+
+    print("Saved reconstructed images to PDF.")
     
     test_stats = {}
     #test_stats['UKF_mean_nmse'] = nmse_ukf_arr

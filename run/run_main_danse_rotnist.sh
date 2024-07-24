@@ -45,8 +45,8 @@ do
 	${PYTHON} ${script_name} \
 	--mode train \
 	--rnn_model_type ${rnn_model_type} \
-	--model_file_saved models/rotnist_danse_opt_gru_m_${n_states}_n_${n_obs}_T_${T}_N_${N}_smnr_$(echo $smnr_dB)dB/*best* \
 	--dataset_type ${dataset_type} \
 	--datafile ${output_path}/sequence_m_${n_states}_n_${n_obs}_${dataset_type}_T_${T}_N_${N}_smnr_$(echo $smnr_dB)dB.pkl \
 	--splits ${output_path}/splits_m_${n_states}_n_${n_obs}_${dataset_type}_T_${T}_N_${N}_smnr_$(echo $smnr_dB)dB.pkl
 done
+	# --model_file_saved models/rotnist_danse_opt_gru_m_${n_states}_n_${n_obs}_T_${T}_N_${N}_smnr_$(echo $smnr_dB)dB/*best* \

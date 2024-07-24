@@ -12,7 +12,8 @@ from parse import parse
 import numpy as np
 import json
 import scipy
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 import torch
 import pickle as pkl
 from torch import nn
@@ -168,7 +169,7 @@ def main():
         tr_verbose = True  
         
         # Starting model training
-        tr_losses, val_losses, _, _, _ = train_danse(
+        tr_losses, val_losses, val_mse_losses, _, _, _ = train_danse(
             model=model_danse,
             train_loader=train_loader,
             val_loader=val_loader,
@@ -191,6 +192,42 @@ def main():
             'danse_{}_losses_eps{}.json'.format(estimator_options['rnn_type'], 
             estimator_options['rnn_params_dict'][model_type]['num_epochs'])), 'w') as f:
             f.write(json.dumps(losses_model, cls=NDArrayEncoder, indent=2))
+    
+    pdf_path = os.path.join(logfile_path, f"training_loss_plots_smnr_{smnr_dB}dB.pdf")
+    append_plot_to_pdf(pdf_path, tr_losses, val_losses, val_mse_losses, smnr_dB)
+
+
+def plot_losses(tr_losses, val_losses, smnr, epochs):
+    plt.figure()
+    plt.plot(epochs, tr_losses, label='Training Loss')
+    plt.plot(epochs, val_losses, label='Validation Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title(f'Training and Validation Losses for SMNR {smnr}dB')
+    plt.legend()
+    plt.grid(True)
+
+def plot_mse(val_mse_losses, smnr, epochs):
+    plt.figure()
+    plt.plot(epochs, val_mse_losses, label='Val MSE Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('MSE')
+    plt.title(f'Validation MSE Losses for SMNR {smnr}dB')
+    plt.legend()
+    plt.grid(True)
+
+def append_plot_to_pdf(pdf_path, tr_losses, val_losses, val_mse_losses, smnr):
+    epochs = range(1, len(tr_losses) + 1)
+    
+    with PdfPages(pdf_path) as pdf:
+        plot_losses(tr_losses, val_losses, smnr, epochs)
+        pdf.savefig()  # Saves the current figure into the PDF
+        plt.close()  # Close the figure to free memory
+
+        plot_mse(val_mse_losses, smnr, epochs)
+        pdf.savefig()  # Saves the current figure into the PDF
+        plt.close()  # Close the figure to free memory
+
 
 if __name__ == "__main__":
     main()

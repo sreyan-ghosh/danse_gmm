@@ -147,6 +147,7 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=nepochs//6, gamma=0.9) # gamma is now set to 0.8
     tr_losses = []
     val_losses = []
+    val_mse_losses = []
 
     if modelfile_path is None:
         model_filepath = "./models/"
@@ -305,6 +306,7 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
             # Saving every value
             tr_losses.append(tr_loss)
             val_losses.append(val_loss)
+            val_mse_losses.append(val_mse_loss)
 
             
             # Check monitor flag
@@ -365,5 +367,5 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
     # Restoring the original std out pointer
     sys.stdout = orig_stdout
 
-    return tr_losses, val_losses, best_val_loss, tr_loss_for_best_val_loss, model
+    return tr_losses, val_losses, val_mse_losses, best_val_loss, tr_loss_for_best_val_loss, model
 

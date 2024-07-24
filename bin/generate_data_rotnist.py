@@ -87,7 +87,7 @@ Augment training data with rotated digits
 images: training images
 labels: training labels
 '''
-def expand_training_data(images, labels, T=None):
+def expand_data(images, labels, T=None):
 
     expanded_images = []
     expanded_labels = []
@@ -126,7 +126,7 @@ def expand_training_data(images, labels, T=None):
     return expandedX, expandedY
 
 # Prepare MNISt data
-def prepare_MNIST_data(use_data_augmentation=True, T=None, N=None, output_path=None):
+def prepare_MNIST_data(use_data_augmentation=True, T_train=None, N_train=None, T_test=None, N_test=None, output_path=None):
     # Get the data.
     train_data_filename = download('train-images-idx3-ubyte.gz')
     train_labels_filename = download('train-labels-idx1-ubyte.gz')
@@ -134,25 +134,29 @@ def prepare_MNIST_data(use_data_augmentation=True, T=None, N=None, output_path=N
     test_labels_filename = download('t10k-labels-idx1-ubyte.gz')
 
     # Extract it into numpy arrays.
-    train_data = extract_data(train_data_filename, N)
-    train_labels = extract_labels(train_labels_filename, N)
-    test_data = extract_data(test_data_filename, int(N*0.1))
-    test_labels = extract_labels(test_labels_filename, int(N*0.1))
+    train_data = extract_data(train_data_filename, N_train)
+    train_labels = extract_labels(train_labels_filename, N_train)
+    test_data = extract_data(test_data_filename, N_test)
+    test_labels = extract_labels(test_labels_filename, N_test)
 
     DATADIR = output_path
 
     if use_data_augmentation:
-        train_data, train_labels = expand_training_data(train_data, train_labels, T)
+        train_data, train_labels = expand_data(train_data, train_labels, T_train)
+        test_data, test_labels = expand_data(test_data, test_labels, T_test)
 
-    if not os.path.isdir(os.path.join(DATADIR, "train-images")):
-        os.makedirs(os.path.join(DATADIR, "train-images"))
+    if not os.path.isdir(os.path.join(DATADIR, "train_images")):
+        os.makedirs(os.path.join(DATADIR, "train_images"))
     
-    # process train data
-    with open(os.path.join(DATADIR, "train-labels.csv"), 'w') as csvFile:
+    if not os.path.isdir(os.path.join(DATADIR, "test_images")):
+        os.makedirs(os.path.join(DATADIR, "test_images"))
+    
+    # process training data
+    with open(os.path.join(DATADIR, "train_labels.csv"), 'w') as csvFile:
         writer = csv.writer(csvFile, delimiter=',', quotechar='"')
         imnum, j = 0, 0
         for i in range(len(train_data)):
-            if i%T == 0:
+            if i%T_train == 0:
                 imnum += 1
                 j = 0
             j += 1
@@ -160,28 +164,30 @@ def prepare_MNIST_data(use_data_augmentation=True, T=None, N=None, output_path=N
             array = array.astype(np.uint8)
             cur_img = Image.fromarray(array)
             gray_img = cur_img.convert("L")
-            imwrite(DATADIR + "/train-images/" + f"{imnum}_{j}" + ".jpg", gray_img)
-            writer.writerow(["train-images/" + f"{imnum}_{j}" + ".jpg", train_labels[i]])
-            if i%T == 0:
-                print(f"Generated {imnum} set of images...")
+            imwrite(DATADIR + "/train_images/" + f"{imnum}_{j}" + ".jpg", gray_img)
+            writer.writerow(["train_images/" + f"{imnum}_{j}" + ".jpg", train_labels[i]])
+            if i%T_train == 0:
+                print(f"Generated {imnum} set of train images...")
+    
+    # process testing data
+    with open(os.path.join(DATADIR, "test_labels.csv"), 'w') as csvFile:
+        writer = csv.writer(csvFile, delimiter=',', quotechar='"')
+        imnum, j = 0, 0
+        for i in range(len(test_data)):
+            if i%T_test == 0:
+                imnum += 1
+                j = 0
+            j += 1
+            array = test_data[i][:,:,0]
+            array = array.astype(np.uint8)
+            cur_img = Image.fromarray(array)
+            gray_img = cur_img.convert("L")
+            imwrite(DATADIR + "/test_images/" + f"{imnum}_{j}" + ".jpg", gray_img)
+            writer.writerow(["test_images/" + f"{imnum}_{j}" + ".jpg", train_labels[i]])
+            if i%T_test == 0:
+                print(f"Generated {imnum} set of test images...")
 
     print("----------Completed Generating ROTNIST Data-----------")
-    # repeat for test data
-    # with open(f"{output_path}/test-labels.csv", 'w') as csvFile:
-    #     writer = csv.writer(csvFile, delimiter=',', quotechar='"')
-    #     imnum, j = 0, 0
-    #     for i in range(len(test_data)):
-    #         if i%T == 0:
-    #             imnum += 1
-    #             j = 0
-    #         j += 1
-    #         array = test_data[i][:,:,0]
-    #         array = array.astype(np.uint8)
-    #         cur_img = Image.fromarray(array)
-    #         gray_img = cur_img.convert("L")
-    #         imwrite(DATADIR + "/test-images/" + f"{imnum}_{j}" + ".jpg", gray_img)
-    #         writer.writerow(["test-images/" + f"{imnum}_{j}" + ".jpg", test_labels[i]])
-    #return train_total_data, train_size, validation_data, validation_labels, test_data, test_labels
     
 if __name__ == "__main__":
     
@@ -189,17 +195,23 @@ if __name__ == "__main__":
     #---------------------------------------------------
     parser = argparse.ArgumentParser(description="Input arguments related to creating a dataset for ROTNIST")
     
-    # N
-    parser.add_argument("--num_samples", help="denotes the number of trajectories to be simulated for each realization", type=int, default=10)
-    # T
-    parser.add_argument("--sequence_length", help="denotes the length of each trajectory", type=int, default=10)
+    # N_tr
+    parser.add_argument("--num_samples_tr", help="denotes the number of training sequences to be simulated for each realization", type=int, default=10)
+    # T_tr
+    parser.add_argument("--sequence_length_tr", help="denotes the length of each training sequences", type=int, default=10)
+    # N_te
+    parser.add_argument("--num_samples_te", help="denotes the number of testing sequences to be simulated for each realization", type=int, default=10)
+    # T_te
+    parser.add_argument("--sequence_length_te", help="denotes the length of each testing sequences", type=int, default=10)
     parser.add_argument("--output_path", help="Enter full path to store the data file", type=str, default="data/rotnist")
 
     args = parser.parse_args() 
 
 
-    T = args.sequence_length
-    N_samples = args.num_samples
+    T_tr = args.sequence_length_tr
+    N_samples_tr = args.num_samples_tr
+    T_te = args.sequence_length_te
+    N_samples_te = args.num_samples_te
     output_path = args.output_path
 
     """
@@ -219,4 +231,4 @@ if __name__ == "__main__":
     """
     #---------------------------------------------------
         
-    prepare_MNIST_data(True, T, N_samples, output_path)
+    prepare_MNIST_data(True, T_tr, N_samples_tr, T_te, N_samples_te, output_path)

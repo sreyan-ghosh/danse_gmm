@@ -102,7 +102,7 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
         # My own data generation scheme
         m, n, T_test, N_test, smnr_dB_test = parse("test_sequence_m_{:d}_n_{:d}_rotnist_T_{:d}_N_{:d}_smnr_{:f}dB.pkl", test_data_file.split('/')[-1])
         
-        data_par_dir = "data/encoded_noise_data"
+        data_par_dir = "data/encoded_noise_data/train_data"
         splits_filepath = os.path.join(data_par_dir, f"splits_m_{m}_n_{n}_rotnist_T_{T_test}_N_{N_test}_smnr_{smnr_dB_test}dB.pkl")
         splits = load_saved_dataset(splits_filepath)
         tr_indices, val_indices, test_indices = splits["train"], splits["val"], splits["test"]
@@ -222,8 +222,8 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
                                                                                                 Cw=Cw_i,
                                                                                                 device=device)  
     
-    z_samples = recreate_latent_values(Z_estimated_filtered, Pk_estimated_filtered, device)
-    
+    # z_samples = recreate_latent_values(Z_estimated_filtered, Pk_estimated_filtered, device)
+    post_mean_z_hat = Z_estimated_filtered
     time_elapsed_danse = timer() - start_time_danse
         
     nmse_ls = nmse_loss(Z[:,:,:], Z_LS[:,0:,:])
@@ -325,7 +325,7 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
     sys.stdout = orig_stdout
     return nmse_danse, nmse_danse_std, nmse_ls, nmse_ls_std, \
         mse_dB_danse, mse_dB_danse_std, mse_dB_ls, mse_dB_ls_std, \
-        time_elapsed_danse, smnr_dB_test, z_samples, test_data_dict
+        time_elapsed_danse, smnr_dB_test, post_mean_z_hat, test_data_dict
 
 """
 def run_decoding(model, device, pkl_path, latent_dim, T, smnr_db):
@@ -470,7 +470,7 @@ if __name__ == "__main__":
 
         nmse_danse_i, nmse_danse_i_std, nmse_ls_i, nmse_ls_i_std, \
             mse_dB_danse_i, mse_dB_danse_std_i, mse_dB_ls_i, mse_dB_ls_std_i, \
-            time_elapsed_danse_i, smnr_dB_i, z_samples_i, test_data_dict_i = test_rotnist(device=device, 
+            time_elapsed_danse_i, smnr_dB_i, post_mean_z_hat_i, test_data_dict_i = test_rotnist(device=device, 
             model_file_saved=model_file_saved_i, test_data_file=test_data_file_i, test_logfile=test_logfile, 
             evaluation_mode=evaluation_mode, bias=bias, p=p)
 
@@ -478,26 +478,17 @@ if __name__ == "__main__":
 #-------------------------------------------------------------------------------
 
         n_list = []   
-        for num_sample in range(z_samples_i.shape[0]):
+        for num_sample in range(post_mean_z_hat_i.shape[0]):
             t_list = []
-            for t_sample in range(z_samples_i.shape[1]):
-                elem = z_samples_i[num_sample, t_sample]
+            for t_sample in range(post_mean_z_hat_i.shape[1]):
+                elem = post_mean_z_hat_i[num_sample, t_sample]
                 x_hat = decode_data(model, elem, device) # x_hat = 784
                 t_list.append(x_hat) 
             n_list.append(t_list) # n_list len = 50
         
         recon_img_dict[str(smnr_dB)] = n_list
         recon_img_dict["dataZ"] = test_data_dict_i["Z"]
-        # print(f"Size of n_list: {len(n_list)}")
-        # if len(n_list) > 0:
-        #     print(f"First element of n_list: {n_list[0]}")
-        #     print(f"Size of first element of n_list: {len(n_list[0])}")
-
-        # print(f"\nSize of t_list: {len(n_list[0])}")
-        # if len(n_list[0]) > 0:
-        #     print(f"First element of t_list: {n_list[0][0]}")
-        #     print(f"Size of first element of t_list: {len(n_list[0][0])}")
-    
+            
 #-------------------------------------------------------------------------------
 
         # Store the NMSE values and std devs of the NMSE values

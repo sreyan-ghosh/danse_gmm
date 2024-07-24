@@ -5,11 +5,17 @@
 # The python kernel version e.g. to run on python 3.8 version use: python3.8
 PYTHON="python"
 
-# The number of i.i.d. trajectories each of length T that constitute the training data
-N=500
+# The number of training sequencess each of length T
+N_train=500
 
-# Length of each such training data trajectory, default it is set to T=1000
-T=20
+# Length of each such training data sequence
+T_train=20
+
+# The number of testing sequencess each of length T
+N_test=100
+
+# Length of each such testing data sequence
+T_test=20
 
 # The name of the script for generating data with full path name
 script_name="./bin/generate_data_rotnist.py"
@@ -20,8 +26,10 @@ output_path="./data/rotnist"
 rm -r ${output_path}/*
 
 ${PYTHON} ${script_name} \
---num_samples $N \
---sequence_length $T \
+--num_samples_tr $N_train \
+--sequence_length_tr $T_train \
+--num_samples_te $N_test \
+--sequence_length_te $T_test \
 --output_path ${output_path}
 #--dataset_type ${dataset_type} \
 

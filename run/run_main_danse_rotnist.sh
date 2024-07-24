@@ -32,7 +32,7 @@ dataset_type="rotnist"
 script_name="./main_danse_opt_rotnist.py" # Rotnist Update
 
 # Output path to store the data
-output_path="./data/encoded_noise_data/" # Rotnist Update
+output_path="./data/encoded_noise_data/train_data" # Rotnist Update
 
 # Set the process noise level (in dB)
 #sigma_e2_dB=-10.0

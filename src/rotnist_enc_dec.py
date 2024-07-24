@@ -143,12 +143,12 @@ def ae_train(model, device, train_loader, optimizer, epoch):
     print(f'====> Epoch: {epoch} Average loss: {avg_loss:.4f}')
     return avg_loss
 
-def encode_data(model, data_loader, model_type, device):
+def encode_data(model, dataloader, model_type, device):
     model.eval()
     latent_array = []
     original_images_paths = []
     with torch.no_grad():
-        for data, paths in data_loader:
+        for data, paths in dataloader:
             data = data.to(device)
             if model_type == 'vae':
                 mu, logvar = model.encode(data)
@@ -168,9 +168,9 @@ def decode_data(model, z, device):
         decoded = model.decode(z)
     return decoded
 
-def run_encoding(model, device, train_loader, model_type, encoded_dir):
+def run_encoding(model, device, dataloader, model_type, encoded_dir):
     # Save encoded data
-    latent_array, original_images_paths = encode_data(model, train_loader, model_type, device)
+    latent_array, original_images_paths = encode_data(model, dataloader, model_type, device)
     os.makedirs(encoded_dir, exist_ok=True)
 
     # set_index = 1
@@ -315,16 +315,18 @@ def save_reconstructed_images(decoded_y_list, decoded_z_list, reqd_fpaths, filen
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Input arguments related to creating a dataset for ROTNIST")
+    parser.add_argument("--danse_mode", help="Enter 'train_danse' or 'test_danse' mode", type=str, default="train_danse")
     parser.add_argument("--mode", help="Enter 'encode' or 'decode' mode", type=str, default="train")
     parser.add_argument("--model_type", help="Enter 'ae' or 'vae' model", type=str, default="ae")
-    parser.add_argument("--output_path", help="Enter full path to store the data file", type=str, default='data/encoded_data/')
-    parser.add_argument("--danse_input_path", help="Enter full path to store the danse input files", type=str, default='data/encoded_noise_data')
+    parser.add_argument("--output_path", help="Enter full path to store the data file", type=str, default='data/encoded_data/train_data')
+    parser.add_argument("--danse_input_path", help="Enter full path to store the danse input files", type=str, default='data/encoded_noise_data/train_data')
     parser.add_argument("--saved_model_path", help="Enter full path to save the AR/VAE model", type=str, default='models/rotnist_models/')
     parser.add_argument("--smnr_db", help="For the smnr", type=float, default=20.0)
     parser.add_argument("--latent_dim", help="For the latent dimension", type=int, default=32)
 
 
     args = parser.parse_args() 
+    danse_mode = args.danse_mode
     mode = args.mode
     model_type = args.model_type
     enc_img_output_dir = args.output_path
@@ -341,9 +343,16 @@ if __name__ == "__main__":
     ])
 
     # Load dataset
-    train_dataset = RotatedMNISTDataset(root_dir='data/rotnist/train-images/', transform=transform)
-    T = train_dataset.T
-    train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
+    if danse_mode == "train_danse":
+        train_dataset = RotatedMNISTDataset(root_dir='data/rotnist/train_images/', transform=transform)
+        T = train_dataset.T
+        train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
+    elif danse_mode == "test_danse":
+        test_dataset = RotatedMNISTDataset(root_dir='data/rotnist/test_images/', transform=transform)
+        T = test_dataset.T
+        test_loader = DataLoader(test_dataset, batch_size=128, shuffle=False)
+    
+    # set device to gpu
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     if model_type.lower() == 'vae':
@@ -367,7 +376,10 @@ if __name__ == "__main__":
 
     elif mode.lower() == 'encode':
         model = torch.load(os.path.join(saved_model_path, f"{model_type}_model"))
-        run_encoding(model, device, train_loader, model_type, enc_img_output_dir)
+        if danse_mode == "train_danse":
+            run_encoding(model, device, train_loader, model_type, enc_img_output_dir)
+        elif danse_mode == "test_danse":
+            run_encoding(model, device, test_loader, model_type, enc_img_output_dir)
         print(f"Saved encodings to: {enc_img_output_dir}")
         
     elif mode.lower() == 'noise':

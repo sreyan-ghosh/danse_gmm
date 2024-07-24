@@ -18,45 +18,45 @@ xtick style={color=black},
 y grid style={darkgray176},
 ylabel={NMSE (in dB)},
 ymajorgrids,
-ymin=-22.6274954020977, ymax=2.32117986083031,
+ymin=-22.4741439580917, ymax=2.0179459810257,
 ytick style={color=black}
 ]
 \path [draw=green01270, semithick]
-(axis cs:0,-0.73997700214386)
---(axis cs:0,1.18714916706085);
+(axis cs:0,-1.08263051509857)
+--(axis cs:0,0.904669165611267);
 
 \path [draw=green01270, semithick]
-(axis cs:10,-11.2728970050812)
---(axis cs:10,-8.71988558769226);
+(axis cs:10,-11.0233417153358)
+--(axis cs:10,-9.1019806265831);
 
 \path [draw=green01270, semithick]
-(axis cs:20,-21.4496539831161)
---(axis cs:20,-19.2219845056534);
+(axis cs:20,-21.3247939348221)
+--(axis cs:20,-18.8651398420334);
 
 \path [draw=blue, thick]
-(axis cs:0,-3.26776832342148)
---(axis cs:0,-1.51325756311417);
+(axis cs:0,-3.39114212989807)
+--(axis cs:0,-1.86024069786072);
 
 \path [draw=blue, thick]
-(axis cs:10,-11.5960268974304)
---(axis cs:10,-9.46040773391724);
+(axis cs:10,-11.1544097661972)
+--(axis cs:10,-9.74539530277252);
 
 \path [draw=blue, thick]
-(axis cs:20,-21.4934647083282)
---(axis cs:20,-19.3552138805389);
+(axis cs:20,-21.3608671426773)
+--(axis cs:20,-19.0374330282211);
 
 \addplot [semithick, green01270, dash pattern=on 1pt off 3pt on 3pt off 3pt, mark=pentagon*, mark size=3, mark options={solid}]
 table {%
-0 0.223586082458496
-10 -9.99639129638672
-20 -20.3358192443848
+0 -0.0889806747436523
+10 -10.0626611709595
+20 -20.0949668884277
 };
 \addlegendentry{DANSE}
 \addplot [thick, blue, mark=asterisk, mark size=3, mark options={solid}]
 table {%
-0 -2.39051294326782
-10 -10.5282173156738
-20 -20.4243392944336
+0 -2.62569141387939
+10 -10.4499025344849
+20 -20.1991500854492
 };
 \addlegendentry{DANSE}
 \end{axis}

@@ -2,6 +2,7 @@
 \begin{tikzpicture}
 
 \definecolor{darkgray176}{RGB}{176,176,176}
+\definecolor{green01270}{RGB}{0,127,0}
 \definecolor{lightgray204}{RGB}{204,204,204}
 
 \begin{axis}[
@@ -15,11 +16,23 @@ xmajorgrids,
 xmin=-1, xmax=21,
 xtick style={color=black},
 y grid style={darkgray176},
-ylabel={SSIM (in dB)},
+ylabel={SSIM},
 ymajorgrids,
-ymin=0.258875376697151, ymax=0.941540544212775,
+ymin=0.258836592869517, ymax=0.94235500459309,
 ytick style={color=black}
 ]
+\path [draw=green01270, semithick]
+(axis cs:0,0.362522651351608)
+--(axis cs:0,0.57587297486407);
+
+\path [draw=green01270, semithick]
+(axis cs:10,0.684492521681339)
+--(axis cs:10,0.832446886505823);
+
+\path [draw=green01270, semithick]
+(axis cs:20,0.774524689103383)
+--(axis cs:20,0.911285985878382);
+
 \path [draw=blue, thick]
 (axis cs:0,0.289905611584225)
 --(axis cs:0,0.530575918921929);
@@ -32,6 +45,13 @@ ytick style={color=black}
 (axis cs:20,0.773410809723613)
 --(axis cs:20,0.910510309325701);
 
+\addplot [semithick, green01270, dash pattern=on 1pt off 3pt on 3pt off 3pt, mark=pentagon*, mark size=3, mark options={solid}]
+table {%
+0 0.469197813107839
+10 0.758469704093581
+20 0.842905337490883
+};
+\addlegendentry{DANSE}
 \addplot [thick, blue, mark=asterisk, mark size=3, mark options={solid}]
 table {%
 0 0.410240765253077

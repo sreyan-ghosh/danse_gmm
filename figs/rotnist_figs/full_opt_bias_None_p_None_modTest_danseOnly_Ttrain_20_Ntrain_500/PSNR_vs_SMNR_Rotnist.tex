@@ -2,6 +2,7 @@
 \begin{tikzpicture}
 
 \definecolor{darkgray176}{RGB}{176,176,176}
+\definecolor{green01270}{RGB}{0,127,0}
 \definecolor{lightgray204}{RGB}{204,204,204}
 
 \begin{axis}[
@@ -17,9 +18,21 @@ xtick style={color=black},
 y grid style={darkgray176},
 ylabel={PSNR (in dB)},
 ymajorgrids,
-ymin=10.2723297715187, ymax=22.1090829730034,
+ymin=10.2712189555168, ymax=22.1324101090431,
 ytick style={color=black}
 ]
+\path [draw=green01270, semithick]
+(axis cs:0,10.8532758951187)
+--(axis cs:0,14.1164697408676);
+
+\path [draw=green01270, semithick]
+(axis cs:10,15.2588926553726)
+--(axis cs:10,18.8308786153793);
+
+\path [draw=green01270, semithick]
+(axis cs:20,17.1100888252258)
+--(axis cs:20,21.5932650566101);
+
 \path [draw=blue, thick]
 (axis cs:0,10.8103640079498)
 --(axis cs:0,13.4361913204193);
@@ -32,6 +45,13 @@ ytick style={color=black}
 (axis cs:20,17.1026725769043)
 --(axis cs:20,21.5710487365723);
 
+\addplot [semithick, green01270, dash pattern=on 1pt off 3pt on 3pt off 3pt, mark=pentagon*, mark size=3, mark options={solid}]
+table {%
+0 12.4848728179932
+10 17.044885635376
+20 19.351676940918
+};
+\addlegendentry{DANSE}
 \addplot [thick, blue, mark=asterisk, mark size=3, mark options={solid}]
 table {%
 0 12.1232776641846

@@ -154,6 +154,16 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
     for i in range(Y.shape[0]):
         for j in range(Y.shape[1]):
             Z_LS[i,j,:] = (torch.pinverse(H_tensor[i]) @ Y[i,j,:].reshape((dy, 1))).reshape((dz,))
+            
+    xhat_ls = []   
+    for num_sample in range(Z_LS.shape[0]):
+        t_list = []
+        for t_sample in range(Z_LS.shape[1]):
+            elem = Z_LS[num_sample, t_sample]
+            x_hat = decode_data(model, elem, device) 
+            t_list.append(x_hat) 
+        xhat_ls.append(t_list) 
+    xhat_ls = torch.stack([torch.stack(t_list) for t_list in xhat_ls])
 
     if "partial" in evaluation_mode:
         if "low" in evaluation_mode:
@@ -265,7 +275,7 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
     sys.stdout = orig_stdout
     return nmse_danse, nmse_danse_std, nmse_ls, nmse_ls_std, \
         mse_dB_danse, mse_dB_danse_std, mse_dB_ls, mse_dB_ls_std, \
-        time_elapsed_danse, smnr_dB_test, post_mean_z_hat, test_data_dict, X
+        time_elapsed_danse, smnr_dB_test, post_mean_z_hat, test_data_dict, xhat_ls, X
 
 
 if __name__ == "__main__":
@@ -321,6 +331,10 @@ if __name__ == "__main__":
     psnr_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
     ssim_danse_arr = np.zeros((len(smnr_dB_arr,)))
     ssim_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
+    psnr_ls_arr = np.zeros((len(smnr_dB_arr,)))
+    psnr_ls_std_arr = np.zeros((len(smnr_dB_arr,)))
+    ssim_ls_arr = np.zeros((len(smnr_dB_arr,)))
+    ssim_ls_std_arr = np.zeros((len(smnr_dB_arr,)))
     nmse_ls_std_arr = np.zeros((len(smnr_dB_arr,)))
     #nmse_ekf_std_arr = np.zeros((len(smnr_dB_arr,)))
     #nmse_ukf_std_arr = np.zeros((len(smnr_dB_arr,)))
@@ -379,7 +393,7 @@ if __name__ == "__main__":
 
         nmse_danse_i, nmse_danse_i_std, nmse_ls_i, nmse_ls_i_std, \
             mse_dB_danse_i, mse_dB_danse_std_i, mse_dB_ls_i, mse_dB_ls_std_i, \
-            time_elapsed_danse_i, smnr_dB_i, post_mean_z_hat_i, test_data_dict_i, X = test_rotnist(device=device, 
+            time_elapsed_danse_i, smnr_dB_i, post_mean_z_hat_i, test_data_dict_i, xhat_ls_i, X = test_rotnist(device=device, 
             model_file_saved=model_file_saved_i, test_data_file=test_data_file_i, test_logfile=test_logfile, 
             evaluation_mode=evaluation_mode, bias=bias, p=p)
 
@@ -410,6 +424,16 @@ if __name__ == "__main__":
         ssim_danse_arr[i] = ssim_mean_danse_i
         ssim_danse_std_i = ssim_loss_std(X, xhat_arr)
         ssim_danse_std_arr[i] = ssim_danse_std_i
+        
+        psnr_ls_i = psnr_loss(X, xhat_ls_i)
+        psnr_ls_arr[i] = psnr_ls_i
+        psnr_ls_std_i = psnr_loss_std(X, xhat_ls_i)
+        psnr_ls_std_arr[i] = psnr_ls_std_i
+
+        ssim_mean_ls_i, ssim_values_ls_i = ssim_loss(X, xhat_ls_i)
+        ssim_ls_arr[i] = ssim_mean_ls_i
+        ssim_ls_std_i = ssim_loss_std(X, xhat_ls_i)
+        ssim_ls_std_arr[i] = ssim_ls_std_i
 
 #-------------------------------------------------------------------------------
         # Store the NMSE values and std devs of the NMSE values
@@ -445,7 +469,17 @@ if __name__ == "__main__":
     with torch.no_grad():
         with PdfPages('reconstructed_images_danse.pdf') as pdf:
             keys = ['dataZ', '0.0', '10.0', '20.0']
-            fig, axs = plt.subplots(len(keys), len(xhat_arr[0]), figsize=(20, 4 * len(keys)))
+            num_cols = X.shape[1]  # Number of columns to display
+            num_rows = len(keys) + 1  # Number of rows, including X
+
+            fig, axs = plt.subplots(num_rows, num_cols, figsize=(4 * num_cols, 4 * num_rows))  # Including X row
+
+            # Add X images at the top
+            for k in range(num_cols):
+                original_img = X[0, k].cpu().view(28, 28)
+                axs[0, k].imshow(original_img, cmap='gray')
+                axs[0, k].set_title(f'Original X {k}')
+                axs[0, k].axis('off')
 
             for i, key in enumerate(keys):
                 if key == "dataZ":
@@ -457,18 +491,19 @@ if __name__ == "__main__":
                             x_hat = decode_data(model, elem, device)
                             t_list.append(x_hat)
                         dataZ_list.append(t_list)
-                    
-                    for k in range(len(dataZ_list[0])):
+
+                    for k in range(num_cols):
                         decoded_img = dataZ_list[0][k]
-                        axs[i, k].imshow(decoded_img.cpu().view(28, 28), cmap='gray')
-                        axs[i, k].set_title(f'dataZ {k}')
-                        axs[i, k].axis('off')
+                        axs[i + 1, k].imshow(decoded_img.cpu().view(28, 28), cmap='gray')
+                        axs[i + 1, k].set_title(f'dataZ {k}')
+                        axs[i + 1, k].axis('off')
+
                 else:
-                    for k in range(len(recon_img_dict[key][0])):
+                    for k in range(num_cols):
                         reconstructed_image = recon_img_dict[key][0][k].cpu().view(28, 28)
-                        axs[i, k].imshow(reconstructed_image, cmap='gray')
-                        axs[i, k].set_title(f'{key} dB {k}')
-                        axs[i, k].axis('off')
+                        axs[i + 1, k].imshow(reconstructed_image, cmap='gray')
+                        axs[i + 1, k].set_title(f'{key} dB {k}')
+                        axs[i + 1, k].axis('off')
 
             pdf.savefig(fig)
             plt.close(fig)
@@ -491,6 +526,10 @@ if __name__ == "__main__":
     test_stats["DANSE_std_psnr"] = psnr_danse_std_arr
     test_stats["DANSE_mean_ssim"] = ssim_danse_arr
     test_stats["DANSE_std_ssim"] = ssim_danse_std_arr
+    test_stats["LS_mean_psnr"] = psnr_ls_arr
+    test_stats["LS_std_psnr"] = psnr_ls_std_arr
+    test_stats["LS_mean_ssim"] = ssim_ls_arr
+    test_stats["LS_std_ssim"] = ssim_ls_std_arr
     #test_stats['EKF_mean_mse'] = mse_ekf_dB_arr
     #test_stats['UKF_mean_mse'] = mse_ukf_dB_arr
     test_stats['DANSE_mean_mse'] = mse_danse_dB_arr
@@ -531,7 +570,7 @@ if __name__ == "__main__":
     # Plotting the PSNR Curve
     plt.rcParams['font.family'] = 'serif'
     plt.figure()
-    # plt.errorbar(smnr_dB_arr, psnr_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, psnr_ls_arr, fmt='gp-.', yerr=psnr_ls_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, psnr_danse_arr, fmt='b*-', yerr=psnr_danse_std_arr, linewidth=2.0, label="DANSE")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('PSNR (in dB)')
@@ -545,7 +584,7 @@ if __name__ == "__main__":
     # Plotting the SSIM Curve
     plt.rcParams['font.family'] = 'serif'
     plt.figure()
-    # plt.errorbar(smnr_dB_arr, psnr_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, ssim_ls_arr, fmt='gp-.', yerr=ssim_ls_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, ssim_danse_arr, fmt='b*-', yerr=ssim_danse_std_arr, linewidth=2.0, label="DANSE")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('SSIM')

@@ -15,7 +15,6 @@ Things to do before Friday 26/7
 - [x] Plot log files loss trend by taking the json outputs
 - [x] Change the recreate_latent_values in test_danse_rotnist.py to use posterior mean for z
 - [x] Modify generation of X images to account for test data as well
-- [ ] Plot X sequence,  z sequence and y sequence for LS in a separate file
-- [ ] Plot X sequence,  z sequence and y sequence for DANSE in test_danse_rotnist file
-- [ ] Implement PSNR and SSIM comparison plots
+- [ ] Plot X sequence, z sequence and y sequence for DANSE in test_danse_rotnist file
+- [x] Implement PSNR and SSIM comparison plots
 - [ ] Modify `parameters_opt.py` and tweak rnn params

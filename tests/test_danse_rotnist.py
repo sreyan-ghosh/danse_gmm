@@ -16,6 +16,7 @@ from torch.autograd import Variable
 from torch.autograd.functional import jacobian
 from parse import parse
 from timeit import default_timer as timer
+from PIL import Image
 import json
 import tikzplotlib
 
@@ -28,7 +29,7 @@ from src.rotnist_enc_dec import AE, decode_data
 from utils.plot_functions import *
 from utils.utils_rotnist import generate_normal, dB_to_lin, lin_to_dB, mse_loss, nmse_loss, \
     mse_loss_dB, load_saved_dataset, save_dataset, nmse_loss_std, mse_loss_dB_std, NDArrayEncoder, partial_corrupt, \
-    get_dataloaders, Series_Dataset, push_to_device
+    get_dataloaders, Series_Dataset, push_to_device, psnr_loss, psnr_loss_std, ssim_loss, ssim_loss_std
 #from parameters import get_parameters, A_fn, h_fn, f_lorenz_danse, f_lorenz_danse_ukf, delta_t, J_test
 from config.parameters_opt import get_parameters, A_fn, h_fn, f_lorenz_danse, f_lorenz_danse_ukf, delta_t, J_test, get_H_DANSE
 #from src.k_net import KalmanNetNN
@@ -102,28 +103,21 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
         # My own data generation scheme
         m, n, T_test, N_test, smnr_dB_test = parse("test_sequence_m_{:d}_n_{:d}_rotnist_T_{:d}_N_{:d}_smnr_{:f}dB.pkl", test_data_file.split('/')[-1])
         
-        data_par_dir = "data/encoded_noise_data/train_data"
-        splits_filepath = os.path.join(data_par_dir, f"splits_m_{m}_n_{n}_rotnist_T_{T_test}_N_{N_test}_smnr_{smnr_dB_test}dB.pkl")
-        splits = load_saved_dataset(splits_filepath)
-        tr_indices, val_indices, test_indices = splits["train"], splits["val"], splits["test"]
+        data_par_dir = "data/encoded_noise_data/test_data"
         datafile = os.path.join(data_par_dir, f"sequence_m_{m}_n_{n}_rotnist_T_{T_test}_N_{N_test}_smnr_{smnr_dB_test}dB.pkl")
         Z_XY = load_saved_dataset(filename=datafile)
-        Z_XY_dataset = Series_Dataset(Z_XY_dict=Z_XY)
-        
-        test_data = [Z_XY_dataset[idx] for idx in test_indices]
 
         # Extract the components, inner format might be numpy and cause errors
-        Z = torch.cat([torch.tensor(sample["targets"]) for sample in test_data], dim=0)
-        Z = push_to_device(Z, device)
-        Y = torch.cat([torch.tensor(sample["inputs"]) for sample in test_data], dim=0)
-        Y = push_to_device(Y, device)
-        Cw_i = torch.cat([torch.tensor(sample["Cw"]) for sample in test_data], dim=0)
-        Cw_i = push_to_device(Cw_i, device)
+        Z = torch.from_numpy(Z_XY["dataZ"]).to(device)
+        Y = torch.from_numpy(Z_XY["dataY"]).to(device)
+        Cw_i = torch.from_numpy(Z_XY["dataCw"]).to(device)
+        fpaths = Z_XY["img_fpaths"]
 
         test_data_dict = {}
         test_data_dict["Z"] = Z
         test_data_dict["Y"] = Y
         test_data_dict["Cw"] = Cw_i
+        test_data_dict["img_paths"] =  fpaths
         save_dataset(Z_XY=test_data_dict, filename=test_data_file)
 
     else:
@@ -135,6 +129,7 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
         Z = test_data_dict["Z"]
         Y = test_data_dict["Y"]
         Cw_i = test_data_dict["Cw"]
+        fpaths = test_data_dict["img_paths"]
 
     print("*"*100)
     print("*"*100,file=orig_stdout)
@@ -168,18 +163,11 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
             p *= 1
             bias *= 1
 
-        #sigma_e2_dB_test = partial_corrupt((sigma_e2_dB_test), p=p, bias=bias) # 50 % corruption of the true nu_dB used for data generation
-    
-    # NOTE: Partial corruption code is incomplete! Needs to be fixed !!
-
     print("Fed to Model-based filters: ", file=orig_stdout)
     print("smnr: {}dB, delta_t: {}".format(smnr_dB_test, delta_t), file=orig_stdout)
 
     print("Fed to Model-based filters: ")
     print("smnr: {}dB, delta_t: {}".format(smnr_dB_test, delta_t))
-
-    #lorenz_model.sigma_e2 = dB_to_lin(sigma_e2_dB_test)
-    #lorenz_model.setStateCov(sigma_e2=dB_to_lin(sigma_e2_dB_test))
 
     print("Testing DANSE ...", file=orig_stdout)
     # Initialize the DANSE model in PyTorch
@@ -192,23 +180,6 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
     
     danse_model = DANSE(**estimator_options)
 
-    """
-    # Initialize the DANSE model in PyTorch
-    danse_model = DANSE(
-        n_states=lorenz_model.n_states,
-        n_obs=lorenz_model.n_obs,
-        mu_w=lorenz_model.mu_w,
-        C_w=Cw_i, # Added Cw
-        batch_size=1,
-        H=lorenz_model.H,#jacobian(h_fn, torch.randn(lorenz_model.n_states,)).numpy(),
-        mu_x0=np.zeros((lorenz_model.n_states,)),
-        C_x0=np.eye(lorenz_model.n_states),
-        rnn_type=rnn_type,
-        rnn_params_dict=est_dict['danse']['rnn_params_dict'],
-        device=device
-    
-    )
-    """
     print("DANSE Model file: {}".format(model_file_saved))
 
     Z_estimated_pred = None
@@ -225,7 +196,23 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
     # z_samples = recreate_latent_values(Z_estimated_filtered, Pk_estimated_filtered, device)
     post_mean_z_hat = Z_estimated_filtered
     time_elapsed_danse = timer() - start_time_danse
-        
+
+    # X dims = (100,20,784)
+    X = []
+    fpaths = np.asarray(fpaths)
+    for i in range(fpaths.shape[0]):
+        row = []
+        for j in range(fpaths.shape[1]):
+            img = Image.open(fpaths[i, j])
+            img = img.convert('L')
+            img = img.resize((28, 28))
+            img_array = np.array(img).reshape(-1) / 255.0
+            img_tensor = torch.tensor(img_array, dtype=torch.float32).to(device)
+            row.append(img_tensor)
+        X.append(torch.stack(row).to(device))
+
+    X = torch.stack(X).to(device)
+            
     nmse_ls = nmse_loss(Z[:,:,:], Z_LS[:,0:,:])
     nmse_ls_std = nmse_loss_std(Z[:,:,:], Z_LS[:,0:,:])
     
@@ -274,94 +261,12 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
     print("danse (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {} secs".format(N_test, nmse_danse, nmse_danse_std, mse_dB_danse, mse_dB_danse_std, time_elapsed_danse), file=orig_stdout)
     #print("knet (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_knet, nmse_knet_std, mse_dB_knet, mse_dB_knet_std, time_elapsed_knet), file=orig_stdout)
 
-    """
-    # Plot the result
-    ifig = 0 #np.random.randint(Z.shape[0])
-    
-    print("Chosen trajectory index for plots: {}".format(ifig))
-    print("Chosen trajectory index for plots: {}".format(ifig), file=orig_stdout)
 
-    
-    plot_3d_state_trajectory(Z=torch.squeeze(Z[ifig, 1:, :], 0).numpy(), legend='$\\mathbf{Z}^{true}$', m='b-', savefig_name="./figs/LorenzModel/{}/lorenz_x_true_sigmae2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test), savefig=True)
-    plot_3d_state_trajectory(Z=torch.squeeze(Z_estimated_filtered[ifig], 0).numpy(), legend='$\\hat{\mathbf{Z}}_{DANSE}$', m='k-', savefig_name="./figs/LorenzModel/{}/lorenz_x_danse_sigmae2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test), savefig=True)
-    plot_3d_measurment_trajectory(Y=torch.squeeze(Y[ifig, :, :], 0).numpy(), legend='$\\mathbf{y}^{true}$', m='r-', savefig_name="./figs/LorenzModel/{}/lorenz_y_true_sigmae2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test), savefig=True)
-
-    plot_state_trajectory(Z=torch.squeeze(Z[ifig,:,:],0).numpy(), 
-                        #X_est_EKF=torch.squeeze(X_estimated_ekf[ifig,:,:],0).numpy(), 
-                        #X_est_UKF=torch.squeeze(X_estimated_ukf[ifig,:,:],0).numpy(), 
-                        X_est_DANSE=torch.squeeze(Z_estimated_filtered[ifig],0).numpy(),
-                        #X_est_KNET=torch.squeeze(Z_estimated_filtered_knet[ifig], 0).numpy(),
-                        savefig=True,
-                        #savefig_name="./figs/LorenzModel/{}/3dPlot_sigmae2_{}dB_smnr_{}dB_knet.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
-                        savefig_name="./figs/LorenzModel/{}/3dPlot_sigmae2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
-     
-    plot_state_trajectory_w_lims(Z=torch.squeeze(Z[ifig,:,:],0).numpy(), 
-                        #X_est_KF=torch.squeeze(X_estimated_kf[0,1:,:], 0).numpy(), 
-                        #X_est_KF_std=np.sqrt(torch.diagonal(torch.squeeze(Pk_estimated_kf[0,1:,:,:], 0), offset=0, dim1=1,dim2=2).numpy()), 
-                        #X_est_UKF=torch.squeeze(X_estimated_ukf[ifig,:,:], 0).numpy(), 
-                        #X_est_UKF_std=np.sqrt(torch.diagonal(torch.squeeze(Pk_estimated_ukf[ifig,:,:,:], 0), offset=0, dim1=1,dim2=2).numpy()), 
-                        X_est_DANSE=torch.squeeze(Z_estimated_filtered[ifig], 0).numpy(), 
-                        X_est_DANSE_std=np.sqrt(torch.diagonal(torch.squeeze(Pk_estimated_filtered[ifig], 0), offset=0, dim1=1,dim2=2).numpy()), 
-                        #X_est_DANSE_sup=torch.squeeze(Z_estimated_filtered_sup[0], 0).numpy(), 
-                        #X_est_DANSE_sup_std=np.diag(torch.squeeze(Pk_estimated_filtered_sup[0,1:,:], 0).numpy()).sqrt(), 
-                        #X_est_KNET=torch.squeeze(Z_estimated_filtered_knet[0], 0).numpy(), 
-                        savefig=True,
-                        savefig_name="./figs/LorenzModel/{}/Trajectories_sigma_e2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
-    
-    plot_state_trajectory_axes(Z=torch.squeeze(Z[ifig,:,:],0).numpy(), 
-                                #X_est_EKF=torch.squeeze(X_estimated_ekf[ifig,:,:],0).numpy(), 
-                                #X_est_UKF=torch.squeeze(X_estimated_ukf[ifig,:,:],0).numpy(), 
-                                X_est_DANSE=torch.squeeze(Z_estimated_filtered[ifig],0).numpy(), 
-                                #X_est_KNET=torch.squeeze(Z_estimated_filtered_knet[ifig], 0).numpy(),
-                                savefig=True,
-                                #savefig_name="./figs/LorenzModel/{}/AxesWisePlot_sigmae2_{}dB_smnr_{}dB_knet.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
-                                savefig_name="./figs/LorenzModel/{}/AxesWisePlot_sigmae2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
-
-    #plot_state_trajectory_axes(Z=torch.squeeze(Z,0), X_est_EKF=torch.squeeze(X_estimated_ekf,0), X_est_DANSE=torch.squeeze(Z_estimated_filtered,0))
-    #plot_state_trajectory(Z=torch.squeeze(Z,0), X_est_EKF=torch.squeeze(X_estimated_ekf,0), X_est_DANSE=torch.squeeze(Z_estimated_filtered,0))
-    
-    #plt.show()
-    """
     sys.stdout = orig_stdout
     return nmse_danse, nmse_danse_std, nmse_ls, nmse_ls_std, \
         mse_dB_danse, mse_dB_danse_std, mse_dB_ls, mse_dB_ls_std, \
-        time_elapsed_danse, smnr_dB_test, post_mean_z_hat, test_data_dict
+        time_elapsed_danse, smnr_dB_test, post_mean_z_hat, test_data_dict, X
 
-"""
-def run_decoding(model, device, pkl_path, latent_dim, T, smnr_db):
-    pkl_file = sorted(glob.glob(os.path.join(pkl_path, f"sequence_m_{latent_dim}_n_{latent_dim}_rotnist_T_{T}_*_smnr_{smnr_db}dB.pkl")))
-    Z_XY_dict = load_saved_dataset(str(pkl_file[0]))
-    y_array = Z_XY_dict["dataY"]
-    z_array = Z_XY_dict["dataZ"]
-    fp_arr = Z_XY_dict["img_fpaths"]
-    decoded_z_list = list()
-    decoded_y_list = list()
-    reqd_fpaths = list()
-    cnt = 0
-    for noise_vector in y_array:
-        decoded_y = decode_data(model, torch.tensor(noise_vector[0]), device)
-        decoded_y_list.append(decoded_y)
-        cnt += 1
-        if cnt == 5:
-            cnt = 0
-            break
-    
-    for latent_vector in z_array:
-        decoded_z = decode_data(model, torch.tensor(latent_vector[0]), device)
-        decoded_z_list.append(decoded_z)
-        cnt += 1
-        if cnt == 5:
-            cnt = 0
-            break
-
-    for fpath in fp_arr:
-        reqd_fpaths.append(fpath[0])
-        cnt += 1
-        if cnt == 5:
-            break
-    
-    return decoded_y_list, decoded_z_list, reqd_fpaths
-"""
 
 if __name__ == "__main__":
 
@@ -386,7 +291,7 @@ if __name__ == "__main__":
 
     # Testing parameters 
     T_test = 20
-    N_test = 500
+    N_test = 100
     N_train = 500
     T_train = 20
     #sigma_e2_dB_test = -10.0
@@ -412,6 +317,10 @@ if __name__ == "__main__":
     #nmse_ukf_arr = np.zeros((len(smnr_dB_arr,)))
     nmse_danse_arr = np.zeros((len(smnr_dB_arr,)))
     #nmse_knet_arr = np.zeros((len(smnr_dB_arr,)))
+    psnr_danse_arr = np.zeros((len(smnr_dB_arr,)))
+    psnr_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
+    ssim_danse_arr = np.zeros((len(smnr_dB_arr,)))
+    ssim_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
     nmse_ls_std_arr = np.zeros((len(smnr_dB_arr,)))
     #nmse_ekf_std_arr = np.zeros((len(smnr_dB_arr,)))
     #nmse_ukf_std_arr = np.zeros((len(smnr_dB_arr,)))
@@ -440,9 +349,9 @@ if __name__ == "__main__":
         model_file_saved_dict["{}dB".format(smnr_dB)] = glob.glob(r"./models/*rotnist_danse_opt_*n_32_T_{}_N_{}_smnr_{}dB*/*best*".format(T_train, N_train, smnr_dB))[-1]
 
     test_data_file_dict = {}
-
+    # Rename to test_data directory
     for smnr_dB in smnr_dB_arr:
-        test_data_file_dict["{}dB".format(smnr_dB)] = "./data/encoded_noise_data/test_sequence_m_32_n_32_rotnist_T_{}_N_{}_smnr_{}dB.pkl".format(T_test, N_test, smnr_dB)
+        test_data_file_dict["{}dB".format(smnr_dB)] = "./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_{}_N_{}_smnr_{}dB.pkl".format(T_test, N_test, smnr_dB)
     
     print("*"*100)
     print(model_file_saved_dict)
@@ -470,27 +379,39 @@ if __name__ == "__main__":
 
         nmse_danse_i, nmse_danse_i_std, nmse_ls_i, nmse_ls_i_std, \
             mse_dB_danse_i, mse_dB_danse_std_i, mse_dB_ls_i, mse_dB_ls_std_i, \
-            time_elapsed_danse_i, smnr_dB_i, post_mean_z_hat_i, test_data_dict_i = test_rotnist(device=device, 
+            time_elapsed_danse_i, smnr_dB_i, post_mean_z_hat_i, test_data_dict_i, X = test_rotnist(device=device, 
             model_file_saved=model_file_saved_i, test_data_file=test_data_file_i, test_logfile=test_logfile, 
             evaluation_mode=evaluation_mode, bias=bias, p=p)
 
 # Run decoding
 #-------------------------------------------------------------------------------
 
-        n_list = []   
+        xhat_arr = []   
         for num_sample in range(post_mean_z_hat_i.shape[0]):
             t_list = []
             for t_sample in range(post_mean_z_hat_i.shape[1]):
                 elem = post_mean_z_hat_i[num_sample, t_sample]
                 x_hat = decode_data(model, elem, device) # x_hat = 784
                 t_list.append(x_hat) 
-            n_list.append(t_list) # n_list len = 50
+            xhat_arr.append(t_list) # xhat_arr len = 100
         
-        recon_img_dict[str(smnr_dB)] = n_list
+        recon_img_dict[str(smnr_dB)] = xhat_arr
         recon_img_dict["dataZ"] = test_data_dict_i["Z"]
-            
-#-------------------------------------------------------------------------------
+        xhat_arr = torch.stack([torch.stack(t_list) for t_list in xhat_arr])
 
+# PSNR and SSIM
+#-------------------------------------------------------------------------------
+        psnr_danse_i = psnr_loss(X, xhat_arr)
+        psnr_danse_arr[i] = psnr_danse_i
+        psnr_danse_std_i = psnr_loss_std(X, xhat_arr)
+        psnr_danse_std_arr[i] = psnr_danse_std_i
+
+        ssim_mean_danse_i, ssim_values_danse_i = ssim_loss(X, xhat_arr)
+        ssim_danse_arr[i] = ssim_mean_danse_i
+        ssim_danse_std_i = ssim_loss_std(X, xhat_arr)
+        ssim_danse_std_arr[i] = ssim_danse_std_i
+
+#-------------------------------------------------------------------------------
         # Store the NMSE values and std devs of the NMSE values
         nmse_ls_arr[i] = nmse_ls_i.item()
         #nmse_ekf_arr[i] = nmse_ekf_i.numpy().item()
@@ -524,7 +445,7 @@ if __name__ == "__main__":
     with torch.no_grad():
         with PdfPages('reconstructed_images_danse.pdf') as pdf:
             keys = ['dataZ', '0.0', '10.0', '20.0']
-            fig, axs = plt.subplots(len(keys), len(n_list[0]), figsize=(20, 4 * len(keys)))
+            fig, axs = plt.subplots(len(keys), len(xhat_arr[0]), figsize=(20, 4 * len(keys)))
 
             for i, key in enumerate(keys):
                 if key == "dataZ":
@@ -566,6 +487,10 @@ if __name__ == "__main__":
     test_stats['LS_mean_nmse'] = nmse_ls_arr
     test_stats['LS_std_nmse'] = nmse_ls_std_arr
 
+    test_stats["DANSE_mean_psnr"] = psnr_danse_arr
+    test_stats["DANSE_std_psnr"] = psnr_danse_std_arr
+    test_stats["DANSE_mean_ssim"] = ssim_danse_arr
+    test_stats["DANSE_std_ssim"] = ssim_danse_std_arr
     #test_stats['EKF_mean_mse'] = mse_ekf_dB_arr
     #test_stats['UKF_mean_mse'] = mse_ukf_dB_arr
     test_stats['DANSE_mean_mse'] = mse_danse_dB_arr
@@ -602,6 +527,34 @@ if __name__ == "__main__":
     #plt.subplot(212)
     tikzplotlib.save('./figs/rotnist_figs/{}/NMSE_vs_SMNR_Rotnist.tex'.format(evaluation_mode))
     plt.savefig('./figs/rotnist_figs/{}/NMSE_vs_SMNR_Rotnist.pdf'.format(evaluation_mode))
+
+    # Plotting the PSNR Curve
+    plt.rcParams['font.family'] = 'serif'
+    plt.figure()
+    # plt.errorbar(smnr_dB_arr, psnr_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, psnr_danse_arr, fmt='b*-', yerr=psnr_danse_std_arr, linewidth=2.0, label="DANSE")
+    plt.xlabel('SMNR (in dB)')
+    plt.ylabel('PSNR (in dB)')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    #plt.subplot(212)
+    tikzplotlib.save('./figs/rotnist_figs/{}/PSNR_vs_SMNR_Rotnist.tex'.format(evaluation_mode))
+    plt.savefig('./figs/rotnist_figs/{}/PSNR_vs_SMNR_Rotnist.pdf'.format(evaluation_mode))
+
+    # Plotting the SSIM Curve
+    plt.rcParams['font.family'] = 'serif'
+    plt.figure()
+    # plt.errorbar(smnr_dB_arr, psnr_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, ssim_danse_arr, fmt='b*-', yerr=ssim_danse_std_arr, linewidth=2.0, label="DANSE")
+    plt.xlabel('SMNR (in dB)')
+    plt.ylabel('SSIM')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    #plt.subplot(212)
+    tikzplotlib.save('./figs/rotnist_figs/{}/SSIM_vs_SMNR_Rotnist.tex'.format(evaluation_mode))
+    plt.savefig('./figs/rotnist_figs/{}/SSIM_vs_SMNR_Rotnist.pdf'.format(evaluation_mode))
 
     # Plotting the Time-elapsed Curve
     plt.figure()

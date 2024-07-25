@@ -15,16 +15,28 @@ xmajorgrids,
 xmin=-1, xmax=21,
 xtick style={color=black},
 y grid style={darkgray176},
-ylabel={Inference time (in s)},
+ylabel={SSIM (in dB)},
 ymajorgrids,
-ymin=0.00735185127705336, ymax=0.00816932115703821,
+ymin=0.258875376697151, ymax=0.941540544212775,
 ytick style={color=black}
 ]
-\addplot [thick, blue, mark=*, mark size=3, mark options={solid}]
+\path [draw=blue, thick]
+(axis cs:0,0.289905611584225)
+--(axis cs:0,0.530575918921929);
+
+\path [draw=blue, thick]
+(axis cs:10,0.666112798736122)
+--(axis cs:10,0.826566573868707);
+
+\path [draw=blue, thick]
+(axis cs:20,0.773410809723613)
+--(axis cs:20,0.910510309325701);
+
+\addplot [thick, blue, mark=asterisk, mark size=3, mark options={solid}]
 table {%
-0 0.00813216343522072
-10 0.00783703662455082
-20 0.00738900899887085
+0 0.410240765253077
+10 0.746339686302415
+20 0.841960559524657
 };
 \addlegendentry{DANSE}
 \end{axis}

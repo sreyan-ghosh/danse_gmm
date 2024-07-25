@@ -9,6 +9,7 @@ import os
 from torch.distributions import MultivariateNormal
 from torch.utils.data import Dataset, DataLoader
 from torch.autograd import Variable
+from skimage.metrics import structural_similarity as ssim
 from collections import deque
 import pickle as pkl
 import json
@@ -76,6 +77,40 @@ def mse_loss_dB_std(x, xhat):
     loss = nn.MSELoss(reduction='none')
     noise_p = loss(xhat, x).mean((1,2))
     return (10*torch.log10(noise_p)).std()
+
+def psnr_loss(x, xhat, max_pixel_value=1.0):
+    noise_p = mse_loss(xhat, x).mean((1,2))
+    psnr = 20 * torch.log10(max_pixel_value / torch.sqrt(noise_p))
+    return psnr.mean()
+
+def psnr_loss_std(x, xhat, max_pixel_value=1.0):
+    noise_p = mse_loss(xhat, x).mean((1,2))
+    psnr = 20 * torch.log10(max_pixel_value / torch.sqrt(noise_p))
+    return psnr.std() 
+
+def ssim_loss(x, xhat):
+    x = x.cpu().numpy()
+    xhat = xhat.cpu().numpy()
+    
+    ssim_values = []
+    
+    # Iterate through the first two dimensions and compute SSIM for each slice
+    for i in range(x.shape[0]):
+        for j in range(x.shape[1]):
+            slice_ssim = ssim(x[i, j, :].reshape(28, 28), xhat[i, j, :].reshape(28, 28))
+            ssim_values.append(slice_ssim)
+    
+    # Convert to numpy array
+    ssim_values = np.array(ssim_values)
+    
+    # Compute the mean SSIM loss
+    mean_ssim_loss = ssim_values.mean()
+    
+    return mean_ssim_loss, ssim_values
+
+def ssim_loss_std(x, xhat):
+    mean_ssim_loss, ssim_values = ssim_loss(x, xhat)
+    return np.std(ssim_values)
 
 def get_mvnpdf(mean, cov):
 

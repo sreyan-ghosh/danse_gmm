@@ -78,15 +78,15 @@ def mse_loss_dB_std(x, xhat):
     noise_p = loss(xhat, x).mean((1,2))
     return (10*torch.log10(noise_p)).std()
 
-def psnr_loss(x, xhat, max_pixel_value=1.0):
+def psnr_loss(x, xhat, max_pixel_value=torch.tensor(1.0)): # Should be bigger for DANSE
     noise_p = mse_loss(xhat, x).mean((1,2))
-    psnr = 20 * torch.log10(max_pixel_value / torch.sqrt(noise_p))
+    psnr = 20 * torch.log10(max_pixel_value) -  20 * torch.log10(torch.sqrt(noise_p))
     return psnr.mean()
 
-def psnr_loss_std(x, xhat, max_pixel_value=1.0):
+def psnr_loss_std(x, xhat, max_pixel_value=torch.tensor(1.0)):
     noise_p = mse_loss(xhat, x).mean((1,2))
-    psnr = 20 * torch.log10(max_pixel_value / torch.sqrt(noise_p))
-    return psnr.std() 
+    psnr = 20 * torch.log10(max_pixel_value) -  20 * torch.log10(torch.sqrt(noise_p))
+    return psnr.std()
 
 def ssim_loss(x, xhat):
     x = x.cpu().numpy()

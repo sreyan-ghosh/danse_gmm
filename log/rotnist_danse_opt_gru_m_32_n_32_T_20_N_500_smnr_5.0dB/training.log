@@ -1,0 +1,45 @@
+------------------------------ Training begins --------------------------------- 
+
+Config: {'n_states': 32, 'n_obs': 32, 'mu_w': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+       0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_w': None, 'H': array([[1., 0., 0., ..., 0., 0., 0.],
+       [0., 1., 0., ..., 0., 0., 0.],
+       [0., 0., 1., ..., 0., 0., 0.],
+       ...,
+       [0., 0., 0., ..., 1., 0., 0.],
+       [0., 0., 0., ..., 0., 1., 0.],
+       [0., 0., 0., ..., 0., 0., 1.]]), 'mu_x0': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+       0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_x0': array([[1., 0., 0., ..., 0., 0., 0.],
+       [0., 1., 0., ..., 0., 0., 0.],
+       [0., 0., 1., ..., 0., 0., 0.],
+       ...,
+       [0., 0., 0., ..., 1., 0., 0.],
+       [0., 0., 0., ..., 0., 1., 0.],
+       [0., 0., 0., ..., 0., 0., 1.]]), 'batch_size': 64, 'rnn_type': 'gru', 'device': device(type='cuda', index=0), 'rnn_params_dict': {'gru': {'model_type': 'gru', 'input_size': 32, 'output_size': 32, 'n_hidden': 40, 'n_layers': 1, 'lr': 0.0001, 'num_epochs': 2000, 'min_delta': 0.05, 'n_hidden_dense': 64, 'device': device(type='cuda', index=0)}, 'rnn': {'model_type': 'gru', 'input_size': 32, 'output_size': 32, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'lstm': {'model_type': 'lstm', 'input_size': 32, 'output_size': 32, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}}} 
+
+No. of trainable parameters: 15664
+
+Epoch: 1/2000, Training NLL:1.212136865, Val. NLL:1.241644263, Val. MSE: 4.697600126, Time_Elapsed:0.8375 secs
+Epoch: 50/2000, Training NLL:0.541189273, Val. NLL:0.569527894, Val. MSE: 1.831243336, Time_Elapsed:14.0282 secs
+Epoch: 100/2000, Training NLL:0.485702485, Val. NLL:0.535428971, Val. MSE: 1.715743423, Time_Elapsed:27.6075 secs
+Epoch: 150/2000, Training NLL:0.435668156, Val. NLL:0.482529312, Val. MSE: 1.697810292, Time_Elapsed:41.3863 secs
+Epoch: 200/2000, Training NLL:0.373690779, Val. NLL:0.450960129, Val. MSE: 1.718215823, Time_Elapsed:55.2227 secs
+Epoch: 250/2000, Training NLL:0.313766042, Val. NLL:0.353403881, Val. MSE: 1.612448037, Time_Elapsed:68.9949 secs
+Epoch: 300/2000, Training NLL:0.257998712, Val. NLL:0.335927531, Val. MSE: 1.716465294, Time_Elapsed:80.5334 secs
+Epoch: 350/2000, Training NLL:0.201919255, Val. NLL:0.265171692, Val. MSE: 1.685843825, Time_Elapsed:89.4567 secs
+Epoch: 400/2000, Training NLL:0.147250911, Val. NLL:0.204770818, Val. MSE: 1.771842778, Time_Elapsed:98.4890 secs
+Epoch: 450/2000, Training NLL:0.092267910, Val. NLL:0.156985968, Val. MSE: 1.782550454, Time_Elapsed:107.5211 secs
+Epoch: 500/2000, Training NLL:0.045722927, Val. NLL:0.124132186, Val. MSE: 1.821573377, Time_Elapsed:116.5035 secs
+Epoch: 550/2000, Training NLL:0.006276325, Val. NLL:0.091100313, Val. MSE: 1.924533725, Time_Elapsed:125.5305 secs
+Epoch: 600/2000, Training NLL:-0.028185103, Val. NLL:0.042481665, Val. MSE: 1.932778239, Time_Elapsed:134.5418 secs
+Epoch: 650/2000, Training NLL:-0.057062472, Val. NLL:0.013772614, Val. MSE: 1.983698547, Time_Elapsed:143.5965 secs
+Epoch: 700/2000, Training NLL:-0.083860206, Val. NLL:-0.007374064, Val. MSE: 2.014289200, Time_Elapsed:152.4391 secs
+Epoch: 750/2000, Training NLL:-0.105664731, Val. NLL:-0.059273511, Val. MSE: 1.921821535, Time_Elapsed:161.4210 secs
+Epoch: 800/2000, Training NLL:-0.127651582, Val. NLL:-0.055814462, Val. MSE: 1.989833474, Time_Elapsed:170.5819 secs
+Epoch: 850/2000, Training NLL:-0.144645234, Val. NLL:-0.081708595, Val. MSE: 1.997155726, Time_Elapsed:179.6164 secs
+Consecutive iterations are:[885, 886, 887]
+Exit and Convergence reached after 3 iterations for relative change in NLL below :0.05
+Training convergence attained at Epoch: 887!
+
+Saving the best model at epoch=887, with training loss=-0.15670819580554962, validation loss=-0.08008791133761406
+------------------------------ Training ends --------------------------------- 
+

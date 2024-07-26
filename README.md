@@ -19,5 +19,11 @@ Things to do before Friday 26/7
     - [x] Decode Z_LS to obtain X_LS for comparison plots
 - [x] Implement PSNR and SSIM comparison plots
 - [ ] Modify `parameters_opt.py` and tweak rnn params
+- Look at the time schedule and what to do
 
 Meeting 26/7 notes
+- keep mse nmse for z, zhat also add for x, xhat
+- change plots to show x, xhat_ls, xhat_danse, show 10 and separate plots for each noise dB
+- tune parameters_opt 
+- try convergence criteria switch from nll to mse
+- try noise for -5, 0, 5, 10 dB

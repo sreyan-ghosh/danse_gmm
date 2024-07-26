@@ -630,3 +630,45 @@ Training convergence attained at Epoch: 1020!
 Saving the best model at epoch=1020, with training loss=-0.20186195770899454, validation loss=-0.13317570835351944
 ------------------------------ Training ends --------------------------------- 
 
+------------------------------ Training begins --------------------------------- 
+
+Config: {'n_states': 32, 'n_obs': 32, 'mu_w': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+       0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_w': None, 'H': array([[1., 0., 0., ..., 0., 0., 0.],
+       [0., 1., 0., ..., 0., 0., 0.],
+       [0., 0., 1., ..., 0., 0., 0.],
+       ...,
+       [0., 0., 0., ..., 1., 0., 0.],
+       [0., 0., 0., ..., 0., 1., 0.],
+       [0., 0., 0., ..., 0., 0., 1.]]), 'mu_x0': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+       0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_x0': array([[1., 0., 0., ..., 0., 0., 0.],
+       [0., 1., 0., ..., 0., 0., 0.],
+       [0., 0., 1., ..., 0., 0., 0.],
+       ...,
+       [0., 0., 0., ..., 1., 0., 0.],
+       [0., 0., 0., ..., 0., 1., 0.],
+       [0., 0., 0., ..., 0., 0., 1.]]), 'batch_size': 64, 'rnn_type': 'gru', 'device': device(type='cuda', index=0), 'rnn_params_dict': {'gru': {'model_type': 'gru', 'input_size': 32, 'output_size': 32, 'n_hidden': 40, 'n_layers': 1, 'lr': 0.0001, 'num_epochs': 2000, 'min_delta': 0.05, 'n_hidden_dense': 64, 'device': device(type='cuda', index=0)}, 'rnn': {'model_type': 'gru', 'input_size': 32, 'output_size': 32, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'lstm': {'model_type': 'lstm', 'input_size': 32, 'output_size': 32, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}}} 
+
+No. of trainable parameters: 15664
+
+Epoch: 1/2000, Training NLL:2.051242590, Val. NLL:2.015477419, Val. MSE: 2.371436000, Time_Elapsed:0.5439 secs
+Epoch: 50/2000, Training NLL:0.486575027, Val. NLL:0.516997039, Val. MSE: 0.779937357, Time_Elapsed:9.5219 secs
+Epoch: 100/2000, Training NLL:0.396575247, Val. NLL:0.426958054, Val. MSE: 0.739681214, Time_Elapsed:18.7055 secs
+Epoch: 150/2000, Training NLL:0.359696746, Val. NLL:0.396803632, Val. MSE: 0.706250936, Time_Elapsed:28.4439 secs
+Epoch: 200/2000, Training NLL:0.311162422, Val. NLL:0.355083078, Val. MSE: 0.696099281, Time_Elapsed:37.7961 secs
+Epoch: 250/2000, Training NLL:0.242105566, Val. NLL:0.273553699, Val. MSE: 0.686562121, Time_Elapsed:46.9241 secs
+Epoch: 300/2000, Training NLL:0.175457003, Val. NLL:0.212210387, Val. MSE: 0.647042602, Time_Elapsed:56.1582 secs
+Epoch: 350/2000, Training NLL:0.113996023, Val. NLL:0.152870856, Val. MSE: 0.679605007, Time_Elapsed:65.2336 secs
+Epoch: 400/2000, Training NLL:0.054466844, Val. NLL:0.098452494, Val. MSE: 0.679697126, Time_Elapsed:74.3692 secs
+Epoch: 450/2000, Training NLL:-0.009895510, Val. NLL:0.046669635, Val. MSE: 0.684389830, Time_Elapsed:83.6742 secs
+Epoch: 500/2000, Training NLL:-0.072220983, Val. NLL:-0.028549937, Val. MSE: 0.681992769, Time_Elapsed:92.8239 secs
+Epoch: 550/2000, Training NLL:-0.135013594, Val. NLL:-0.081401641, Val. MSE: 0.699862003, Time_Elapsed:101.9426 secs
+Epoch: 600/2000, Training NLL:-0.196458650, Val. NLL:-0.145629309, Val. MSE: 0.736141622, Time_Elapsed:111.0450 secs
+Epoch: 650/2000, Training NLL:-0.251667497, Val. NLL:-0.203301497, Val. MSE: 0.741091818, Time_Elapsed:120.2121 secs
+Epoch: 700/2000, Training NLL:-0.304336066, Val. NLL:-0.256119564, Val. MSE: 0.729965925, Time_Elapsed:129.3408 secs
+Consecutive iterations are:[711, 712, 713]
+Exit and Convergence reached after 3 iterations for relative change in NLL below :0.05
+Training convergence attained at Epoch: 713!
+
+Saving the best model at epoch=713, with training loss=-0.31604952613512677, validation loss=-0.2898482233285904
+------------------------------ Training ends --------------------------------- 
+

@@ -154,16 +154,6 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
     for i in range(Y.shape[0]):
         for j in range(Y.shape[1]):
             Z_LS[i,j,:] = (torch.pinverse(H_tensor[i]) @ Y[i,j,:].reshape((dy, 1))).reshape((dz,))
-            
-    xhat_ls = []   
-    for num_sample in range(Z_LS.shape[0]):
-        t_list = []
-        for t_sample in range(Z_LS.shape[1]):
-            elem = Z_LS[num_sample, t_sample]
-            x_hat = decode_data(model, elem, device) 
-            t_list.append(x_hat) 
-        xhat_ls.append(t_list) 
-    xhat_ls = torch.stack([torch.stack(t_list) for t_list in xhat_ls])
 
     if "partial" in evaluation_mode:
         if "low" in evaluation_mode:
@@ -222,60 +212,73 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
         X.append(torch.stack(row).to(device))
 
     X = torch.stack(X).to(device)
-            
-    nmse_ls = nmse_loss(Z[:,:,:], Z_LS[:,0:,:])
-    nmse_ls_std = nmse_loss_std(Z[:,:,:], Z_LS[:,0:,:])
-    
-    #nmse_ekf = nmse_loss(Z[:,:,:], X_estimated_ekf[:,:,:])
-    #nmse_ekf_std = nmse_loss_std(Z[:,:,:], X_estimated_ekf[:,:,:])
-    #nmse_ukf = nmse_loss(Z[:,:,:], X_estimated_ukf[:,:,:])
-    #nmse_ukf_std = nmse_loss_std(Z[:,:,:], X_estimated_ukf[:,:,:])
-    nmse_danse = nmse_loss(Z[:,:,:], Z_estimated_filtered[:,0:,:])
-    nmse_danse_std = nmse_loss_std(Z[:,:,:], Z_estimated_filtered[:,0:,:])
-    nmse_danse_pred = nmse_loss(Z[:,:,:], Z_estimated_pred[:,0:,:])
-    nmse_danse_pred_std = nmse_loss_std(Z[:,:,:], Z_estimated_pred[:,0:,:])
-    #nmse_knet = None #nmse_loss(Z[:,:,:], Z_estimated_filtered_knet[:,0:,:])
-    #nmse_knet_std = None #nmse_loss_std(Z[:,:,:], Z_estimated_filtered_knet[:,0:,:])
-    
-    mse_dB_ls = mse_loss_dB(Z[:,:,:], Z_LS[:,0:,:])
-    mse_dB_ls_std = mse_loss_dB_std(Z[:,:,:], Z_LS[:,0:,:])
-    #mse_dB_ekf = mse_loss_dB(Z[:,:,:], X_estimated_ekf[:,:,:])
-    #mse_dB_ekf_std = mse_loss_dB_std(Z[:,:,:], X_estimated_ekf[:,:,:])
-    #mse_dB_ukf = mse_loss_dB(Z[:,:,:], X_estimated_ukf[:,:,:])
-    #mse_dB_ukf_std = mse_loss_dB_std(Z[:,:,:], X_estimated_ukf[:,:,:])
-    mse_dB_danse = mse_loss_dB(Z[:,:,:], Z_estimated_filtered[:,0:,:])
-    mse_dB_danse_std = mse_loss_dB_std(Z[:,:,:], Z_estimated_filtered[:,0:,:])
-    mse_dB_danse_pred = mse_loss_dB(Z[:,:,:], Z_estimated_pred[:,0:,:])
-    mse_dB_danse_pred_std = mse_loss_dB_std(Z[:,:,:], Z_estimated_pred[:,0:,:])
-    #mse_dB_knet = None #mse_loss_dB(Z[:,:,:], Z_estimated_filtered_knet[:,0:,:])
-    #mse_dB_knet_std = None #mse_loss_dB_std(Z[:,:,:], Z_estimated_filtered_knet[:,0:,:])
-    
-    print("DANSE - MSE LOSS:",mse_dB_danse, "[dB]")
-    print("DANSE - MSE STD:", mse_dB_danse_std, "[dB]")
 
-    #print("KNET - MSE LOSS:", mse_dB_knet, "[dB]")
-    #print("KNET - MSE STD:", mse_dB_knet_std, "[dB]")
+    # Run decoding
+#-------------------------------------------------------------------------------
 
-    print("LS, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB]".format(N_test, nmse_ls, nmse_ls_std, mse_dB_ls, mse_dB_ls_std))
-    #print("ekf, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_ekf, nmse_ekf_std, mse_dB_ekf, mse_dB_ekf_std, time_elapsed_ekf))
-    #print("ukf, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_ukf, nmse_ukf_std, mse_dB_ukf, mse_dB_ukf_std, time_elapsed_ukf))
-    print("danse (pred.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_pred, nmse_danse_pred_std, mse_dB_danse_pred, mse_dB_danse_pred_std, time_elapsed_danse))
-    print("danse (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse, nmse_danse_std, mse_dB_danse, mse_dB_danse_std, time_elapsed_danse))
-    #print("knet (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_knet, nmse_knet_std, mse_dB_knet, mse_dB_knet_std, time_elapsed_knet))
+    xhat_danse = []   
+    for num_sample in range(post_mean_z_hat.shape[0]):
+        t_list = []
+        for t_sample in range(post_mean_z_hat.shape[1]):
+            elem = post_mean_z_hat[num_sample, t_sample]
+            x_hat = decode_data(model, elem, device) # x_hat = 784
+            t_list.append(x_hat) 
+        xhat_danse.append(t_list) # xhat_arr len = 100
+    
+    recon_img_dict[str(smnr_dB)] = xhat_danse
+    recon_img_dict["dataZ"] = test_data_dict_i["Z"]
+    xhat_danse = torch.stack([torch.stack(t_list) for t_list in xhat_danse])
+
+    xhat_ls = []   
+    for num_sample in range(Z_LS.shape[0]):
+        t_list = []
+        for t_sample in range(Z_LS.shape[1]):
+            elem = Z_LS[num_sample, t_sample]
+            x_hat = decode_data(model, elem, device) 
+            t_list.append(x_hat) 
+        xhat_ls.append(t_list) 
+    xhat_ls = torch.stack([torch.stack(t_list) for t_list in xhat_ls])
+
+#-----------------------------------------------------------------------------------
+    # NMSE
+    nmse_ls_z = nmse_loss(Z, Z_LS)
+    nmse_ls_z_std = nmse_loss_std(Z, Z_LS)
+    nmse_ls_x = nmse_loss(X, xhat_ls)
+    nmse_ls_x_std = nmse_loss_std(X, xhat_ls)
+    
+    nmse_danse_z = nmse_loss(Z, post_mean_z_hat)
+    nmse_danse_z_std = nmse_loss_std(Z, post_mean_z_hat)
+    nmse_danse_x = nmse_loss(X, xhat_danse)
+    nmse_danse_x_std = nmse_loss_std(X, xhat_danse)
+
+    # MSE
+    mse_dB_ls_z = mse_loss_dB(Z, Z_LS)
+    mse_dB_ls_z_std = mse_loss_dB_std(Z, Z_LS)
+    mse_dB_ls_x = mse_loss_dB(X, xhat_ls)
+    mse_dB_ls_x_std = mse_loss_dB_std(X, xhat_ls)
+
+    mse_dB_danse_z = mse_loss_dB(Z, post_mean_z_hat)
+    mse_dB_danse_z_std = mse_loss_dB_std(Z, post_mean_z_hat)
+    mse_dB_danse_x = mse_loss_dB(X, xhat_danse)
+    mse_dB_danse_x_std = mse_loss_dB_std(X, xhat_danse)
+    
+    # Log file print
+    print("DANSE - MSE LOSS:",mse_dB_danse_x, "[dB]")
+    print("DANSE - MSE STD:", mse_dB_danse_x_std, "[dB]")
+
+    print("LS, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB]".format(N_test, nmse_ls_x, nmse_ls_x_std, mse_dB_ls_x, mse_dB_ls_x_std))
+    # print("danse (pred.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_pred_x, nmse_danse_pred_std, mse_dB_danse_pred, mse_dB_danse_pred_std, time_elapsed_danse))
+    print("danse (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_x, nmse_danse_x_std, mse_dB_danse_x, mse_dB_danse_x_std, time_elapsed_danse))
 
     # System console print
-    print("LS, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB]".format(N_test, nmse_ls, nmse_ls_std, mse_dB_ls, mse_dB_ls_std), file=orig_stdout)
-    #print("ekf, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {} secs".format(N_test, nmse_ekf, nmse_ekf_std, mse_dB_ekf, mse_dB_ekf_std, time_elapsed_ekf), file=orig_stdout)
-    #print("ukf, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {} secs".format(N_test, nmse_ukf, nmse_ukf_std, mse_dB_ukf, mse_dB_ukf_std, time_elapsed_ukf), file=orig_stdout)
-    print("danse (pred.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {} secs".format(N_test, nmse_danse_pred, nmse_danse_pred_std, mse_dB_danse_pred, mse_dB_danse_pred_std, time_elapsed_danse), file=orig_stdout)
-    print("danse (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {} secs".format(N_test, nmse_danse, nmse_danse_std, mse_dB_danse, mse_dB_danse_std, time_elapsed_danse), file=orig_stdout)
-    #print("knet (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_knet, nmse_knet_std, mse_dB_knet, mse_dB_knet_std, time_elapsed_knet), file=orig_stdout)
-
-
     sys.stdout = orig_stdout
-    return nmse_danse, nmse_danse_std, nmse_ls, nmse_ls_std, \
-        mse_dB_danse, mse_dB_danse_std, mse_dB_ls, mse_dB_ls_std, \
-        time_elapsed_danse, smnr_dB_test, post_mean_z_hat, test_data_dict, xhat_ls, X
+    print("LS, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB]".format(N_test, nmse_ls_x, nmse_ls_x_std, mse_dB_ls_x, mse_dB_ls_x_std))
+    # print("danse (pred.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_pred_x, nmse_danse_pred_std, mse_dB_danse_pred, mse_dB_danse_pred_std, time_elapsed_danse))
+    print("danse (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_x, nmse_danse_x_std, mse_dB_danse_x, mse_dB_danse_x_std, time_elapsed_danse))
+
+    return nmse_danse_x, nmse_danse_x_std, nmse_ls_x, nmse_ls_x_std, nmse_ls_z, nmse_ls_z_std, nmse_danse_z, nmse_danse_z_std, \
+        mse_dB_danse_x, mse_dB_danse_x_std, mse_dB_ls_x, mse_dB_ls_x_std, mse_dB_ls_z, mse_dB_ls_z_std, mse_dB_danse_z, mse_dB_danse_z_std,\
+        time_elapsed_danse, test_data_dict, xhat_ls, xhat_danse, X
 
 
 if __name__ == "__main__":
@@ -319,45 +322,42 @@ if __name__ == "__main__":
 
     os.makedirs('./figs/rotnist_figs/{}'.format(evaluation_mode), exist_ok=True)
 
-    smnr_dB_arr = np.array([0.0,10.0,20.0])
-    #smnr_dB_arr = np.array([20.0])
+    smnr_dB_arr = np.array([-5.0, 0.0, 5.0, 10.0])
 
-    nmse_ls_arr = np.zeros((len(smnr_dB_arr,)))
-    #nmse_ekf_arr = np.zeros((len(smnr_dB_arr,)))
-    #nmse_ukf_arr = np.zeros((len(smnr_dB_arr,)))
-    nmse_danse_arr = np.zeros((len(smnr_dB_arr,)))
-    #nmse_knet_arr = np.zeros((len(smnr_dB_arr,)))
-    psnr_danse_arr = np.zeros((len(smnr_dB_arr,)))
-    psnr_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
-    ssim_danse_arr = np.zeros((len(smnr_dB_arr,)))
-    ssim_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
+    nmse_ls_x_arr = np.zeros((len(smnr_dB_arr,)))
+    nmse_ls_z_arr = np.zeros((len(smnr_dB_arr,)))
+    nmse_ls_x_std_arr = np.zeros((len(smnr_dB_arr,)))
+    nmse_ls_z_std_arr = np.zeros((len(smnr_dB_arr,)))
+
+    nmse_danse_x_arr = np.zeros((len(smnr_dB_arr,)))
+    nmse_danse_z_arr = np.zeros((len(smnr_dB_arr,)))
+    nmse_danse_x_std_arr = np.zeros((len(smnr_dB_arr,)))
+    nmse_danse_z_std_arr = np.zeros((len(smnr_dB_arr,)))
+
     psnr_ls_arr = np.zeros((len(smnr_dB_arr,)))
     psnr_ls_std_arr = np.zeros((len(smnr_dB_arr,)))
+    psnr_danse_arr = np.zeros((len(smnr_dB_arr,)))
+    psnr_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
+    
+    ssim_danse_arr = np.zeros((len(smnr_dB_arr,)))
+    ssim_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
     ssim_ls_arr = np.zeros((len(smnr_dB_arr,)))
     ssim_ls_std_arr = np.zeros((len(smnr_dB_arr,)))
-    nmse_ls_std_arr = np.zeros((len(smnr_dB_arr,)))
-    #nmse_ekf_std_arr = np.zeros((len(smnr_dB_arr,)))
-    #nmse_ukf_std_arr = np.zeros((len(smnr_dB_arr,)))
-    nmse_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
-    #nmse_knet_std_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_ls_dB_arr = np.zeros((len(smnr_dB_arr,)))
-    #mse_ekf_dB_arr = np.zeros((len(smnr_dB_arr,)))
-    #mse_ukf_dB_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_danse_dB_arr = np.zeros((len(smnr_dB_arr,)))
-    #mse_knet_dB_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_ls_dB_std_arr = np.zeros((len(smnr_dB_arr,)))
-    #mse_ekf_dB_std_arr = np.zeros((len(smnr_dB_arr,)))
-    #mse_ukf_dB_std_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_danse_dB_std_arr = np.zeros((len(smnr_dB_arr,)))
-    #mse_knet_dB_std_arr = np.zeros((len(smnr_dB_arr,)))
-    #t_ekf_arr = np.zeros((len(smnr_dB_arr,)))
-    #t_ukf_arr = np.zeros((len(smnr_dB_arr,)))
+
+    mse_ls_x_arr = np.zeros((len(smnr_dB_arr,)))
+    mse_ls_z_arr = np.zeros((len(smnr_dB_arr,)))
+    mse_ls_x_std_arr = np.zeros((len(smnr_dB_arr,)))
+    mse_ls_z_std_arr = np.zeros((len(smnr_dB_arr,)))
+
+    mse_danse_x_arr = np.zeros((len(smnr_dB_arr,)))
+    mse_danse_z_arr = np.zeros((len(smnr_dB_arr,)))
+    mse_danse_x_std_arr = np.zeros((len(smnr_dB_arr,)))
+    mse_danse_z_std_arr = np.zeros((len(smnr_dB_arr,)))
+
     t_danse_arr = np.zeros((len(smnr_dB_arr,)))
-    #t_knet_arr = np.zeros((len(smnr_dB_arr,)))
     snr_arr = np.zeros((len(smnr_dB_arr,)))
 
     model_file_saved_dict = {}
-    #model_file_saved_dict_knet = {}
 
     for smnr_dB in smnr_dB_arr:
         model_file_saved_dict["{}dB".format(smnr_dB)] = glob.glob(r"./models/*rotnist_danse_opt_*n_32_T_{}_N_{}_smnr_{}dB*/*best*".format(T_train, N_train, smnr_dB))[-1]
@@ -391,38 +391,26 @@ if __name__ == "__main__":
         test_data_file_i = test_data_file_dict['{}dB'.format(smnr_dB)]
         #model_file_saved_knet_i = model_file_saved_dict_knet['{}dB'.format(smnr_dB)]
 
-        nmse_danse_i, nmse_danse_i_std, nmse_ls_i, nmse_ls_i_std, \
-            mse_dB_danse_i, mse_dB_danse_std_i, mse_dB_ls_i, mse_dB_ls_std_i, \
-            time_elapsed_danse_i, smnr_dB_i, post_mean_z_hat_i, test_data_dict_i, xhat_ls_i, X = test_rotnist(device=device, 
-            model_file_saved=model_file_saved_i, test_data_file=test_data_file_i, test_logfile=test_logfile, 
-            evaluation_mode=evaluation_mode, bias=bias, p=p)
+        nmse_danse_x, nmse_danse_x_std, nmse_ls_x, nmse_ls_x_std, nmse_ls_z, nmse_ls_z_std, nmse_danse_z, nmse_danse_z_std, \
+        mse_dB_danse_x, mse_dB_danse_x_std, mse_dB_ls_x, mse_dB_ls_x_std, mse_dB_ls_z, mse_dB_ls_z_std, mse_dB_danse_z, mse_dB_danse_z_std,\
+        time_elapsed_danse, test_data_dict_i, xhat_ls_i, xhat_danse_i, X = test_rotnist(device=device, 
+        model_file_saved=model_file_saved_i, test_data_file=test_data_file_i, test_logfile=test_logfile, 
+        evaluation_mode=evaluation_mode, bias=bias, p=p)
 
-# Run decoding
-#-------------------------------------------------------------------------------
-
-        xhat_arr = []   
-        for num_sample in range(post_mean_z_hat_i.shape[0]):
-            t_list = []
-            for t_sample in range(post_mean_z_hat_i.shape[1]):
-                elem = post_mean_z_hat_i[num_sample, t_sample]
-                x_hat = decode_data(model, elem, device) # x_hat = 784
-                t_list.append(x_hat) 
-            xhat_arr.append(t_list) # xhat_arr len = 100
-        
-        recon_img_dict[str(smnr_dB)] = xhat_arr
         recon_img_dict["dataZ"] = test_data_dict_i["Z"]
-        xhat_arr = torch.stack([torch.stack(t_list) for t_list in xhat_arr])
+        recon_img_dict[f"DANSE {str(smnr_dB)}"] = xhat_danse_i
+        recon_img_dict[f"LS {str(smnr_dB)}"] = xhat_ls_i
 
-# PSNR and SSIM
-#-------------------------------------------------------------------------------
-        psnr_danse_i = psnr_loss(X, xhat_arr)
+        # PSNR and SSIM
+        #-------------------------------------------------------------------------------
+        psnr_danse_i = psnr_loss(X, xhat_danse_i)
         psnr_danse_arr[i] = psnr_danse_i
-        psnr_danse_std_i = psnr_loss_std(X, xhat_arr)
+        psnr_danse_std_i = psnr_loss_std(X, xhat_danse_i)
         psnr_danse_std_arr[i] = psnr_danse_std_i
 
-        ssim_mean_danse_i, ssim_values_danse_i = ssim_loss(X, xhat_arr)
+        ssim_mean_danse_i, ssim_values_danse_i = ssim_loss(X, xhat_danse_i)
         ssim_danse_arr[i] = ssim_mean_danse_i
-        ssim_danse_std_i = ssim_loss_std(X, xhat_arr)
+        ssim_danse_std_i = ssim_loss_std(X, xhat_danse_i)
         ssim_danse_std_arr[i] = ssim_danse_std_i
         
         psnr_ls_i = psnr_loss(X, xhat_ls_i)
@@ -435,40 +423,36 @@ if __name__ == "__main__":
         ssim_ls_std_i = ssim_loss_std(X, xhat_ls_i)
         ssim_ls_std_arr[i] = ssim_ls_std_i
 
-#-------------------------------------------------------------------------------
+        #-------------------------------------------------------------------------------
         # Store the NMSE values and std devs of the NMSE values
-        nmse_ls_arr[i] = nmse_ls_i.item()
-        #nmse_ekf_arr[i] = nmse_ekf_i.numpy().item()
-        #nmse_ukf_arr[i] = nmse_ukf_i.numpy().item()
-        nmse_danse_arr[i] = nmse_danse_i.item()
-        #nmse_knet_arr[i] = nmse_knet_i.numpy().item()
-        nmse_ls_std_arr[i] = nmse_ls_i_std.item()
-        #nmse_ekf_std_arr[i] = nmse_ekf_i_std.numpy().item()
-        #nmse_ukf_std_arr[i] = nmse_ukf_i_std.numpy().item()
-        nmse_danse_std_arr[i] = nmse_danse_i_std.item()
-        #nmse_knet_std_arr[i] = nmse_knet_std_i.numpy().item()
+        nmse_ls_z_arr[i] = nmse_ls_z.item()
+        nmse_ls_z_std_arr[i] = nmse_ls_z_std.item()
+        nmse_ls_x_arr[i] = nmse_ls_x.item()
+        nmse_ls_x_std_arr[i] = nmse_ls_x_std.item()
+        
+        nmse_danse_z_arr[i] = nmse_danse_z.item()
+        nmse_danse_z_std_arr[i] = nmse_danse_z_std.item()
+        nmse_danse_x_arr[i] = nmse_danse_x.item()
+        nmse_danse_x_std_arr[i] = nmse_danse_x_std.item()
         
         # Store the MSE values and std devs of the MSE values (in dB)
-        mse_ls_dB_arr[i] = mse_dB_ls_i.item()
-        #mse_ekf_dB_arr[i] = mse_dB_ekf_i.numpy().item()
-        #mse_ukf_dB_arr[i] = mse_dB_ukf_i.numpy().item()
-        mse_danse_dB_arr[i] = mse_dB_danse_i.item()
-        #mse_knet_dB_arr[i] = mse_dB_knet_i.numpy().item()
-        mse_ls_dB_std_arr[i] = mse_dB_ls_std_i.item()
-        #mse_ekf_dB_std_arr[i] = mse_dB_ekf_std_i.numpy().item()
-        #mse_ukf_dB_std_arr[i] = mse_dB_ukf_std_i.numpy().item()
-        mse_danse_dB_std_arr[i] = mse_dB_danse_std_i.item()
-        #mse_knet_dB_std_arr[i] = mse_dB_knet_std_i.numpy().item()
+        mse_ls_z_arr[i] = mse_dB_ls_z.item()
+        mse_ls_z_std_arr[i] = mse_dB_ls_z_std.item()
+        mse_ls_x_arr[i] = mse_dB_ls_x.item()
+        mse_ls_x_std_arr[i] = mse_dB_ls_x_std.item()
+    
+        mse_danse_z_arr[i] = mse_dB_danse_z.item()
+        mse_danse_z_std_arr[i] = mse_dB_danse_z_std.item()
+        mse_danse_x_arr[i] = mse_dB_danse_x.item()
+        mse_danse_x_std_arr[i] = mse_dB_danse_x_std.item()
 
         # Store the inference times
-        #t_ekf_arr[i] = time_elapsed_ekf_i
-        #t_ukf_arr[i] = time_elapsed_ukf_i
-        t_danse_arr[i] = time_elapsed_danse_i
-        #t_knet_arr[i] = time_elapsed_knet_i
+        t_danse_arr[i] = time_elapsed_danse
     
+    # Need to change plotting logic to accommodate origX, reconZ, danseXhat, lsXhat in one file for each SMNR
     with torch.no_grad():
         with PdfPages('reconstructed_images_danse.pdf') as pdf:
-            keys = ['dataZ', '0.0', '10.0', '20.0']
+            keys = recon_img_dict.keys()
             num_cols = X.shape[1]  # Number of columns to display
             num_rows = len(keys) + 1  # Number of rows, including X
 
@@ -511,61 +495,70 @@ if __name__ == "__main__":
     print("Saved reconstructed images to PDF.")
     
     test_stats = {}
-    #test_stats['UKF_mean_nmse'] = nmse_ukf_arr
-    #test_stats['EKF_mean_nmse'] = nmse_ekf_arr
-    test_stats['DANSE_mean_nmse'] = nmse_danse_arr
-    #test_stats['KNET_mean_nmse'] = nmse_knet_arr
-    #test_stats['UKF_std_nmse'] = nmse_ukf_std_arr
-    #test_stats['EKF_std_nmse'] = nmse_ekf_std_arr
-    test_stats['DANSE_std_nmse'] = nmse_danse_std_arr
-    #test_stats['KNET_std_nmse'] = nmse_knet_std_arr
-    test_stats['LS_mean_nmse'] = nmse_ls_arr
-    test_stats['LS_std_nmse'] = nmse_ls_std_arr
+
+    test_stats['DANSE_mean_nmse_x'] = nmse_danse_x_arr
+    test_stats['DANSE_mean_nmse_z'] = nmse_danse_z_arr
+    test_stats['LS_mean_nmse_x'] = nmse_ls_x_arr
+    test_stats['LS_mean_nmse_z'] = nmse_ls_z_arr
+    
+    test_stats['DANSE_std_nmse_x'] = nmse_danse_x_std_arr
+    test_stats['DANSE_std_nmse_z'] = nmse_danse_z_std_arr
+    test_stats['LS_std_nmse_x'] = nmse_ls_x_std_arr
+    test_stats['LS_std_nmse_z'] = nmse_ls_z_std_arr
 
     test_stats["DANSE_mean_psnr"] = psnr_danse_arr
     test_stats["DANSE_std_psnr"] = psnr_danse_std_arr
-    test_stats["DANSE_mean_ssim"] = ssim_danse_arr
-    test_stats["DANSE_std_ssim"] = ssim_danse_std_arr
     test_stats["LS_mean_psnr"] = psnr_ls_arr
     test_stats["LS_std_psnr"] = psnr_ls_std_arr
+    
+    test_stats["DANSE_mean_ssim"] = ssim_danse_arr
+    test_stats["DANSE_std_ssim"] = ssim_danse_std_arr
     test_stats["LS_mean_ssim"] = ssim_ls_arr
     test_stats["LS_std_ssim"] = ssim_ls_std_arr
-    #test_stats['EKF_mean_mse'] = mse_ekf_dB_arr
-    #test_stats['UKF_mean_mse'] = mse_ukf_dB_arr
-    test_stats['DANSE_mean_mse'] = mse_danse_dB_arr
-    #test_stats['KNET_mean_mse'] = mse_knet_dB_arr
-    #test_stats['EKF_std_mse'] = mse_ekf_dB_std_arr
-    #test_stats['UKF_std_mse'] = mse_ukf_dB_std_arr
-    test_stats['DANSE_std_mse'] = mse_danse_dB_std_arr
-    #test_stats['KNET_std_mse'] = mse_knet_dB_std_arr
-    test_stats['LS_mean_mse'] = mse_ls_dB_arr
-    test_stats['LS_std_mse'] = mse_ls_dB_std_arr
 
-    #test_stats['UKF_time'] = t_ukf_arr
-    #test_stats['EKF_time'] = t_ekf_arr
+    test_stats['DANSE_mean_mse_x'] = mse_danse_x_arr
+    test_stats['DANSE_mean_mse_z'] = mse_danse_z_arr
+    test_stats['LS_mean_mse_x'] = mse_ls_x_arr
+    test_stats['LS_mean_mse_z'] = mse_ls_z_arr
+    
+    test_stats['DANSE_std_mse_x'] = mse_danse_x_std_arr
+    test_stats['DANSE_std_mse_z'] = mse_danse_z_std_arr    
+    test_stats['LS_std_mse_x'] = mse_ls_x_std_arr    
+    test_stats['LS_std_mse_z'] = mse_ls_z_std_arr
+    
     test_stats['DANSE_time'] = t_danse_arr
-    #test_stats['KNET_time'] = t_knet_arr
+
     test_stats['SMNR'] = smnr_dB_arr
     
     with open(test_jsonfile, 'w') as f:
         f.write(json.dumps(test_stats, cls=NDArrayEncoder, indent=2))
 
-    # Plotting the NMSE Curve
+    # Plotting the NMSE Curve for X
     plt.rcParams['font.family'] = 'serif'
     plt.figure()
-    plt.errorbar(smnr_dB_arr, nmse_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
-    #plt.errorbar(smnr_dB_arr, nmse_ekf_arr, fmt='rd--',  yerr=nmse_ekf_std_arr, linewidth=1.5, label="EKF")
-    #plt.errorbar(smnr_dB_arr, nmse_ukf_arr, fmt='ko-',  yerr=nmse_ukf_std_arr, linewidth=1.5, label="UKF")
-    plt.errorbar(smnr_dB_arr, nmse_danse_arr, fmt='b*-', yerr=nmse_danse_std_arr, linewidth=2.0, label="DANSE")
-    #plt.errorbar(smnr_dB_arr, nmse_knet_arr, fmt='ys-', yerr=nmse_knet_std_arr,  linewidth=1.0, label="KalmanNet")
+    plt.errorbar(smnr_dB_arr, nmse_ls_x_arr, fmt='gp-.', yerr=nmse_ls_x_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, nmse_danse_x_arr, fmt='b*-', yerr=nmse_danse_x_std_arr, linewidth=2.0, label="DANSE")
+    plt.xlabel('SMNR (in dB)')
+    plt.ylabel('NMSE (in dB)')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    tikzplotlib.save('./figs/rotnist_figs/{}/NMSE_vs_SMNR_X_Rotnist.tex'.format(evaluation_mode))
+    plt.savefig('./figs/rotnist_figs/{}/NMSE_vs_SMNR_X_Rotnist.pdf'.format(evaluation_mode))
+    
+    # Plotting the NMSE Curve for Z
+    plt.rcParams['font.family'] = 'serif'
+    plt.figure()
+    plt.errorbar(smnr_dB_arr, nmse_ls_z_arr, fmt='gp-.', yerr=nmse_ls_z_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, nmse_danse_z_arr, fmt='b*-', yerr=nmse_danse_z_std_arr, linewidth=2.0, label="DANSE")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('NMSE (in dB)')
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
     #plt.subplot(212)
-    tikzplotlib.save('./figs/rotnist_figs/{}/NMSE_vs_SMNR_Rotnist.tex'.format(evaluation_mode))
-    plt.savefig('./figs/rotnist_figs/{}/NMSE_vs_SMNR_Rotnist.pdf'.format(evaluation_mode))
+    tikzplotlib.save('./figs/rotnist_figs/{}/NMSE_vs_SMNR_Z_Rotnist.tex'.format(evaluation_mode))
+    plt.savefig('./figs/rotnist_figs/{}/NMSE_vs_SMNR_Z_Rotnist.pdf'.format(evaluation_mode))
 
     # Plotting the PSNR Curve
     plt.rcParams['font.family'] = 'serif'
@@ -597,39 +590,35 @@ if __name__ == "__main__":
 
     # Plotting the Time-elapsed Curve
     plt.figure()
-    #plt.subplot(211)
-    #plt.plot(smnr_dB_arr, t_ekf_arr, 'rd--', linewidth=1.5, label="EKF")
-    #plt.plot(smnr_dB_arr, t_ukf_arr, 'ks--', linewidth=1.5, label="UKF")
     plt.plot(smnr_dB_arr, t_danse_arr, 'bo-', linewidth=2.0, label="DANSE")
-    #plt.plot(smnr_dB_arr, t_knet_arr, 'ys-', linewidth=1.0, label="KalmanNet")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('Inference time (in s)')
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
-    #tikzplotlib.save('./figs/LorenzModel/{}/InferTime_vs_SMNR_Lorenz_w_knet.tex'.format(evaluation_mode))
-    #plt.savefig('./figs/LorenzModel/{}/InferTime_vs_SMNR_Lorenz_w_knet.pdf'.format(evaluation_mode))
     tikzplotlib.save('./figs/rotnist_figs/{}/InferTime_vs_SMNR_Rotnist.tex'.format(evaluation_mode)) # Original
     plt.savefig('./figs/rotnist_figs/{}/InferTime_vs_SMNR_Rotnist.pdf'.format(evaluation_mode)) # Original
 
-
-
-    # Plotting the MSE Curve
+    # Plotting the MSE Curve for X
     plt.figure()
-    plt.errorbar(smnr_dB_arr, mse_ls_dB_arr, fmt='gp-.', yerr=mse_ls_dB_std_arr,  linewidth=1.5, label="LS")
-    #plt.errorbar(smnr_dB_arr, mse_ekf_dB_arr, fmt='rd--',  yerr=mse_ekf_dB_std_arr, linewidth=1.5, label="EKF")
-    #plt.errorbar(smnr_dB_arr, mse_ukf_dB_arr, fmt='ko-',  yerr=mse_ukf_dB_std_arr, linewidth=1.5, label="UKF")
-    plt.errorbar(smnr_dB_arr, mse_danse_dB_arr, fmt='b*-', yerr=mse_danse_dB_std_arr, linewidth=2.0, label="DANSE")
-    #plt.errorbar(smnr_dB_arr, mse_knet_dB_arr, fmt='ys-', yerr=mse_knet_dB_std_arr,  linewidth=1.0, label="KalmanNet")
+    plt.errorbar(smnr_dB_arr, mse_ls_x_arr, fmt='gp-.', yerr=mse_ls_x_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, mse_danse_x_arr, fmt='b*-', yerr=mse_danse_x_std_arr, linewidth=2.0, label="DANSE")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('MSE (in dB)')
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
-    #plt.subplot(212)
-    #tikzplotlib.save('./figs/LorenzModel/{}/MSE_vs_SMNR_Lorenz_w_knet.tex'.format(evaluation_mode))
-    #plt.savefig('./figs/LorenzModel/{}/MSE_vs_SMNR_Lorenz_w_knet.pdf'.format(evaluation_mode))
-    tikzplotlib.save('./figs/rotnist_figs/{}/MSE_vs_SMNR_Rotnist.tex'.format(evaluation_mode)) # Original
-    plt.savefig('./figs/rotnist_figs/{}/MSE_vs_SMNR_Rotnist.pdf'.format(evaluation_mode)) # Original
+    tikzplotlib.save('./figs/rotnist_figs/{}/MSE_vs_SMNR_X_Rotnist.tex'.format(evaluation_mode)) # Original
+    plt.savefig('./figs/rotnist_figs/{}/MSE_vs_SMNR_X_Rotnist.pdf'.format(evaluation_mode)) # Original
 
-    #plt.show()
+    # Plotting the MSE Curve for Z
+    plt.figure()
+    plt.errorbar(smnr_dB_arr, mse_ls_z_arr, fmt='gp-.', yerr=mse_ls_z_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, mse_danse_z_arr, fmt='b*-', yerr=mse_danse_z_std_arr, linewidth=2.0, label="DANSE")
+    plt.xlabel('SMNR (in dB)')
+    plt.ylabel('MSE (in dB)')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    tikzplotlib.save('./figs/rotnist_figs/{}/MSE_vs_SMNR_Z_Rotnist.tex'.format(evaluation_mode)) # Original
+    plt.savefig('./figs/rotnist_figs/{}/MSE_vs_SMNR_Z_Rotnist.pdf'.format(evaluation_mode)) # Original

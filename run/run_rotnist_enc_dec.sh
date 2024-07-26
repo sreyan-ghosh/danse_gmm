@@ -56,7 +56,7 @@ if [ "$danse_mode" == "train_danse" ]; then
 
     # Run the noise process 3 times
     if [ "$mode" == "noise" ]; then
-        for smnr_dB in 0.0 10.0 20.0
+        for smnr_dB in -5.0 0.0 5.0 10.0
         do
             ${PYTHON} ${script_name} \
             --output_path ${output_path} \
@@ -95,7 +95,7 @@ if [ "$danse_mode" == "test_danse" ]; then
 
     # Run the noise process 3 times
     if [ "$mode" == "noise" ]; then
-        for smnr_dB in 0.0 10.0 20.0
+        for smnr_dB in -5.0 0.0 5.0 10.0
         do
             ${PYTHON} ${script_name} \
             --output_path ${output_path} \
@@ -114,7 +114,7 @@ if [ "$danse_mode" == "test_danse" ]; then
 fi
 
 if [ "$mode" == "decode" ]; then
-    for smnr_dB in 0.0 10.0 20.0
+    for smnr_dB in -5.0 0.0 5.0 10.0
     do
         ${PYTHON} ${script_name} \
         --output_path ${output_path} \

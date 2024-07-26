@@ -40,7 +40,7 @@ output_path="./data/encoded_noise_data/train_data" # Rotnist Update
 # RNN model type (e.g. GRU / LSTM)
 rnn_model_type="gru"
 
-for smnr_dB in 0.0 10.0 20.0
+for smnr_dB in -5.0 0.0 5.0 10.0
 do
 	${PYTHON} ${script_name} \
 	--mode train \

@@ -1,0 +1,33 @@
+% This file was created with tikzplotlib v0.10.1.
+\begin{tikzpicture}
+
+\definecolor{darkgray176}{RGB}{176,176,176}
+\definecolor{lightgray204}{RGB}{204,204,204}
+
+\begin{axis}[
+legend cell align={left},
+legend style={fill opacity=0.8, draw opacity=1, text opacity=1, draw=lightgray204},
+tick align=outside,
+tick pos=left,
+x grid style={darkgray176},
+xlabel={SMNR (in dB)},
+xmajorgrids,
+xmin=-5.75, xmax=10.75,
+xtick style={color=black},
+y grid style={darkgray176},
+ylabel={Inference time (in s)},
+ymajorgrids,
+ymin=0.00942064765840769, ymax=0.0106255007907748,
+ytick style={color=black}
+]
+\addplot [thick, blue, mark=*, mark size=3, mark options={solid}]
+table {%
+-5 0.0105707347393036
+0 0.00952041521668434
+5 0.00947541370987892
+10 0.00986015796661377
+};
+\addlegendentry{DANSE}
+\end{axis}
+
+\end{tikzpicture}

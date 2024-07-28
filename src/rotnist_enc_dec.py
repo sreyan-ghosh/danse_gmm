@@ -1,6 +1,8 @@
 import os
 import sys
 import re
+
+import torch.cuda
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 import glob
@@ -10,6 +12,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
+from torch.cuda.amp import GradScaler, autocast
 from torchvision import transforms
 from utils.utils_rotnist import save_dataset, load_saved_dataset
 import matplotlib.pyplot as plt
@@ -118,6 +121,7 @@ def vae_train(model, device, train_loader, optimizer, epoch):
         if batch_idx % 10 == 0:
             print(f'Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)} '
                   f'({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item() / len(data):.6f}')
+        torch.cuda.empty_cache()
 
     avg_loss = train_loss / len(train_loader.dataset)
     print(f'====> Epoch: {epoch} Average loss: {avg_loss:.4f}')
@@ -127,7 +131,6 @@ def ae_train(model, device, train_loader, optimizer, epoch):
     model.train()
     train_loss = 0
     for batch_idx, (data, _) in enumerate(train_loader):
-#       data = data.view(data.size(0), -1).to(device)  # Flatten the data
         data = data.to(device)
         optimizer.zero_grad()
         recon_batch = model(data)
@@ -138,6 +141,7 @@ def ae_train(model, device, train_loader, optimizer, epoch):
         if batch_idx % 10 == 0:
             print(f'Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)} '
                   f'({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item() / len(data):.6f}')
+        torch.cuda.empty_cache()
 
     avg_loss = train_loss / len(train_loader.dataset)
     print(f'====> Epoch: {epoch} Average loss: {avg_loss:.4f}')
@@ -223,6 +227,7 @@ def run_decoding(model, device, pkl_path, latent_dim, T, smnr_db):
     return decoded_y_list, decoded_z_list, reqd_fpaths
 
 def generate_danse_input(encoded_dir, output_dir, smnr_db=10):
+    torch.cuda.empty_cache()
     os.makedirs(output_dir, exist_ok=True)
     Z_XY = dict()
     Z_arr = list()
@@ -236,7 +241,7 @@ def generate_danse_input(encoded_dir, output_dir, smnr_db=10):
     pt_files = sorted(all_pt_files, key=lambda x: extract_N_T(os.path.basename(x)))
     
     for file_path in pt_files:
-        data = torch.load(file_path)
+        data = torch.load(file_path, map_location="cpu")
         encoded_img = data[0]
         og_img_fp = data[1]
         encoded_images.append(encoded_img)
@@ -254,10 +259,10 @@ def generate_danse_input(encoded_dir, output_dir, smnr_db=10):
         Z_arr.append(encoded_images)
 
     for z_vector in Z_arr:
-        z_tensor = torch.stack(z_vector)
+        z_tensor = torch.stack(z_vector).to("cpu")
         
         # Calculate signal power using variance
-        signal_power = torch.var(z_tensor.cpu())
+        signal_power = torch.var(z_tensor)
         
         # Calculate noise power from SMNR in dB
         noise_power = signal_power / (10**(smnr_db / 10))
@@ -346,11 +351,11 @@ if __name__ == "__main__":
     if danse_mode == "train_danse":
         train_dataset = RotatedMNISTDataset(root_dir='data/rotnist/train_images/', transform=transform)
         T = train_dataset.T
-        train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
+        train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
     elif danse_mode == "test_danse":
         test_dataset = RotatedMNISTDataset(root_dir='data/rotnist/test_images/', transform=transform)
         T = test_dataset.T
-        test_loader = DataLoader(test_dataset, batch_size=128, shuffle=False)
+        test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers=4)
     
     # set device to gpu
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -381,7 +386,7 @@ if __name__ == "__main__":
         elif danse_mode == "test_danse":
             run_encoding(model, device, test_loader, model_type, enc_img_output_dir)
         print(f"Saved encodings to: {enc_img_output_dir}")
-        
+
     elif mode.lower() == 'noise':
         print("Adding noise for {}dB SMNR".format(smnr_db))
         generate_danse_input(enc_img_output_dir, danse_input_path, smnr_db=smnr_db)

@@ -1,5 +1,7 @@
 #!/bin/bash
-# This script is used to run the generate_data.py file for creating training data.
+# This script is used to run the rotnist_enc_dec.py file for creating encoded 
+# and noised training and testing data for DANSE.
+# 
 # Creator: Kasper Malm & Sreyan Ghosh, July 2024.
 
 # The python kernel version e.g. to run on python 3.8 version use: python3.8

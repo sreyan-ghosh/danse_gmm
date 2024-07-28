@@ -1,0 +1,74 @@
+% This file was created with tikzplotlib v0.10.1.
+\begin{tikzpicture}
+
+\definecolor{darkgray176}{RGB}{176,176,176}
+\definecolor{green01270}{RGB}{0,127,0}
+\definecolor{lightgray204}{RGB}{204,204,204}
+
+\begin{axis}[
+legend cell align={left},
+legend style={fill opacity=0.8, draw opacity=1, text opacity=1, draw=lightgray204},
+tick align=outside,
+tick pos=left,
+x grid style={darkgray176},
+xlabel={SMNR (in dB)},
+xmajorgrids,
+xmin=-5.75, xmax=10.75,
+xtick style={color=black},
+y grid style={darkgray176},
+ylabel={MSE (in dB)},
+ymajorgrids,
+ymin=-19.1913690984249, ymax=-8.84692223668099,
+ytick style={color=black}
+]
+\path [draw=green01270, semithick]
+(axis cs:-5,-12.3614950180054)
+--(axis cs:-5,-9.31712436676025);
+
+\path [draw=green01270, semithick]
+(axis cs:0,-13.8783284425735)
+--(axis cs:0,-10.9455069303513);
+
+\path [draw=green01270, semithick]
+(axis cs:5,-16.379209280014)
+--(axis cs:5,-12.706800699234);
+
+\path [draw=green01270, semithick]
+(axis cs:10,-18.7211669683456)
+--(axis cs:10,-14.991517663002);
+
+\path [draw=blue, thick]
+(axis cs:-5,-12.636931180954)
+--(axis cs:-5,-10.0756924152374);
+
+\path [draw=blue, thick]
+(axis cs:0,-13.777725815773)
+--(axis cs:0,-10.951745390892);
+
+\path [draw=blue, thick]
+(axis cs:5,-15.4392367601395)
+--(axis cs:5,-11.9812191724777);
+
+\path [draw=blue, thick]
+(axis cs:10,-17.6628903150558)
+--(axis cs:10,-14.2296935319901);
+
+\addplot [semithick, green01270, dash pattern=on 1pt off 3pt on 3pt off 3pt, mark=pentagon*, mark size=3, mark options={solid}]
+table {%
+-5 -10.8393096923828
+0 -12.4119176864624
+5 -14.543004989624
+10 -16.8563423156738
+};
+\addlegendentry{DANSE}
+\addplot [thick, blue, mark=asterisk, mark size=3, mark options={solid}]
+table {%
+-5 -11.3563117980957
+0 -12.3647356033325
+5 -13.7102279663086
+10 -15.9462919235229
+};
+\addlegendentry{DANSE}
+\end{axis}
+
+\end{tikzpicture}

@@ -337,3 +337,624 @@ smnr: 10.0dB
 Fed to Model-based filters: 
 smnr: 10.0dB, delta_t: 0.02
 DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_1020_best.pt
+Dataset is not present, creating at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_672_best.pt
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-10.7550, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2886, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.3016 ± 0.9103[dB], mse: -10.7550 ± 1.2886[dB], time: 0.0066 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-10.7550, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2886, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.3016 ± 0.9103[dB], mse: -10.7550 ± 1.2886[dB], time: 0.0071 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-10.7550, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2886, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.3016 ± 0.9103[dB], mse: -10.7550 ± 1.2886[dB], time: 0.0083 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-10.7550, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2886, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.3016 ± 0.9103[dB], mse: -10.7550 ± 1.2886[dB], time: 0.0085 secs
+Dataset is not present, creating at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_676_best.pt
+DANSE - MSE LOSS: tensor(-12.1571, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2751, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -1.7037 ± 0.9423[dB], mse: -12.1571 ± 1.2751[dB], time: 0.0071 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-10.7550, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2886, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.3016 ± 0.9103[dB], mse: -10.7550 ± 1.2886[dB], time: 0.0066 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_676_best.pt
+DANSE - MSE LOSS: tensor(-12.1571, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2751, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -1.7037 ± 0.9423[dB], mse: -12.1571 ± 1.2751[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-10.7550, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2886, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.3016 ± 0.9103[dB], mse: -10.7550 ± 1.2886[dB], time: 0.0067 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_676_best.pt
+DANSE - MSE LOSS: tensor(-12.1571, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2751, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -1.7037 ± 0.9423[dB], mse: -12.1571 ± 1.2751[dB], time: 0.0059 secs
+Dataset is not present, creating at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_887_best.pt
+DANSE - MSE LOSS: tensor(-14.1256, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.5575, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -3.6722 ± 1.1126[dB], mse: -14.1256 ± 1.5575[dB], time: 0.0058 secs
+Dataset is not present, creating at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_1020_best.pt
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-10.7550, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2886, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.3016 ± 0.9103[dB], mse: -10.7550 ± 1.2886[dB], time: 0.0067 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_676_best.pt
+DANSE - MSE LOSS: tensor(-12.1571, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2751, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -1.7037 ± 0.9423[dB], mse: -12.1571 ± 1.2751[dB], time: 0.0060 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl already present!
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_887_best.pt
+DANSE - MSE LOSS: tensor(-14.1256, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.5575, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -3.6722 ± 1.1126[dB], mse: -14.1256 ± 1.5575[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl already present!
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_713_best.pt
+DANSE - MSE LOSS: tensor(-16.6811, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.8685, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -6.4029 ± 1.6547[dB], mse: -16.8563 ± 1.8648[dB]
+danse (fil.), batch size: 100, nmse: -6.2277 ± 1.6037[dB], mse: -16.6811 ± 1.8685[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-10.7550, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2886, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.3016 ± 0.9103[dB], mse: -10.7550 ± 1.2886[dB], time: 0.0070 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_676_best.pt
+DANSE - MSE LOSS: tensor(-12.1571, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2751, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -1.7037 ± 0.9423[dB], mse: -12.1571 ± 1.2751[dB], time: 0.0060 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl already present!
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_887_best.pt
+DANSE - MSE LOSS: tensor(-14.1256, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.5575, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -3.6722 ± 1.1126[dB], mse: -14.1256 ± 1.5575[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl already present!
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_713_best.pt
+DANSE - MSE LOSS: tensor(-16.6811, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.8685, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -6.4029 ± 1.6547[dB], mse: -16.8563 ± 1.8648[dB]
+danse (fil.), batch size: 100, nmse: -6.2277 ± 1.6037[dB], mse: -16.6811 ± 1.8685[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-10.7550, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2886, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.3016 ± 0.9103[dB], mse: -10.7550 ± 1.2886[dB], time: 0.0065 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_676_best.pt
+DANSE - MSE LOSS: tensor(-12.1571, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2751, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -1.7037 ± 0.9423[dB], mse: -12.1571 ± 1.2751[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl already present!
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_887_best.pt
+DANSE - MSE LOSS: tensor(-14.1256, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.5575, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -3.6722 ± 1.1126[dB], mse: -14.1256 ± 1.5575[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl already present!
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_713_best.pt
+DANSE - MSE LOSS: tensor(-16.6811, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.8685, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -6.4029 ± 1.6547[dB], mse: -16.8563 ± 1.8648[dB]
+danse (fil.), batch size: 100, nmse: -6.2277 ± 1.6037[dB], mse: -16.6811 ± 1.8685[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-10.7550, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2886, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.3016 ± 0.9103[dB], mse: -10.7550 ± 1.2886[dB], time: 0.0066 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-10.7550, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2886, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.3016 ± 0.9103[dB], mse: -10.7550 ± 1.2886[dB], time: 0.0069 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_676_best.pt
+DANSE - MSE LOSS: tensor(-12.1571, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2751, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -1.7037 ± 0.9423[dB], mse: -12.1571 ± 1.2751[dB], time: 0.0058 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl already present!
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_887_best.pt
+DANSE - MSE LOSS: tensor(-14.1256, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.5575, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -3.6722 ± 1.1126[dB], mse: -14.1256 ± 1.5575[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl already present!
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_713_best.pt
+DANSE - MSE LOSS: tensor(-16.6811, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.8685, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -6.4029 ± 1.6547[dB], mse: -16.8563 ± 1.8648[dB]
+danse (fil.), batch size: 100, nmse: -6.2277 ± 1.6037[dB], mse: -16.6811 ± 1.8685[dB], time: 0.0058 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(-12.0875, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.4533, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -1.6341 ± 0.5883[dB], mse: -12.0875 ± 1.4533[dB], time: 0.0067 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_675_best.pt
+DANSE - MSE LOSS: tensor(-12.8648, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.6862, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -2.4114 ± 0.6121[dB], mse: -12.8648 ± 1.6862[dB], time: 0.0060 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl already present!
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_676_best.pt
+DANSE - MSE LOSS: tensor(-14.6097, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.7867, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -4.1563 ± 1.0544[dB], mse: -14.6097 ± 1.7867[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl already present!
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_675_best.pt
+DANSE - MSE LOSS: tensor(-16.7310, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.8401, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -6.4029 ± 1.6547[dB], mse: -16.8563 ± 1.8648[dB]
+danse (fil.), batch size: 100, nmse: -6.2776 ± 1.5008[dB], mse: -16.7310 ± 1.8401[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(-11.9913, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.3905, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -1.5379 ± 0.6840[dB], mse: -11.9913 ± 1.3905[dB], time: 0.0066 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_675_best.pt
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(-11.9913, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.3905, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -1.5379 ± 0.6840[dB], mse: -11.9913 ± 1.3905[dB], time: 0.0068 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_674_best.pt
+DANSE - MSE LOSS: tensor(-12.9822, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.6369, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -2.5288 ± 0.6453[dB], mse: -12.9822 ± 1.6369[dB], time: 0.0061 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl already present!
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_679_best.pt
+DANSE - MSE LOSS: tensor(-14.6520, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.7840, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -4.1986 ± 1.0702[dB], mse: -14.6520 ± 1.7840[dB], time: 0.0060 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl already present!
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(-16.7459, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.8354, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -6.4029 ± 1.6547[dB], mse: -16.8563 ± 1.8648[dB]
+danse (fil.), batch size: 100, nmse: -6.2924 ± 1.4998[dB], mse: -16.7459 ± 1.8354[dB], time: 0.0060 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(-11.9461, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.5750, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -1.4927 ± 0.5603[dB], mse: -11.9461 ± 1.5750[dB], time: 0.0070 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(-12.8887, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.6835, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -2.4353 ± 0.6422[dB], mse: -12.8887 ± 1.6835[dB], time: 0.0064 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl already present!
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-14.5981, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.7907, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -4.1447 ± 1.0446[dB], mse: -14.5981 ± 1.7907[dB], time: 0.0064 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl already present!
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_696_best.pt
+DANSE - MSE LOSS: tensor(-16.7242, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.8470, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -6.4029 ± 1.6547[dB], mse: -16.8563 ± 1.8648[dB]
+danse (fil.), batch size: 100, nmse: -6.2708 ± 1.5082[dB], mse: -16.7242 ± 1.8470[dB], time: 0.0066 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(-11.6209, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.3095, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -1.1674 ± 0.6722[dB], mse: -11.6209 ± 1.3095[dB], time: 0.0070 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_677_best.pt
+DANSE - MSE LOSS: tensor(-12.3372, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.6409, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -1.8838 ± 0.3203[dB], mse: -12.3372 ± 1.6409[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl already present!
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_673_best.pt
+DANSE - MSE LOSS: tensor(-13.8252, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.8544, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -3.3718 ± 0.6505[dB], mse: -13.8252 ± 1.8544[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl already present!
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_673_best.pt
+DANSE - MSE LOSS: tensor(-16.1010, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.8612, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -6.4029 ± 1.6547[dB], mse: -16.8563 ± 1.8648[dB]
+danse (fil.), batch size: 100, nmse: -5.6476 ± 1.2185[dB], mse: -16.1010 ± 1.8612[dB], time: 0.0059 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(-11.8638, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.4553, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -1.4104 ± 0.5934[dB], mse: -11.8638 ± 1.4553[dB], time: 0.0069 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(-12.9205, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.5887, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -2.4671 ± 0.6333[dB], mse: -12.9205 ± 1.5887[dB], time: 0.0062 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl already present!
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_675_best.pt
+DANSE - MSE LOSS: tensor(-14.6696, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.7688, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -4.2162 ± 1.0747[dB], mse: -14.6696 ± 1.7688[dB], time: 0.0061 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl already present!
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_678_best.pt
+DANSE - MSE LOSS: tensor(-16.7631, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.8400, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -6.4029 ± 1.6547[dB], mse: -16.8563 ± 1.8648[dB]
+danse (fil.), batch size: 100, nmse: -6.3097 ± 1.5209[dB], mse: -16.7631 ± 1.8400[dB], time: 0.0061 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(-11.7183, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2622, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -1.2649 ± 0.7524[dB], mse: -11.7183 ± 1.2622[dB], time: 0.0069 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_673_best.pt
+DANSE - MSE LOSS: tensor(-13.0194, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.5286, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -2.5660 ± 0.6948[dB], mse: -13.0194 ± 1.5286[dB], time: 0.0062 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl already present!
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_678_best.pt
+DANSE - MSE LOSS: tensor(-14.7811, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.7486, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -4.3277 ± 1.1110[dB], mse: -14.7811 ± 1.7486[dB], time: 0.0062 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl already present!
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_675_best.pt
+DANSE - MSE LOSS: tensor(-16.8083, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.8453, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -6.4029 ± 1.6547[dB], mse: -16.8563 ± 1.8648[dB]
+danse (fil.), batch size: 100, nmse: -6.3549 ± 1.5447[dB], mse: -16.8083 ± 1.8453[dB], time: 0.0061 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(-11.2594, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.1794, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.8060 ± 0.8404[dB], mse: -11.2594 ± 1.1794[dB], time: 0.0072 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_672_best.pt
+DANSE - MSE LOSS: tensor(-12.6014, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.3568, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -2.1480 ± 0.8334[dB], mse: -12.6014 ± 1.3568[dB], time: 0.0066 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl already present!
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_675_best.pt
+DANSE - MSE LOSS: tensor(-14.8448, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.7199, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -4.3914 ± 1.1229[dB], mse: -14.8448 ± 1.7199[dB], time: 0.0065 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl already present!
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_675_best.pt
+DANSE - MSE LOSS: tensor(-16.8723, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.8317, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -6.4029 ± 1.6547[dB], mse: -16.8563 ± 1.8648[dB]
+danse (fil.), batch size: 100, nmse: -6.4189 ± 1.5564[dB], mse: -16.8723 ± 1.8317[dB], time: 0.0064 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_-5.0dB.pkl already present!
+****************************************************************************************************
+smnr: -5.0dB
+Fed to Model-based filters: 
+smnr: -5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_-5.0dB/danse_gru_ckpt_epoch_671_best.pt
+DANSE - MSE LOSS: tensor(-11.3563, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.2806, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -0.3859 ± 0.8308[dB], mse: -10.8393 ± 1.5222[dB]
+danse (fil.), batch size: 100, nmse: -0.9029 ± 0.7007[dB], mse: -11.3563 ± 1.2806[dB], time: 0.0500 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_0.0dB.pkl already present!
+****************************************************************************************************
+smnr: 0.0dB
+Fed to Model-based filters: 
+smnr: 0.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_0.0dB/danse_gru_ckpt_epoch_674_best.pt
+DANSE - MSE LOSS: tensor(-12.3647, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.4130, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -1.9585 ± 1.0338[dB], mse: -12.4119 ± 1.4664[dB]
+danse (fil.), batch size: 100, nmse: -1.9113 ± 0.5802[dB], mse: -12.3647 ± 1.4130[dB], time: 0.0483 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_5.0dB.pkl already present!
+****************************************************************************************************
+smnr: 5.0dB
+Fed to Model-based filters: 
+smnr: 5.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_5.0dB/danse_gru_ckpt_epoch_674_best.pt
+DANSE - MSE LOSS: tensor(-13.7102, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.7290, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -4.0896 ± 1.2772[dB], mse: -14.5430 ± 1.8362[dB]
+danse (fil.), batch size: 100, nmse: -3.2568 ± 0.6776[dB], mse: -13.7102 ± 1.7290[dB], time: 0.0486 secs
+Dataset at ./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_20_N_100_smnr_10.0dB.pkl already present!
+****************************************************************************************************
+smnr: 10.0dB
+Fed to Model-based filters: 
+smnr: 10.0dB, delta_t: 0.02
+DANSE Model file: ./models/rotnist_danse_opt_gru_m_32_n_32_T_20_N_500_smnr_10.0dB/danse_gru_ckpt_epoch_676_best.pt
+DANSE - MSE LOSS: tensor(-15.9463, device='cuda:0') [dB]
+DANSE - MSE STD: tensor(1.7166, device='cuda:0') [dB]
+LS, batch size: 100, nmse: -6.4029 ± 1.6547[dB], mse: -16.8563 ± 1.8648[dB]
+danse (fil.), batch size: 100, nmse: -5.4929 ± 1.1292[dB], mse: -15.9463 ± 1.7166[dB], time: 0.0492 secs

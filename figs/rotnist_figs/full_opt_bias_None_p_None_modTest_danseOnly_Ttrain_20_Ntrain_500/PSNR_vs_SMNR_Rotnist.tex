@@ -13,50 +13,60 @@ tick pos=left,
 x grid style={darkgray176},
 xlabel={SMNR (in dB)},
 xmajorgrids,
-xmin=-1, xmax=21,
+xmin=-5.75, xmax=10.75,
 xtick style={color=black},
 y grid style={darkgray176},
 ylabel={PSNR (in dB)},
 ymajorgrids,
-ymin=10.2712189555168, ymax=22.1324101090431,
+ymin=8.84692225456238, ymax=19.1913687229156,
 ytick style={color=black}
 ]
 \path [draw=green01270, semithick]
-(axis cs:0,10.8532758951187)
---(axis cs:0,14.1164697408676);
+(axis cs:-5,9.31712436676025)
+--(axis cs:-5,12.3614950180054);
 
 \path [draw=green01270, semithick]
-(axis cs:10,15.2588926553726)
---(axis cs:10,18.8308786153793);
+(axis cs:0,10.945506811142)
+--(axis cs:0,13.8783285617828);
 
 \path [draw=green01270, semithick]
-(axis cs:20,17.1100888252258)
---(axis cs:20,21.5932650566101);
+(axis cs:5,12.7068003416061)
+--(axis cs:5,16.3792096376419);
+
+\path [draw=green01270, semithick]
+(axis cs:10,14.9915180206299)
+--(axis cs:10,18.7211666107178);
 
 \path [draw=blue, thick]
-(axis cs:0,10.8103640079498)
---(axis cs:0,13.4361913204193);
+(axis cs:-5,10.0756915807724)
+--(axis cs:-5,12.6369301080704);
 
 \path [draw=blue, thick]
-(axis cs:10,15.1265684366226)
---(axis cs:10,18.648787856102);
+(axis cs:0,10.9517455101013)
+--(axis cs:0,13.7777256965637);
 
 \path [draw=blue, thick]
-(axis cs:20,17.1026725769043)
---(axis cs:20,21.5710487365723);
+(axis cs:5,11.981219291687)
+--(axis cs:5,15.4392366409302);
+
+\path [draw=blue, thick]
+(axis cs:10,14.2296954393387)
+--(axis cs:10,17.6628922224045);
 
 \addplot [semithick, green01270, dash pattern=on 1pt off 3pt on 3pt off 3pt, mark=pentagon*, mark size=3, mark options={solid}]
 table {%
-0 12.4848728179932
-10 17.044885635376
-20 19.351676940918
+-5 10.8393096923828
+0 12.4119176864624
+5 14.543004989624
+10 16.8563423156738
 };
 \addlegendentry{DANSE}
 \addplot [thick, blue, mark=asterisk, mark size=3, mark options={solid}]
 table {%
-0 12.1232776641846
-10 16.8876781463623
-20 19.3368606567383
+-5 11.3563108444214
+0 12.3647356033325
+5 13.7102279663086
+10 15.9462938308716
 };
 \addlegendentry{DANSE}
 \end{axis}

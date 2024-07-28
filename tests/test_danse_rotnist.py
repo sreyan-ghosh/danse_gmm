@@ -225,8 +225,6 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
             t_list.append(x_hat) 
         xhat_danse.append(t_list) # xhat_arr len = 100
     
-    recon_img_dict[str(smnr_dB)] = xhat_danse
-    recon_img_dict["dataZ"] = test_data_dict_i["Z"]
     xhat_danse = torch.stack([torch.stack(t_list) for t_list in xhat_danse])
 
     xhat_ls = []   
@@ -303,10 +301,10 @@ if __name__ == "__main__":
     latent_dim = args.latent_dim
 
     # Testing parameters 
-    T_test = 20
+    T_test = 40
     N_test = 100
     N_train = 500
-    T_train = 20
+    T_train = 40
     #sigma_e2_dB_test = -10.0
     device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
     bias = None # By default should be positive, equal to 10.0
@@ -383,7 +381,6 @@ if __name__ == "__main__":
     device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
     model = torch.load(os.path.join(saved_model_path, f"{model_type}_model")).to(device)
 
-    recon_img_dict = dict()
 
     for i, smnr_dB in enumerate(smnr_dB_arr):
         
@@ -397,6 +394,7 @@ if __name__ == "__main__":
         model_file_saved=model_file_saved_i, test_data_file=test_data_file_i, test_logfile=test_logfile, 
         evaluation_mode=evaluation_mode, bias=bias, p=p)
 
+        recon_img_dict = dict()
         recon_img_dict["dataZ"] = test_data_dict_i["Z"]
         recon_img_dict[f"DANSE {str(smnr_dB)}"] = xhat_danse_i
         recon_img_dict[f"LS {str(smnr_dB)}"] = xhat_ls_i
@@ -450,47 +448,49 @@ if __name__ == "__main__":
         t_danse_arr[i] = time_elapsed_danse
     
     # Need to change plotting logic to accommodate origX, reconZ, danseXhat, lsXhat in one file for each SMNR
-    with torch.no_grad():
-        with PdfPages('reconstructed_images_danse.pdf') as pdf:
-            keys = recon_img_dict.keys()
-            num_cols = X.shape[1]  # Number of columns to display
-            num_rows = len(keys) + 1  # Number of rows, including X
+        with torch.no_grad():
+            savepath = f'./figs/rotnist_figs/{evaluation_mode}/reconstructed_images_danse_smnr_{int(smnr_dB)}dB.pdf'
+            with PdfPages(savepath) as pdf:
+                keys = recon_img_dict.keys()
+                num_cols = 10  # Number of columns to display = setting to show 10 images
+                num_rows = 4  # Number of rows, showing origX, reconZ, danseXhat, lsXhat in each pdf
 
-            fig, axs = plt.subplots(num_rows, num_cols, figsize=(4 * num_cols, 4 * num_rows))  # Including X row
+                fig, axs = plt.subplots(num_rows, num_cols, figsize=(4 * num_cols, 4 * num_rows))
 
-            # Add X images at the top
-            for k in range(num_cols):
-                original_img = X[0, k].cpu().view(28, 28)
-                axs[0, k].imshow(original_img, cmap='gray')
-                axs[0, k].set_title(f'Original X {k}')
-                axs[0, k].axis('off')
+                # Add X images at the top
+                for k in range(num_cols):
+                    original_img = X[0, k].cpu().view(28, 28)
+                    axs[0, k].imshow(original_img, cmap='gray')
+                    axs[0, k].set_title(f'Original X {k}')
+                    axs[0, k].axis('off')
 
-            for i, key in enumerate(keys):
-                if key == "dataZ":
-                    dataZ_list = []
-                    for num_sample in range(recon_img_dict["dataZ"].shape[0]):
-                        t_list = []
-                        for t_sample in range(recon_img_dict["dataZ"].shape[1]):
-                            elem = recon_img_dict["dataZ"][num_sample, t_sample]
-                            x_hat = decode_data(model, elem, device)
-                            t_list.append(x_hat)
-                        dataZ_list.append(t_list)
+                for i, key in enumerate(keys):
+                    if key == "dataZ":
+                        dataZ_list = []
+                        for num_sample in range(recon_img_dict["dataZ"].shape[0]):
+                            t_list = []
+                            for t_sample in range(recon_img_dict["dataZ"].shape[1]):
+                                elem = recon_img_dict["dataZ"][num_sample, t_sample]
+                                x_hat = decode_data(model, elem, device)
+                                t_list.append(x_hat)
+                            dataZ_list.append(t_list)
 
-                    for k in range(num_cols):
-                        decoded_img = dataZ_list[0][k]
-                        axs[i + 1, k].imshow(decoded_img.cpu().view(28, 28), cmap='gray')
-                        axs[i + 1, k].set_title(f'dataZ {k}')
-                        axs[i + 1, k].axis('off')
+                        for k in range(num_cols):
+                            decoded_img = dataZ_list[0][k]
+                            axs[i + 1, k].imshow(decoded_img.cpu().view(28, 28), cmap='gray')
+                            axs[i + 1, k].set_title(f'reconZ {k}')
+                            axs[i + 1, k].axis('off')
 
-                else:
-                    for k in range(num_cols):
-                        reconstructed_image = recon_img_dict[key][0][k].cpu().view(28, 28)
-                        axs[i + 1, k].imshow(reconstructed_image, cmap='gray')
-                        axs[i + 1, k].set_title(f'{key} dB {k}')
-                        axs[i + 1, k].axis('off')
+                    else:
+                        for k in range(num_cols):
+                            if key in [f"DANSE {str(smnr_dB)}", f"LS {str(smnr_dB)}"]:
+                                reconstructed_image = recon_img_dict[key][0][k].cpu().view(28, 28)
+                                axs[i + 1, k].imshow(reconstructed_image, cmap='gray')
+                                axs[i + 1, k].set_title(f'{key} dB {k}')
+                                axs[i + 1, k].axis('off')
 
-            pdf.savefig(fig)
-            plt.close(fig)
+                pdf.savefig(fig)
+                plt.close(fig)
 
     print("Saved reconstructed images to PDF.")
     

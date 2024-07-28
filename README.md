@@ -22,8 +22,8 @@ Things to do before Friday 26/7
 - Look at the time schedule and what to do
 
 Meeting 26/7 notes
-- keep mse nmse for z, zhat also add for x, xhat
-- change plots to show x, xhat_ls, xhat_danse, show 10 and separate plots for each noise dB
-- tune parameters_opt 
-- try convergence criteria switch from nll to mse
-- try noise for -5, 0, 5, 10 dB
+- [x] Keep mse nmse for z, zhat also add for x, xhat
+- [ ] Change plots to show x, xhat_ls, xhat_danse, show 10 and separate plots for each noise dB
+- [ ] Tune parameters_opt 
+- [ ] Try convergence criteria switch from nll to mse
+- [x] Try noise for -5, 0, 5, 10 dB

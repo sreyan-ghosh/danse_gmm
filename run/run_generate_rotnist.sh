@@ -9,13 +9,13 @@ PYTHON="python"
 N_train=500
 
 # Length of each such training data sequence
-T_train=20
+T_train=40
 
 # The number of testing sequencess each of length T
 N_test=100
 
 # Length of each such testing data sequence
-T_test=20
+T_test=40
 
 # The name of the script for generating data with full path name
 script_name="./bin/generate_data_rotnist.py"

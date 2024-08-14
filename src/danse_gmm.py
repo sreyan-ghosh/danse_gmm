@@ -1,35 +1,39 @@
 #####################################################
-# Creators: Anubhab Ghosh, Antoine Honoré
-# Feb 2023
+# Creators: Anubhab Ghosh, Antoine Honoré, Sreyan Ghosh, Kasper Malm
+# Feb 2023, Updated: Jul 2024
 #####################################################
 import numpy as np
 import torch
 from torch.autograd import Variable
 from torch import nn, optim, distributions
 from timeit import default_timer as timer
+import os
 import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
 import copy
 import math
-import os
-from utils.utils import compute_log_prob_normal, create_diag, compute_inverse, count_params, ConvergenceMonitor
+from utils.utils_rotnist import compute_log_prob_normal, create_diag, compute_inverse, count_params, ConvergenceMonitor
 #from utils.plot_functions import plot_state_trajectory, plot_state_trajectory_axes
 import torch.nn.functional as F
-from src.rnn import RNN_model
+from src.rnn_gmm import RNN_model
 
 def save_model(model, filepath):
     torch.save(model.state_dict(), filepath)
     return None
 
 def push_model(nets, device='cpu'):
+    device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
     nets = nets.to(device=device)
     return nets
 
-class DANSE(nn.Module):
+class DANSE_GMM(nn.Module):
 
-    def __init__(self, n_states, n_obs, mu_w, C_w, H, mu_x0, C_x0, batch_size, rnn_type, rnn_params_dict, device='cpu'):
-        super(DANSE, self).__init__()
+    def __init__(self, n_states, n_obs, mu_w, C_w, H, mu_x0, C_x0, batch_size, rnn_type, num_mixtures, rnn_params_dict, device='cpu'):
+        super(DANSE_GMM, self).__init__()
 
-        self.device = device
+        self.device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
+        
 
         # Initialize the paramters of the state estimator
         self.n_states = n_states
@@ -41,7 +45,7 @@ class DANSE(nn.Module):
 
         # Initializing the parameters of the measurement noise
         self.mu_w = self.push_to_device(mu_w)
-        self.C_w = self.push_to_device(C_w)
+        self.C_w = None
 
         # Initialize the observation model matrix 
         self.H = self.push_to_device(H)
@@ -51,105 +55,149 @@ class DANSE(nn.Module):
         # Initialize RNN type
         self.rnn_type = rnn_type
 
+        # GMM Update: Added num_mix parameter for DANSE and RNN
+        # Intialize number of mixtures for GMM
+        self.num_mixtures = num_mixtures
+        rnn_params_dict[self.rnn_type]["num_mixtures"] = num_mixtures
+
         # Initialize the parameters of the RNN
         self.rnn = RNN_model(**rnn_params_dict[self.rnn_type]).to(self.device)
 
-        # Initialize various means and variances of the estimator
+        # Initialize various betas, means and variances of the estimator
 
-        # Prior parameters
+        # Posterior parameters
+        self.beta_xt_yt_current = None # GMM Update: added beta
         self.mu_xt_yt_current = None
         self.L_xt_yt_current = None
 
         # Marginal parameters
+        self.beta_yt_current = None # GMM Update: added beta
         self.mu_yt_current = None
         self.L_yt_current = None
 
-        # Posterior parameters
+        # Prior parameters
+        self.beta_xt_yt_prev = None # GMM Update: added beta
         self.mu_xt_yt_prev = None
         self.L_xt_yt_prev = None
+
+        # Marginal parameters for all mixture components
+        self.mu_yt_all_mix = None
+        self.L_yt_all_mix = None
     
     def push_to_device(self, x):
         """ Push the given tensor to the device
         """
         return torch.from_numpy(x).type(torch.FloatTensor).to(self.device)
 
-    def compute_prior_mean_vars(self, mu_xt_yt_prev, L_xt_yt_prev):
-
+    def compute_prior_mean_vars(self, beta_xt_yt_prev, mu_xt_yt_prev, L_xt_yt_prev):
+        self.beta_xt_yt_prev = beta_xt_yt_prev # GMM Update: Added beta
         self.mu_xt_yt_prev = mu_xt_yt_prev
         self.L_xt_yt_prev = create_diag(L_xt_yt_prev)
-        return self.mu_xt_yt_prev, self.L_xt_yt_prev
+        return self.beta_xt_yt_prev, self.mu_xt_yt_prev, self.L_xt_yt_prev
 
-    def compute_marginal_mean_vars(self, mu_xt_yt_prev, L_xt_yt_prev):
-        #print(self.H.device, self.mu_xt_yt_prev.device, self.mu_w.device)
-        self.mu_yt_current = torch.einsum('ij,ntj->nti',self.H, mu_xt_yt_prev) + self.mu_w.squeeze(-1)
-        self.L_yt_current = self.H @ L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w
-    
-    def compute_posterior_mean_vars(self, Yi_batch):
-
-        Re_t_inv = torch.inverse(self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w)
-        self.K_t = (self.L_xt_yt_prev @ (self.H.T @ Re_t_inv))
-        self.mu_xt_yt_current = self.mu_xt_yt_prev + torch.einsum('ntij,ntj->nti',self.K_t,(Yi_batch - torch.einsum('ij,ntj->nti',self.H,self.mu_xt_yt_prev)))
-        #self.L_xt_yt_current = self.L_xt_yt_prev - torch.einsum('ntij,ntkl->ntik',
-        #torch.einsum('ntij,ntjk->ntik',
-        #self.K_t, self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w), 
-        #self.K_t)
-        self.L_xt_yt_current = self.L_xt_yt_prev - (torch.einsum('ntij,ntjk->ntik',
-                            self.K_t, self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w) @ torch.transpose(self.K_t, 2, 3))
-        return self.mu_xt_yt_current, self.L_xt_yt_current
-    '''
-    def compute_logprob_batch(self, Yi_batch):
-
-        N, T, _ = Yi_batch.shape
-        log_py_t_given_prev = 0.0 
-        for t in range(T):
-
-            if t >= 1:
-                mu_yt_prev, L_yt_prev_diag = self.rnn(Yi_batch[:, 0:t-1, :])
-            else:
-                mu_yt_prev, L_yt_prev_diag = self.rnn(torch.zeros(N, 1, 1))
-            
-            self.compute_prior_mean_vars(mu_yt_prev, L_yt_prev_diag)
-            self.compute_marginal_mean_vars()
-
-            log_py_t_given_prev += compute_log_prob_normal(
-                X = Yi_batch[:, t, :],
-                mean=self.mu_yt_current,
-                cov=self.L_yt_current
-                ).mean(0)
-
-        return log_py_t_given_prev
-    '''
-    def compute_logpdf_Gaussian(self, Y):
+    def compute_marginal_mean_vars(self, beta_xt_yt_prev, mu_xt_yt_prev, L_xt_yt_prev, Cwi_batch):
         
-        _, T, _ = Y.shape 
-        logprob = 0.5 * self.n_obs * T * math.log(math.pi*2) - 0.5 * torch.logdet(self.L_yt_current).sum(1) \
-            - 0.5 * torch.einsum('nti,nti->nt',
-            (Y - self.mu_yt_current), 
-            torch.einsum('ntij,ntj->nti',torch.inverse(self.L_yt_current), (Y - self.mu_yt_current))).sum(1)
+        self.beta_yt_current = beta_xt_yt_prev
+        self.mu_yt_all_mix = torch.einsum('ij,mntj->mnti',self.H, mu_xt_yt_prev)
+        self.mu_yt_current = torch.einsum('mnti,mntj->ntj',beta_xt_yt_prev, self.mu_yt_all_mix) + self.mu_w
+
+        self.L_yt_all_mix = self.H @ L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + Cwi_batch.unsqueeze(1).unsqueeze(0) # 5 dims
+        L_wsum_current = torch.einsum('mnti,mntjk->ntjk',beta_xt_yt_prev, self.L_yt_all_mix)
+        # Compute deviation part of the covariance
+        mu_diff = self.mu_yt_all_mix - self.mu_yt_current.unsqueeze(0) # Unsqueeze adds 0:th dimension. Output shape: (2, 64, 60, 16)
+        # Meeting Note: matmul instead of * (Maybe not, works)
+        outerprod_dev = mu_diff.unsqueeze(-1) * mu_diff.unsqueeze(-2) # Unsqueeze adds last dimension and second to last (2, 64, 60, 16, 1), (2, 64, 60, 1, 16)
+                                                                      # Represents transpose mult. Output shape: (2, 64, 60, 16, 16)
+        # Using einsum to compute the weighted sum of outer products
+        dev_wsum_current = torch.einsum('mnti,mntjk->ntjk', beta_xt_yt_prev, outerprod_dev)
+        
+        # Combine both parts to get the final covariance
+        self.L_yt_current = L_wsum_current + dev_wsum_current # OP dims: (64,60,16,16) 
+        
+    # Meeting Note: Does not need beta as input, is stored in self like for mu and L    
+    def compute_posterior_mean_vars(self, beta_xt_yt_prev, Yi_batch, Cwi_batch): # GMM Update: How does this change?
+        Cwi_reshaped = Cwi_batch.unsqueeze(1).unsqueeze(0) # unsqueeze(1) accounts for T dim, and unsqueeze(0) for mix dim
+        Re_t = self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + Cwi_reshaped # 5 dims
+        Re_t_inv = torch.inverse(Re_t) # 5 dims
+        self.K_t = self.L_xt_yt_prev @ (self.H.T @ Re_t_inv) # 5 dims
+        self.eps_t = Yi_batch.unsqueeze(0) - torch.einsum('ij,mntj->mnti',self.H,self.mu_xt_yt_prev) - self.mu_w # 4 dims
+
+        p = Yi_batch.shape[-1]  # dimensionality of the observations
+        sqrt_2pi_p = torch.sqrt(torch.tensor((2 * math.pi) ** p))
+
+        # log beta calc
+        log_beta_post_num = torch.log(beta_xt_yt_prev.squeeze(-1)) - torch.log(sqrt_2pi_p * torch.sqrt(torch.det(Re_t))) \
+            - 0.5 * torch.einsum('mnti, mnti->mnt', self.eps_t, torch.einsum('mntij,mntj->mnti', Re_t_inv, self.eps_t))
+        log_beta_post = log_beta_post_num - torch.logsumexp(log_beta_post_num, dim=0, keepdim=True)
+        
+        self.beta_xt_yt_current = torch.exp(log_beta_post)
+
+        mu_xt_yt_cur_all_mix = self.mu_xt_yt_prev + torch.einsum('mntij,mntj->mnti',self.K_t,self.eps_t) # 4 dims
+        self.mu_xt_yt_current = torch.einsum('mnt,mntj->ntj',self.beta_xt_yt_current, mu_xt_yt_cur_all_mix) # 3 dims
+
+        L_xt_yt_cur_all_mix = self.L_xt_yt_prev - (torch.einsum('mntij,mntjk->mntik',
+                            self.K_t, Re_t) @ torch.transpose(self.K_t, 3, 4)) # 5 dims
+      
+        L_xt_yt_cur_wsum = torch.einsum('mnt,mntjk->ntjk', self.beta_xt_yt_current, L_xt_yt_cur_all_mix)
+        # Mean deviation
+        mu_diff = mu_xt_yt_cur_all_mix - self.mu_xt_yt_current.unsqueeze(0)
+        outerprod_dev = mu_diff.unsqueeze(-1) * mu_diff.unsqueeze(-2)
+        dev_xt_yt_cur_wsum = torch.einsum('mnt,mntjk->ntjk', self.beta_xt_yt_current, outerprod_dev)
+        self.L_xt_yt_current = L_xt_yt_cur_wsum + dev_xt_yt_cur_wsum
+        
+        
+        
+        return self.beta_xt_yt_current, self.mu_xt_yt_current, self.L_xt_yt_current
+    
+    def compute_logpdf_Gaussian(self, Y, Cw): 
+        _, T, _ = Y.shape
+        Cw_reshaped = Cw.unsqueeze(1).unsqueeze(0)
+        logprob = 0.5 * self.n_obs * math.log(math.pi*2) - 0.5 * torch.logdet(self.L_yt_all_mix+Cw_reshaped) \
+            - 0.5 * torch.einsum('mnti,mnti->mnt',
+            (Y.unsqueeze(0) - self.mu_yt_all_mix), 
+            torch.einsum('mntij,mntj->mnti',torch.inverse(self.L_yt_all_mix+Cw_reshaped), 
+                         (Y.unsqueeze(0) - self.mu_yt_all_mix)))
 
         return logprob
+    
+    # beta has shape (2,64,60,1) and logprob has shape m,n,t
+    def compute_gmm_logpdf(self, logprob): 
+        gmm_logprob = torch.logsumexp(torch.log(self.beta_xt_yt_prev.squeeze(-1) + 1e-8) + logprob, dim=0)
+        return gmm_logprob.mean(1).mean(0) # shape scalar
 
-    def compute_predictions(self, Y_test_batch):
+    def compute_predictions(self, Y_test_batch, Cw_test_batch): 
 
-        mu_x_given_Y_test_batch, vars_x_given_Y_test_batch = self.rnn.forward(x=Y_test_batch)
-        mu_xt_yt_prev_test, L_xt_yt_prev_test = self.compute_prior_mean_vars(
+        beta_x_given_Y_test_batch, mu_x_given_Y_test_batch, vars_x_given_Y_test_batch = self.rnn.forward(x=Y_test_batch)
+        beta_xt_yt_prev_test, mu_xt_yt_prev_test, L_xt_yt_prev_test = self.compute_prior_mean_vars(
+            beta_xt_yt_prev=beta_x_given_Y_test_batch,
             mu_xt_yt_prev=mu_x_given_Y_test_batch,
             L_xt_yt_prev=vars_x_given_Y_test_batch
             )
-        mu_xt_yt_current_test, L_xt_yt_current_test = self.compute_posterior_mean_vars(Yi_batch=Y_test_batch)
-        return mu_xt_yt_prev_test, L_xt_yt_prev_test, mu_xt_yt_current_test, L_xt_yt_current_test
+        beta_xt_yt_current_test, mu_xt_yt_current_test, L_xt_yt_current_test = self.compute_posterior_mean_vars(
+                                                                                       beta_xt_yt_prev=beta_xt_yt_prev_test,
+                                                                                       Yi_batch=Y_test_batch,
+                                                                                       Cwi_batch=Cw_test_batch)
+        return beta_x_given_Y_test_batch, mu_xt_yt_prev_test, L_xt_yt_prev_test,\
+              beta_xt_yt_current_test, mu_xt_yt_current_test, L_xt_yt_current_test
 
-    def forward(self, Yi_batch):
+    def forward(self, Yi_batch, Cwi_batch):
 
-        mu_batch, vars_batch = self.rnn.forward(x=Yi_batch)
-        mu_xt_yt_prev, L_xt_yt_prev = self.compute_prior_mean_vars(mu_xt_yt_prev=mu_batch, L_xt_yt_prev=vars_batch)
-        self.compute_marginal_mean_vars(mu_xt_yt_prev=mu_xt_yt_prev, L_xt_yt_prev=L_xt_yt_prev)
-        logprob_batch = self.compute_logpdf_Gaussian(Y=Yi_batch) / (Yi_batch.shape[1] * Yi_batch.shape[2]) # Per dim. and per sequence length
-        log_pYT_batch_avg = logprob_batch.mean(0)
+        beta_batch, mu_batch, vars_batch = self.rnn.forward(x=Yi_batch)
+        beta_xt_yt_prev, mu_xt_yt_prev, L_xt_yt_prev = self.compute_prior_mean_vars(beta_xt_yt_prev=beta_batch, 
+                                                                                    mu_xt_yt_prev=mu_batch,
+                                                                                    L_xt_yt_prev=vars_batch)
+        self.compute_marginal_mean_vars(beta_xt_yt_prev=beta_xt_yt_prev,
+                                        mu_xt_yt_prev=mu_xt_yt_prev,
+                                        L_xt_yt_prev=L_xt_yt_prev,
+                                        Cwi_batch=Cwi_batch)
+        
+        # GMM Update: We need to return the gmm_logprob somewhere
+        logprob_batch = self.compute_logpdf_Gaussian(Y=Yi_batch, Cw=Cwi_batch) # Per dim. and per sequence length
+        logprob_gmm_batch = self.compute_gmm_logpdf(logprob_batch)
 
-        return log_pYT_batch_avg
+        return logprob_gmm_batch
 
-
+# Rotnist Update: Change for rotnist
 def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path, modelfile_path, save_chkpoints, device='cpu', tr_verbose=False):
     
     # Push the model to device and count parameters
@@ -162,9 +210,10 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
     optimizer = optim.Adam(model.parameters(), lr=model.rnn.lr)
     #scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.998)
     #scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=nepochs//3, gamma=0.9) # gamma was initially 0.9
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=nepochs//6, gamma=0.9) # gamma is now set to 0.8
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=nepochs//6, gamma=0.9) # gamma is now set to 0.9 OG: 6
     tr_losses = []
     val_losses = []
+    val_mse_losses = []
 
     if modelfile_path is None:
         model_filepath = "./models/"
@@ -228,10 +277,11 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
         
             for i, data in enumerate(train_loader, 0):
             
-                tr_Y_batch, tr_X_batch = data
+                tr_Y_batch, tr_Z_batch, tr_Cw_batch = data
                 optimizer.zero_grad()
                 Y_train_batch = Variable(tr_Y_batch, requires_grad=False).type(torch.FloatTensor).to(device)
-                log_pY_train_batch = -model.forward(Y_train_batch)
+                Cw_train_batch = Variable(tr_Cw_batch, requires_grad=False).type(torch.FloatTensor).to(device)
+                log_pY_train_batch = -model.forward(Y_train_batch, Cw_train_batch)
                 log_pY_train_batch.backward()
                 optimizer.step()
 
@@ -254,13 +304,15 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
                 
                 for i, data in enumerate(val_loader, 0):
                     
-                    val_Y_batch, val_X_batch = data
+                    val_Y_batch, val_Z_batch, val_Cw_batch = data
                     Y_val_batch = Variable(val_Y_batch, requires_grad=False).type(torch.FloatTensor).to(device)
-                    val_mu_X_predictions_batch, val_var_X_predictions_batch, val_mu_X_filtered_batch, val_var_X_filtered_batch = model.compute_predictions(Y_val_batch)
-                    log_pY_val_batch = -model.forward(Y_val_batch)
+                    Cw_val_batch = Variable(val_Cw_batch, requires_grad=False).type(torch.FloatTensor).to(device)
+                    val_beta_Z_predictions_batch, val_mu_Z_predictions_batch, val_var_Z_predictions_batch, \
+                    val_beta_Z_filtered_batch, val_mu_Z_filtered_batch, val_var_Z_filtered_batch = model.compute_predictions(Y_val_batch, Cw_val_batch)
+                    log_pY_val_batch = -model.forward(Y_val_batch, Cw_val_batch)
                     val_loss_epoch_sum += log_pY_val_batch.item()
                     #val_mse_loss_batch = mse_criterion(val_X_batch[:,1:,:].to(device), val_mu_X_filtered_batch)
-                    val_mse_loss_batch = mse_criterion(val_X_batch.to(device), val_mu_X_filtered_batch)
+                    val_mse_loss_batch = mse_criterion(val_Z_batch.to(device), val_mu_Z_filtered_batch)
                     # print statistics
                     val_mse_loss_epoch_sum += val_mse_loss_batch.item()
 
@@ -321,6 +373,7 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
             # Saving every value
             tr_losses.append(tr_loss)
             val_losses.append(val_loss)
+            val_mse_losses.append(val_mse_loss)
 
             
             # Check monitor flag
@@ -381,55 +434,5 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
     # Restoring the original std out pointer
     sys.stdout = orig_stdout
 
-    return tr_losses, val_losses, best_val_loss, tr_loss_for_best_val_loss, model
-
-def test_danse(test_loader, options, device, model_file=None, test_logfile_path = None):
-
-    test_loss_epoch_sum = 0.0
-    te_log_pY_epoch_sum = 0.0 
-    print("################ Evaluation Begins ################ \n")    
-    
-    # Set model in evaluation mode
-    model = DANSE(**options)
-    model.load_state_dict(torch.load(model_file))
-    criterion = nn.MSELoss()
-    model = push_model(nets=model, device=device)
-    model.eval()
-    if not test_logfile_path is None:
-        test_log = "./log/test_danse.log"
-    else:
-        test_log = test_logfile_path
-
-    X_ref = None
-    X_hat_ref = None
-
-    with torch.no_grad():
-        
-        for i, data in enumerate(test_loader, 0):
-                
-            te_Y_batch, te_X_batch = data
-            Y_test_batch = Variable(te_Y_batch, requires_grad=False).type(torch.FloatTensor).to(device)
-            te_mu_X_predictions_batch, te_var_X_predictions_batch, te_mu_X_filtered_batch, te_var_X_filtered_batch = model.compute_predictions(Y_test_batch)
-            log_pY_test_batch = -model.forward(Y_test_batch)
-            test_mse_loss_batch = criterion(te_X_batch[:,:-1,:], te_mu_X_filtered_batch)
-            # print statistics
-            test_loss_epoch_sum += test_mse_loss_batch.item()
-            te_log_pY_epoch_sum += log_pY_test_batch.item()
-
-        X_ref = te_X_batch[-1]
-        X_hat_ref = te_mu_X_filtered_batch[-1]
-
-    test_mse_loss = test_loss_epoch_sum / len(test_loader)
-    test_NLL_loss = te_log_pY_epoch_sum / len(test_loader)
-
-    print('Test NLL loss: {:.3f}, Test MSE loss: {:.3f} using weights from file: {} %'.format(test_NLL_loss, test_mse_loss, model_file))
-
-    with open(test_log, "a") as logfile_test:
-        logfile_test.write('Test NLL loss: {:.3f}, Test MSE loss: {:.3f} using weights from file: {}'.format(test_NLL_loss, test_mse_loss, model_file))
-
-    # Plot one of the predictions
-    #plot_state_trajectory(X=X_ref, X_est=X_hat_ref)
-    #plot_state_trajectory_axes(X=X_ref, X_est=X_hat_ref)
-
-    return test_mse_loss   
+    return tr_losses, val_losses, val_mse_losses, best_val_loss, tr_loss_for_best_val_loss, model
 

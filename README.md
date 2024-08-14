@@ -23,7 +23,30 @@ Things to do before Friday 26/7
 
 Meeting 26/7 notes
 - [x] Keep mse nmse for z, zhat also add for x, xhat
-- [ ] Change plots to show x, xhat_ls, xhat_danse, show 10 and separate plots for each noise dB
-- [ ] Tune parameters_opt 
-- [ ] Try convergence criteria switch from nll to mse
+- [x] Change plots to show x, xhat_ls, xhat_danse, show 10 and separate plots for each noise dB
+- [x] Tune parameters_opt 
 - [x] Try noise for -5, 0, 5, 10 dB
+
+Meeting 29/7
+- [x] Trying longer t lengths, (t=60) with lower latent dim
+- [x] Tune parameters for t=60, latent_dim=16
+- [x] Start working on GMM, create outline
+
+GMM Work
+- [ ] Modify train_test_split to account only for validation and train sequences (test not reqd)
+- [x] Modify `rnn_gmm.py` file to output 4dim triplets of (beta, mean, cov)
+- [x] Modify `danse_gmm.py` file with updated forward, prior, posterior and comp_pred funcs
+- [x] Add danse_gmm option to `parameters_opt.py` file and modify as required
+- [x] Maintain `main_danse_gmm_rotnist.py` to be in sync with danse_gmm changes
+
+Meeting 12/8
+- [x] Add the Cw before (see note in the file)
+- [x] Change beta calculations to log
+- [x] Move beta before mean and cov
+- [ ] Add danse_rotnist to test
+
+Things to try if nothing else works
+- Really short sequences (is it getting better with the longer sequences?)
+- Train on just one kind of number
+- Calculating the mse loss for the X instead by decoding within the training loop (maybe not)
+- 

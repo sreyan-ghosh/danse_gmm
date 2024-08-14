@@ -433,6 +433,60 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
     }
 
     estimators_dict={
+        "danse_gmm":{
+            "n_states":n_states,
+            "n_obs":n_obs,
+            "mu_w":np.zeros((n_obs,)),
+            "C_w":None,
+            "H":None,
+            "mu_x0":np.zeros((n_states,)),
+            "C_x0":np.eye(n_states,n_states),
+            "batch_size":64,
+            "rnn_type":"gru",
+            "num_mixtures": 1,
+            "device":device,
+            "rnn_params_dict":{
+                "gru":{
+                    "model_type":"gru",
+                    "input_size":n_obs,
+                    "output_size":n_states,
+                    "num_mixtures": None, # GMM Update: Load it in from the danse class' __init__ method
+                    "n_hidden":128, # OG: 32
+                    "n_layers":1,
+                    "lr":1e-5, # OG: 2e-5
+                    "num_epochs":2000,
+                    "min_delta":5e-3, # OG: 1e-3
+                    "n_hidden_dense":64, # OG: 32
+                    "device":device
+                },
+                "rnn":{
+                    "model_type":"gru",
+                    "input_size":n_obs,
+                    "output_size":n_states,
+                    "num_mixtures": None,
+                    "n_hidden":40,
+                    "n_layers":2,
+                    "lr":1e-3,
+                    "num_epochs":300,
+                    "min_delta":1e-3,
+                    "n_hidden_dense":32,
+                    "device":device
+                },
+                "lstm":{
+                    "model_type":"lstm",
+                    "input_size":n_obs,
+                    "output_size":n_states,
+                    "num_mixtures": None,
+                    "n_hidden":40,
+                    "n_layers":2,
+                    "lr":1e-3,
+                    "num_epochs":300,
+                    "min_delta":1e-3,
+                    "n_hidden_dense":32,
+                    "device":device
+                }
+            }
+        },
         # Parameters of the DANSE estimator
         "danse":{
             "n_states":n_states,
@@ -450,12 +504,12 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
                     "model_type":"gru",
                     "input_size":n_obs,
                     "output_size":n_states,
-                    "n_hidden":64, # OG: 40
+                    "n_hidden":32, # OG: 40 64
                     "n_layers":1,
-                    "lr":1e-5, # OG: 1e-4
+                    "lr":2e-5, # OG: 1e-4 1e-5
                     "num_epochs":2000,
-                    "min_delta":5e-2,
-                    "n_hidden_dense":64, # OG: 64
+                    "min_delta":1e-2, # OG: 5e-2
+                    "n_hidden_dense":32, # OG: 64
                     "device":device
                 },
                 "rnn":{

@@ -144,7 +144,7 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
     optimizer = optim.Adam(model.parameters(), lr=model.rnn.lr)
     #scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.998)
     #scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=nepochs//3, gamma=0.9) # gamma was initially 0.9
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=nepochs//6, gamma=0.9) # gamma is now set to 0.8
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=nepochs//6, gamma=0.9) # gamma is now set to 0.9 OG: 6
     tr_losses = []
     val_losses = []
     val_mse_losses = []

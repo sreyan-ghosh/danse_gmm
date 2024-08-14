@@ -1,0 +1,82 @@
+------------------------------ Training begins --------------------------------- 
+
+Config: {'n_states': 16, 'n_obs': 16, 'mu_w': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_w': None, 'H': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'mu_x0': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_x0': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'batch_size': 64, 'rnn_type': 'gru', 'num_mixtures': 10, 'device': device(type='cuda', index=0), 'rnn_params_dict': {'gru': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': 10, 'n_hidden': 128, 'n_layers': 1, 'lr': 1e-05, 'num_epochs': 2000, 'min_delta': 0.005, 'n_hidden_dense': 64, 'device': device(type='cuda', index=0)}, 'rnn': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'lstm': {'model_type': 'lstm', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}}} 
+
+No. of trainable parameters: 85770
+
+Epoch: 1/2000, Training NLL:19.429591497, Val. NLL:20.406914711, Val. MSE: 14.230874538, Time_Elapsed:0.5921 secs
+Epoch: 50/2000, Training NLL:19.354326884, Val. NLL:20.188361168, Val. MSE: 13.023224354, Time_Elapsed:15.6825 secs
+Epoch: 100/2000, Training NLL:19.225021044, Val. NLL:19.804726601, Val. MSE: 13.051053047, Time_Elapsed:30.9098 secs
+Epoch: 150/2000, Training NLL:19.027127902, Val. NLL:19.502099991, Val. MSE: 12.375554562, Time_Elapsed:46.2164 secs
+Epoch: 200/2000, Training NLL:18.548681259, Val. NLL:18.773635864, Val. MSE: 11.540265560, Time_Elapsed:61.2684 secs
+Epoch: 250/2000, Training NLL:18.086689631, Val. NLL:18.921473503, Val. MSE: 11.282186508, Time_Elapsed:77.0754 secs
+Epoch: 300/2000, Training NLL:17.776119550, Val. NLL:18.371196747, Val. MSE: 10.640644550, Time_Elapsed:92.3352 secs
+Epoch: 350/2000, Training NLL:17.490365664, Val. NLL:18.012531281, Val. MSE: 10.469565392, Time_Elapsed:107.5110 secs
+Epoch: 400/2000, Training NLL:17.239727974, Val. NLL:18.044390678, Val. MSE: 10.294301033, Time_Elapsed:122.7647 secs
+Epoch: 450/2000, Training NLL:17.027511597, Val. NLL:18.233001709, Val. MSE: 10.322420120, Time_Elapsed:138.1056 secs
+Epoch: 500/2000, Training NLL:16.803953171, Val. NLL:17.317532539, Val. MSE: 9.435232162, Time_Elapsed:153.3564 secs
+Epoch: 550/2000, Training NLL:16.622599284, Val. NLL:17.265727043, Val. MSE: 9.456886768, Time_Elapsed:168.3787 secs
+Epoch: 600/2000, Training NLL:16.456296285, Val. NLL:17.356126785, Val. MSE: 9.323845863, Time_Elapsed:183.6645 secs
+Epoch: 650/2000, Training NLL:16.267855644, Val. NLL:16.491639137, Val. MSE: 8.700253963, Time_Elapsed:198.8052 secs
+Epoch: 700/2000, Training NLL:16.104617914, Val. NLL:17.004701614, Val. MSE: 9.212018013, Time_Elapsed:214.0665 secs
+Epoch: 750/2000, Training NLL:15.954781214, Val. NLL:17.065402985, Val. MSE: 9.363099098, Time_Elapsed:229.3892 secs
+Epoch: 800/2000, Training NLL:15.790890217, Val. NLL:16.442119598, Val. MSE: 8.665190220, Time_Elapsed:244.5277 secs
+Epoch: 850/2000, Training NLL:15.658119996, Val. NLL:16.292491913, Val. MSE: 8.221724510, Time_Elapsed:259.8276 secs
+Epoch: 900/2000, Training NLL:15.507035414, Val. NLL:16.481829643, Val. MSE: 8.734428406, Time_Elapsed:274.9569 secs
+Epoch: 950/2000, Training NLL:15.355998834, Val. NLL:16.054298401, Val. MSE: 8.082304001, Time_Elapsed:290.0963 secs
+Epoch: 1000/2000, Training NLL:15.228293737, Val. NLL:15.981994152, Val. MSE: 8.250347853, Time_Elapsed:305.3381 secs
+Epoch: 1050/2000, Training NLL:15.106899897, Val. NLL:16.085489273, Val. MSE: 8.125636816, Time_Elapsed:320.5807 secs
+Epoch: 1100/2000, Training NLL:14.983121872, Val. NLL:15.742681026, Val. MSE: 7.923307419, Time_Elapsed:335.7028 secs
+Epoch: 1150/2000, Training NLL:14.869010448, Val. NLL:15.853610992, Val. MSE: 8.008065701, Time_Elapsed:351.0955 secs
+Epoch: 1200/2000, Training NLL:14.753155867, Val. NLL:15.340377331, Val. MSE: 7.417007685, Time_Elapsed:366.3242 secs
+Epoch: 1250/2000, Training NLL:14.665117423, Val. NLL:15.084027290, Val. MSE: 7.346935511, Time_Elapsed:381.5581 secs
+Epoch: 1300/2000, Training NLL:14.537286758, Val. NLL:14.587025642, Val. MSE: 7.126500368, Time_Elapsed:396.8454 secs
+Epoch: 1350/2000, Training NLL:14.421020031, Val. NLL:14.761643887, Val. MSE: 7.476207256, Time_Elapsed:411.9582 secs
+Epoch: 1400/2000, Training NLL:14.329561075, Val. NLL:15.111907482, Val. MSE: 7.728754759, Time_Elapsed:427.1993 secs
+Epoch: 1450/2000, Training NLL:14.249360561, Val. NLL:15.087247372, Val. MSE: 7.887149572, Time_Elapsed:442.5213 secs
+Epoch: 1500/2000, Training NLL:14.136216482, Val. NLL:15.287731647, Val. MSE: 7.856568336, Time_Elapsed:457.7786 secs
+Epoch: 1550/2000, Training NLL:14.064738274, Val. NLL:14.905115128, Val. MSE: 7.860435963, Time_Elapsed:473.0150 secs
+Epoch: 1600/2000, Training NLL:13.939588070, Val. NLL:14.820753574, Val. MSE: 7.855542421, Time_Elapsed:488.1642 secs
+Epoch: 1650/2000, Training NLL:13.872763475, Val. NLL:14.559723854, Val. MSE: 7.384925365, Time_Elapsed:503.4626 secs
+Epoch: 1700/2000, Training NLL:13.788156350, Val. NLL:14.730969906, Val. MSE: 7.661213398, Time_Elapsed:518.6753 secs
+Epoch: 1750/2000, Training NLL:13.714226882, Val. NLL:14.351131439, Val. MSE: 7.556982517, Time_Elapsed:534.0175 secs
+Epoch: 1800/2000, Training NLL:13.631586870, Val. NLL:13.861601353, Val. MSE: 6.950084686, Time_Elapsed:549.1845 secs
+Epoch: 1850/2000, Training NLL:13.546140989, Val. NLL:14.068369389, Val. MSE: 7.616699219, Time_Elapsed:564.3997 secs
+Epoch: 1900/2000, Training NLL:13.488973300, Val. NLL:14.226949692, Val. MSE: 7.229677200, Time_Elapsed:579.7022 secs
+Consecutive iterations are:[1914, 1915, 1916]
+Exit and Convergence reached after 3 iterations for relative change in NLL below :0.005
+Training convergence attained at Epoch: 1916!
+
+Saving the best model at epoch=1916, with training loss=13.469456990559896, validation loss=13.827347755432129
+------------------------------ Training ends --------------------------------- 
+

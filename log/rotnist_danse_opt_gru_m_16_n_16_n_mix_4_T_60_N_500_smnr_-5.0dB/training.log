@@ -1,0 +1,545 @@
+------------------------------ Training begins --------------------------------- 
+
+Config: {'n_states': 16, 'n_obs': 16, 'mu_w': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_w': None, 'H': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'mu_x0': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_x0': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'batch_size': 64, 'rnn_type': 'gru', 'num_mixtures': 4, 'device': device(type='cuda', index=0), 'rnn_params_dict': {'gru': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': 4, 'n_hidden': 256, 'n_layers': 2, 'lr': 2e-05, 'num_epochs': 2000, 'min_delta': 0.01, 'n_hidden_dense': 64, 'device': device(type='cuda', index=0)}, 'rnn': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'lstm': {'model_type': 'lstm', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}}} 
+
+No. of trainable parameters: 630212
+
+Epoch: 1/2000, Training NLL:96.204177856, Val. NLL:97.233695984, Val. MSE: 15.283258915, Time_Elapsed:0.4636 secs
+Epoch: 50/2000, Training NLL:93.152509054, Val. NLL:94.634567261, Val. MSE: 13.746949673, Time_Elapsed:10.5961 secs
+Epoch: 100/2000, Training NLL:89.028619130, Val. NLL:87.811676025, Val. MSE: 11.888029575, Time_Elapsed:21.0499 secs
+Epoch: 150/2000, Training NLL:85.968433380, Val. NLL:87.254432678, Val. MSE: 12.186808586, Time_Elapsed:31.7919 secs
+Epoch: 200/2000, Training NLL:83.454181671, Val. NLL:87.841430664, Val. MSE: 12.381992817, Time_Elapsed:42.2131 secs
+Epoch: 250/2000, Training NLL:80.938535055, Val. NLL:85.727130890, Val. MSE: 12.667311192, Time_Elapsed:52.7276 secs
+Epoch: 300/2000, Training NLL:78.550148010, Val. NLL:83.140884399, Val. MSE: 12.898964405, Time_Elapsed:63.2336 secs
+Epoch: 350/2000, Training NLL:76.458872477, Val. NLL:79.893558502, Val. MSE: 13.720752239, Time_Elapsed:73.8491 secs
+Epoch: 400/2000, Training NLL:74.583508809, Val. NLL:80.189357758, Val. MSE: 13.993576527, Time_Elapsed:84.3358 secs
+Epoch: 450/2000, Training NLL:72.732372284, Val. NLL:72.029136658, Val. MSE: 13.997112274, Time_Elapsed:94.8102 secs
+Epoch: 500/2000, Training NLL:71.150119781, Val. NLL:75.848220825, Val. MSE: 15.617676258, Time_Elapsed:105.2478 secs
+Epoch: 550/2000, Training NLL:69.574939728, Val. NLL:75.810531616, Val. MSE: 16.989008904, Time_Elapsed:115.7228 secs
+Epoch: 600/2000, Training NLL:68.076362610, Val. NLL:72.319347382, Val. MSE: 17.289936066, Time_Elapsed:126.2409 secs
+Interrupted!! ...saving the model at epoch:625
+------------------------------ Training ends --------------------------------- 
+
+------------------------------ Training begins --------------------------------- 
+
+Config: {'n_states': 16, 'n_obs': 16, 'mu_w': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_w': None, 'H': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'mu_x0': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_x0': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'batch_size': 64, 'rnn_type': 'gru', 'num_mixtures': 4, 'device': device(type='cuda', index=0), 'rnn_params_dict': {'gru': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': 4, 'n_hidden': 256, 'n_layers': 2, 'lr': 1e-05, 'num_epochs': 2000, 'min_delta': 0.01, 'n_hidden_dense': 64, 'device': device(type='cuda', index=0)}, 'rnn': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'lstm': {'model_type': 'lstm', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}}} 
+
+No. of trainable parameters: 630212
+
+Epoch: 1/2000, Training NLL:96.209273020, Val. NLL:97.244331360, Val. MSE: 15.286129951, Time_Elapsed:0.4491 secs
+Epoch: 50/2000, Training NLL:95.181166331, Val. NLL:96.468055725, Val. MSE: 14.279068470, Time_Elapsed:10.2749 secs
+Epoch: 100/2000, Training NLL:93.018386841, Val. NLL:91.085933685, Val. MSE: 13.164505005, Time_Elapsed:20.3556 secs
+Epoch: 150/2000, Training NLL:90.781111399, Val. NLL:91.283283234, Val. MSE: 13.153774738, Time_Elapsed:30.9065 secs
+Epoch: 200/2000, Training NLL:89.075515747, Val. NLL:92.287330627, Val. MSE: 13.066557884, Time_Elapsed:41.4374 secs
+Epoch: 250/2000, Training NLL:87.458485921, Val. NLL:91.004337311, Val. MSE: 12.570828915, Time_Elapsed:52.0243 secs
+Epoch: 300/2000, Training NLL:86.069276174, Val. NLL:90.274398804, Val. MSE: 12.225272179, Time_Elapsed:62.6981 secs
+Epoch: 350/2000, Training NLL:84.910511017, Val. NLL:87.728096008, Val. MSE: 12.525307655, Time_Elapsed:73.3104 secs
+Epoch: 400/2000, Training NLL:83.805789948, Val. NLL:89.127082825, Val. MSE: 12.534687519, Time_Elapsed:83.9447 secs
+Epoch: 450/2000, Training NLL:82.669568380, Val. NLL:81.302299500, Val. MSE: 11.635859489, Time_Elapsed:94.4865 secs
+Epoch: 500/2000, Training NLL:81.687399546, Val. NLL:85.521247864, Val. MSE: 13.074656487, Time_Elapsed:104.9951 secs
+Epoch: 550/2000, Training NLL:80.643163045, Val. NLL:86.398296356, Val. MSE: 13.139849663, Time_Elapsed:115.6950 secs
+Epoch: 600/2000, Training NLL:79.547856649, Val. NLL:82.820655823, Val. MSE: 12.864628315, Time_Elapsed:126.1523 secs
+Epoch: 650/2000, Training NLL:78.564137777, Val. NLL:83.213996887, Val. MSE: 12.759715080, Time_Elapsed:136.6770 secs
+Consecutive iterations are:[672, 673, 674]
+Exit and Convergence reached after 3 iterations for relative change in NLL below :0.01
+Training convergence attained at Epoch: 674!
+
+Saving the best model at epoch=674, with training loss=78.15748341878255, validation loss=81.58770751953125
+------------------------------ Training ends --------------------------------- 
+
+------------------------------ Training begins --------------------------------- 
+
+Config: {'n_states': 16, 'n_obs': 16, 'mu_w': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_w': None, 'H': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'mu_x0': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_x0': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'batch_size': 64, 'rnn_type': 'gru', 'num_mixtures': 4, 'device': device(type='cuda', index=0), 'rnn_params_dict': {'gru': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': 4, 'n_hidden': 256, 'n_layers': 2, 'lr': 5e-06, 'num_epochs': 2000, 'min_delta': 0.01, 'n_hidden_dense': 64, 'device': device(type='cuda', index=0)}, 'rnn': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'lstm': {'model_type': 'lstm', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}}} 
+
+No. of trainable parameters: 630212
+
+Epoch: 1/2000, Training NLL:96.211803436, Val. NLL:97.249610901, Val. MSE: 15.287562847, Time_Elapsed:0.4581 secs
+Epoch: 50/2000, Training NLL:95.781383514, Val. NLL:96.986366272, Val. MSE: 14.371802330, Time_Elapsed:10.4971 secs
+Epoch: 100/2000, Training NLL:95.173425039, Val. NLL:92.889709473, Val. MSE: 13.721111774, Time_Elapsed:20.9366 secs
+Epoch: 150/2000, Training NLL:94.179037730, Val. NLL:94.291740417, Val. MSE: 14.336504459, Time_Elapsed:31.4009 secs
+Epoch: 200/2000, Training NLL:93.048774719, Val. NLL:95.436923981, Val. MSE: 14.445170403, Time_Elapsed:41.8041 secs
+Epoch: 250/2000, Training NLL:91.851807912, Val. NLL:94.575679779, Val. MSE: 13.810226440, Time_Elapsed:52.1467 secs
+Epoch: 300/2000, Training NLL:90.896016439, Val. NLL:94.443195343, Val. MSE: 13.178718567, Time_Elapsed:62.5877 secs
+Epoch: 350/2000, Training NLL:90.122650146, Val. NLL:91.984661102, Val. MSE: 13.352377892, Time_Elapsed:73.2198 secs
+Epoch: 400/2000, Training NLL:89.376494090, Val. NLL:93.847892761, Val. MSE: 13.212822437, Time_Elapsed:83.6184 secs
+Epoch: 450/2000, Training NLL:88.632719676, Val. NLL:86.545513153, Val. MSE: 11.768898964, Time_Elapsed:94.0330 secs
+Epoch: 500/2000, Training NLL:88.020774841, Val. NLL:91.114860535, Val. MSE: 13.134250164, Time_Elapsed:104.3479 secs
+Epoch: 550/2000, Training NLL:87.432325999, Val. NLL:92.500080109, Val. MSE: 13.250905514, Time_Elapsed:114.9363 secs
+Epoch: 600/2000, Training NLL:86.761323293, Val. NLL:88.895648956, Val. MSE: 12.853730679, Time_Elapsed:125.4031 secs
+Epoch: 650/2000, Training NLL:86.213265737, Val. NLL:90.767326355, Val. MSE: 11.938576221, Time_Elapsed:135.8289 secs
+Consecutive iterations are:[672, 673, 674]
+Exit and Convergence reached after 3 iterations for relative change in NLL below :0.01
+Training convergence attained at Epoch: 674!
+
+Saving the best model at epoch=674, with training loss=86.0085080464681, validation loss=88.67074203491211
+------------------------------ Training ends --------------------------------- 
+
+------------------------------ Training begins --------------------------------- 
+
+Config: {'n_states': 16, 'n_obs': 16, 'mu_w': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_w': None, 'H': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'mu_x0': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_x0': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'batch_size': 64, 'rnn_type': 'gru', 'num_mixtures': 4, 'device': device(type='cuda', index=0), 'rnn_params_dict': {'gru': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': 4, 'n_hidden': 256, 'n_layers': 2, 'lr': 5e-06, 'num_epochs': 2000, 'min_delta': 0.005, 'n_hidden_dense': 64, 'device': device(type='cuda', index=0)}, 'rnn': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'lstm': {'model_type': 'lstm', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}}} 
+
+No. of trainable parameters: 630212
+
+Epoch: 1/2000, Training NLL:96.211803436, Val. NLL:97.249610901, Val. MSE: 15.287562847, Time_Elapsed:0.4653 secs
+Epoch: 50/2000, Training NLL:95.781383514, Val. NLL:96.986366272, Val. MSE: 14.371802330, Time_Elapsed:10.3576 secs
+Epoch: 100/2000, Training NLL:95.173425039, Val. NLL:92.889709473, Val. MSE: 13.721111774, Time_Elapsed:20.6943 secs
+Epoch: 150/2000, Training NLL:94.179037730, Val. NLL:94.291740417, Val. MSE: 14.336504459, Time_Elapsed:31.1630 secs
+Epoch: 200/2000, Training NLL:93.048774719, Val. NLL:95.436923981, Val. MSE: 14.445170403, Time_Elapsed:41.7536 secs
+Epoch: 250/2000, Training NLL:91.851807912, Val. NLL:94.575679779, Val. MSE: 13.810226440, Time_Elapsed:52.2281 secs
+Epoch: 300/2000, Training NLL:90.896016439, Val. NLL:94.443195343, Val. MSE: 13.178718567, Time_Elapsed:62.6995 secs
+Epoch: 350/2000, Training NLL:90.122650146, Val. NLL:91.984661102, Val. MSE: 13.352377892, Time_Elapsed:73.1210 secs
+Epoch: 400/2000, Training NLL:89.376494090, Val. NLL:93.847892761, Val. MSE: 13.212822437, Time_Elapsed:83.5927 secs
+Epoch: 450/2000, Training NLL:88.632719676, Val. NLL:86.545513153, Val. MSE: 11.768898964, Time_Elapsed:93.9004 secs
+Epoch: 500/2000, Training NLL:88.020774841, Val. NLL:91.114860535, Val. MSE: 13.134250164, Time_Elapsed:104.3810 secs
+Epoch: 550/2000, Training NLL:87.432325999, Val. NLL:92.500080109, Val. MSE: 13.250905514, Time_Elapsed:114.8471 secs
+Epoch: 600/2000, Training NLL:86.761323293, Val. NLL:88.895648956, Val. MSE: 12.853730679, Time_Elapsed:125.3617 secs
+Epoch: 650/2000, Training NLL:86.213265737, Val. NLL:90.767326355, Val. MSE: 11.938576221, Time_Elapsed:135.7536 secs
+Epoch: 700/2000, Training NLL:85.732031504, Val. NLL:88.742828369, Val. MSE: 12.196619034, Time_Elapsed:146.1821 secs
+Epoch: 750/2000, Training NLL:85.296877543, Val. NLL:90.031826019, Val. MSE: 12.725376129, Time_Elapsed:156.6253 secs
+Epoch: 800/2000, Training NLL:84.827501933, Val. NLL:88.650016785, Val. MSE: 12.593361855, Time_Elapsed:167.0827 secs
+Epoch: 850/2000, Training NLL:84.277356466, Val. NLL:86.572620392, Val. MSE: 11.910790443, Time_Elapsed:177.5554 secs
+Epoch: 900/2000, Training NLL:84.031791687, Val. NLL:88.394126892, Val. MSE: 12.731637478, Time_Elapsed:187.9456 secs
+Epoch: 950/2000, Training NLL:83.364816030, Val. NLL:84.422504425, Val. MSE: 11.762542725, Time_Elapsed:198.3795 secs
+Epoch: 1000/2000, Training NLL:82.866703033, Val. NLL:86.460090637, Val. MSE: 12.994187355, Time_Elapsed:208.9259 secs
+Epoch: 1050/2000, Training NLL:82.556955973, Val. NLL:83.617408752, Val. MSE: 12.386855602, Time_Elapsed:219.5544 secs
+Consecutive iterations are:[1068, 1069, 1070]
+Exit and Convergence reached after 3 iterations for relative change in NLL below :0.005
+Training convergence attained at Epoch: 1070!
+
+Saving the best model at epoch=1070, with training loss=82.37210337320964, validation loss=85.7033920288086
+------------------------------ Training ends --------------------------------- 
+
+------------------------------ Training begins --------------------------------- 
+
+Config: {'n_states': 16, 'n_obs': 16, 'mu_w': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_w': None, 'H': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'mu_x0': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_x0': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'batch_size': 64, 'rnn_type': 'gru', 'num_mixtures': 4, 'device': device(type='cuda', index=0), 'rnn_params_dict': {'gru': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': 4, 'n_hidden': 32, 'n_layers': 1, 'lr': 2e-05, 'num_epochs': 2000, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'rnn': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'lstm': {'model_type': 'lstm', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}}} 
+
+No. of trainable parameters: 10212
+
+Epoch: 1/2000, Training NLL:0.027071116, Val. NLL:0.027854233, Val. MSE: 14.953577042, Time_Elapsed:0.4358 secs
+Epoch: 50/2000, Training NLL:0.027029202, Val. NLL:0.027306007, Val. MSE: 14.347481728, Time_Elapsed:9.1326 secs
+Epoch: 100/2000, Training NLL:0.026998697, Val. NLL:0.027889053, Val. MSE: 14.343811989, Time_Elapsed:18.5452 secs
+Epoch: 150/2000, Training NLL:0.026953945, Val. NLL:0.027494313, Val. MSE: 14.462940216, Time_Elapsed:27.7319 secs
+Epoch: 200/2000, Training NLL:0.026895996, Val. NLL:0.027871772, Val. MSE: 15.091385841, Time_Elapsed:36.9361 secs
+Epoch: 250/2000, Training NLL:0.026804152, Val. NLL:0.027381004, Val. MSE: 14.008276463, Time_Elapsed:46.2907 secs
+Epoch: 300/2000, Training NLL:0.026692088, Val. NLL:0.026967036, Val. MSE: 12.963258266, Time_Elapsed:55.4734 secs
+Epoch: 350/2000, Training NLL:0.026591583, Val. NLL:0.027111576, Val. MSE: 12.558586121, Time_Elapsed:64.8307 secs
+Epoch: 400/2000, Training NLL:0.026470179, Val. NLL:0.027368653, Val. MSE: 13.408254623, Time_Elapsed:74.1202 secs
+Epoch: 450/2000, Training NLL:0.026421946, Val. NLL:0.026075827, Val. MSE: 11.825068951, Time_Elapsed:83.3777 secs
+Epoch: 500/2000, Training NLL:0.026321345, Val. NLL:0.027263738, Val. MSE: 13.047245026, Time_Elapsed:92.6805 secs
+Epoch: 550/2000, Training NLL:0.026252830, Val. NLL:0.027018552, Val. MSE: 12.528635979, Time_Elapsed:101.8929 secs
+Epoch: 600/2000, Training NLL:0.026172332, Val. NLL:0.026695247, Val. MSE: 12.700737000, Time_Elapsed:111.2582 secs
+Epoch: 650/2000, Training NLL:0.026136324, Val. NLL:0.026691439, Val. MSE: 12.609987736, Time_Elapsed:120.6530 secs
+Epoch: 700/2000, Training NLL:0.026050253, Val. NLL:0.025891872, Val. MSE: 11.777611732, Time_Elapsed:129.9323 secs
+Epoch: 750/2000, Training NLL:0.026031714, Val. NLL:0.026682445, Val. MSE: 12.397895336, Time_Elapsed:139.2618 secs
+Epoch: 800/2000, Training NLL:0.025962470, Val. NLL:0.026471181, Val. MSE: 12.601985931, Time_Elapsed:148.4783 secs
+Epoch: 850/2000, Training NLL:0.025914056, Val. NLL:0.026229920, Val. MSE: 12.187781334, Time_Elapsed:157.8460 secs
+Epoch: 900/2000, Training NLL:0.025843143, Val. NLL:0.026467291, Val. MSE: 12.523203850, Time_Elapsed:167.0889 secs
+Epoch: 950/2000, Training NLL:0.025813964, Val. NLL:0.025738664, Val. MSE: 11.842041492, Time_Elapsed:176.3374 secs
+Epoch: 1000/2000, Training NLL:0.025766898, Val. NLL:0.026381474, Val. MSE: 12.790043831, Time_Elapsed:185.6672 secs
+Epoch: 1050/2000, Training NLL:0.025719578, Val. NLL:0.025592844, Val. MSE: 11.742915154, Time_Elapsed:194.9053 secs
+Epoch: 1100/2000, Training NLL:0.025654344, Val. NLL:0.026003012, Val. MSE: 12.489777565, Time_Elapsed:204.1079 secs
+Epoch: 1150/2000, Training NLL:0.025646226, Val. NLL:0.026873465, Val. MSE: 13.204724789, Time_Elapsed:213.2821 secs
+Epoch: 1200/2000, Training NLL:0.025565475, Val. NLL:0.025993051, Val. MSE: 12.123998642, Time_Elapsed:222.6236 secs
+Epoch: 1250/2000, Training NLL:0.025567424, Val. NLL:0.025618421, Val. MSE: 12.491037846, Time_Elapsed:231.8726 secs
+Epoch: 1300/2000, Training NLL:0.025505287, Val. NLL:0.026381313, Val. MSE: 12.799708843, Time_Elapsed:241.1502 secs
+Epoch: 1350/2000, Training NLL:0.025477877, Val. NLL:0.026358414, Val. MSE: 12.923953056, Time_Elapsed:250.2999 secs
+Epoch: 1400/2000, Training NLL:0.025443952, Val. NLL:0.025519702, Val. MSE: 12.458598137, Time_Elapsed:259.6010 secs
+Epoch: 1450/2000, Training NLL:0.025400077, Val. NLL:0.026160264, Val. MSE: 13.067004204, Time_Elapsed:268.9088 secs
+Epoch: 1500/2000, Training NLL:0.025363605, Val. NLL:0.025537518, Val. MSE: 12.353013039, Time_Elapsed:278.2291 secs
+Epoch: 1550/2000, Training NLL:0.025321521, Val. NLL:0.025867362, Val. MSE: 13.077443123, Time_Elapsed:287.4894 secs
+Epoch: 1600/2000, Training NLL:0.025267297, Val. NLL:0.025054031, Val. MSE: 11.933811188, Time_Elapsed:296.8571 secs
+Epoch: 1650/2000, Training NLL:0.025252719, Val. NLL:0.025545724, Val. MSE: 12.994494915, Time_Elapsed:306.1258 secs
+Epoch: 1700/2000, Training NLL:0.025221051, Val. NLL:0.025913848, Val. MSE: 12.925932884, Time_Elapsed:315.3221 secs
+Epoch: 1750/2000, Training NLL:0.025199290, Val. NLL:0.026023961, Val. MSE: 13.274808884, Time_Elapsed:324.5696 secs
+Epoch: 1800/2000, Training NLL:0.025152641, Val. NLL:0.026021902, Val. MSE: 13.293710709, Time_Elapsed:333.7396 secs
+Epoch: 1850/2000, Training NLL:0.025117171, Val. NLL:0.025441583, Val. MSE: 12.729713440, Time_Elapsed:342.9191 secs
+Epoch: 1900/2000, Training NLL:0.025090241, Val. NLL:0.025717773, Val. MSE: 13.858573437, Time_Elapsed:352.2496 secs
+Epoch: 1950/2000, Training NLL:0.025039488, Val. NLL:0.025327096, Val. MSE: 13.067974091, Time_Elapsed:361.5032 secs
+Epoch: 2000/2000, Training NLL:0.025044493, Val. NLL:0.024987004, Val. MSE: 12.599521637, Time_Elapsed:370.8069 secs
+
+Saving the best model at epoch=None, with training loss=inf, validation loss=inf
+Saving last model as best...
+------------------------------ Training ends --------------------------------- 
+
+------------------------------ Training begins --------------------------------- 
+
+Config: {'n_states': 16, 'n_obs': 16, 'mu_w': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_w': None, 'H': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'mu_x0': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_x0': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'batch_size': 64, 'rnn_type': 'gru', 'num_mixtures': 4, 'device': device(type='cuda', index=0), 'rnn_params_dict': {'gru': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': 4, 'n_hidden': 32, 'n_layers': 1, 'lr': 2e-05, 'num_epochs': 2000, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'rnn': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'lstm': {'model_type': 'lstm', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}}} 
+
+No. of trainable parameters: 10212
+
+Epoch: 1/2000, Training NLL:0.027071116, Val. NLL:0.027854233, Val. MSE: 14.953577042, Time_Elapsed:0.5214 secs
+Epoch: 50/2000, Training NLL:0.027029202, Val. NLL:0.027306007, Val. MSE: 14.347481728, Time_Elapsed:10.7541 secs
+Epoch: 100/2000, Training NLL:0.026998697, Val. NLL:0.027889053, Val. MSE: 14.343811989, Time_Elapsed:21.1300 secs
+Epoch: 150/2000, Training NLL:0.026953945, Val. NLL:0.027494313, Val. MSE: 14.462940216, Time_Elapsed:31.6315 secs
+Epoch: 200/2000, Training NLL:0.026895996, Val. NLL:0.027871772, Val. MSE: 15.091385841, Time_Elapsed:42.2413 secs
+Epoch: 250/2000, Training NLL:0.026804152, Val. NLL:0.027381004, Val. MSE: 14.008276463, Time_Elapsed:54.8585 secs
+Epoch: 300/2000, Training NLL:0.026692088, Val. NLL:0.026967036, Val. MSE: 12.963258743, Time_Elapsed:65.1576 secs
+Epoch: 350/2000, Training NLL:0.026591583, Val. NLL:0.027111576, Val. MSE: 12.558586597, Time_Elapsed:75.6124 secs
+Epoch: 400/2000, Training NLL:0.026470179, Val. NLL:0.027368653, Val. MSE: 13.408254623, Time_Elapsed:86.1040 secs
+Epoch: 450/2000, Training NLL:0.026421946, Val. NLL:0.026075827, Val. MSE: 11.825068951, Time_Elapsed:96.4922 secs
+Epoch: 500/2000, Training NLL:0.026321345, Val. NLL:0.027263738, Val. MSE: 13.047245026, Time_Elapsed:107.1127 secs
+Epoch: 550/2000, Training NLL:0.026252830, Val. NLL:0.027018552, Val. MSE: 12.528635979, Time_Elapsed:117.5304 secs
+Epoch: 600/2000, Training NLL:0.026172332, Val. NLL:0.026695247, Val. MSE: 12.700737000, Time_Elapsed:127.9192 secs
+Epoch: 650/2000, Training NLL:0.026136324, Val. NLL:0.026691439, Val. MSE: 12.609987259, Time_Elapsed:138.2959 secs
+Epoch: 700/2000, Training NLL:0.026050253, Val. NLL:0.025891872, Val. MSE: 11.777611256, Time_Elapsed:148.8805 secs
+Epoch: 750/2000, Training NLL:0.026031714, Val. NLL:0.026682445, Val. MSE: 12.397894859, Time_Elapsed:159.3312 secs
+Epoch: 800/2000, Training NLL:0.025962470, Val. NLL:0.026471181, Val. MSE: 12.601986408, Time_Elapsed:169.8039 secs
+Epoch: 850/2000, Training NLL:0.025914056, Val. NLL:0.026229920, Val. MSE: 12.187781334, Time_Elapsed:180.3469 secs
+Epoch: 900/2000, Training NLL:0.025843143, Val. NLL:0.026467291, Val. MSE: 12.523203850, Time_Elapsed:190.6428 secs
+Epoch: 950/2000, Training NLL:0.025813964, Val. NLL:0.025738664, Val. MSE: 11.842041969, Time_Elapsed:201.1157 secs
+Epoch: 1000/2000, Training NLL:0.025766898, Val. NLL:0.026381474, Val. MSE: 12.790043831, Time_Elapsed:211.6581 secs
+Epoch: 1050/2000, Training NLL:0.025719578, Val. NLL:0.025592844, Val. MSE: 11.742915630, Time_Elapsed:222.1536 secs
+Epoch: 1100/2000, Training NLL:0.025654344, Val. NLL:0.026003012, Val. MSE: 12.489777565, Time_Elapsed:232.5812 secs
+Epoch: 1150/2000, Training NLL:0.025646226, Val. NLL:0.026873465, Val. MSE: 13.204725266, Time_Elapsed:242.9281 secs
+Epoch: 1200/2000, Training NLL:0.025565475, Val. NLL:0.025993051, Val. MSE: 12.123999119, Time_Elapsed:253.4113 secs
+Epoch: 1250/2000, Training NLL:0.025567424, Val. NLL:0.025618421, Val. MSE: 12.491038799, Time_Elapsed:263.7711 secs
+Epoch: 1300/2000, Training NLL:0.025505287, Val. NLL:0.026381313, Val. MSE: 12.799708843, Time_Elapsed:274.1709 secs
+Epoch: 1350/2000, Training NLL:0.025477877, Val. NLL:0.026358414, Val. MSE: 12.923954010, Time_Elapsed:284.5854 secs
+Epoch: 1400/2000, Training NLL:0.025443952, Val. NLL:0.025519702, Val. MSE: 12.458598137, Time_Elapsed:295.1589 secs
+Epoch: 1450/2000, Training NLL:0.025400077, Val. NLL:0.026160264, Val. MSE: 13.067005157, Time_Elapsed:306.5259 secs
+Epoch: 1500/2000, Training NLL:0.025363605, Val. NLL:0.025537518, Val. MSE: 12.353014469, Time_Elapsed:317.0125 secs
+Epoch: 1550/2000, Training NLL:0.025321521, Val. NLL:0.025867362, Val. MSE: 13.077445030, Time_Elapsed:327.5290 secs
+Epoch: 1600/2000, Training NLL:0.025267297, Val. NLL:0.025054031, Val. MSE: 11.933812618, Time_Elapsed:337.9862 secs
+Epoch: 1650/2000, Training NLL:0.025252719, Val. NLL:0.025545724, Val. MSE: 12.994495869, Time_Elapsed:348.3388 secs
+Epoch: 1700/2000, Training NLL:0.025221051, Val. NLL:0.025913848, Val. MSE: 12.925933361, Time_Elapsed:358.7661 secs
+Epoch: 1750/2000, Training NLL:0.025199290, Val. NLL:0.026023961, Val. MSE: 13.274809361, Time_Elapsed:369.1780 secs
+Epoch: 1800/2000, Training NLL:0.025152641, Val. NLL:0.026021902, Val. MSE: 13.293712139, Time_Elapsed:379.5351 secs
+Epoch: 1850/2000, Training NLL:0.025117171, Val. NLL:0.025441583, Val. MSE: 12.729715347, Time_Elapsed:390.0939 secs
+Epoch: 1900/2000, Training NLL:0.025090241, Val. NLL:0.025717773, Val. MSE: 13.858575344, Time_Elapsed:400.3402 secs
+Epoch: 1950/2000, Training NLL:0.025039488, Val. NLL:0.025327096, Val. MSE: 13.067974091, Time_Elapsed:410.6438 secs
+Epoch: 2000/2000, Training NLL:0.025044493, Val. NLL:0.024987004, Val. MSE: 12.599522591, Time_Elapsed:421.0438 secs
+
+Saving the best model at epoch=None, with training loss=inf, validation loss=inf
+Saving last model as best...
+------------------------------ Training ends --------------------------------- 
+
+------------------------------ Training begins --------------------------------- 
+
+Config: {'n_states': 16, 'n_obs': 16, 'mu_w': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_w': None, 'H': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'mu_x0': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_x0': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'batch_size': 64, 'rnn_type': 'gru', 'num_mixtures': 4, 'device': device(type='cuda', index=0), 'rnn_params_dict': {'gru': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': 4, 'n_hidden': 32, 'n_layers': 1, 'lr': 2e-05, 'num_epochs': 2000, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'rnn': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'lstm': {'model_type': 'lstm', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}}} 
+
+No. of trainable parameters: 10212
+
+Epoch: 1/2000, Training NLL:0.027071116, Val. NLL:0.027854233, Val. MSE: 14.953577042, Time_Elapsed:0.5234 secs
+Epoch: 50/2000, Training NLL:0.027029202, Val. NLL:0.027306007, Val. MSE: 14.347481728, Time_Elapsed:10.6796 secs
+Epoch: 100/2000, Training NLL:0.026998697, Val. NLL:0.027889053, Val. MSE: 14.343811989, Time_Elapsed:21.0517 secs
+Epoch: 150/2000, Training NLL:0.026953945, Val. NLL:0.027494313, Val. MSE: 14.462940216, Time_Elapsed:31.4681 secs
+Epoch: 200/2000, Training NLL:0.026895996, Val. NLL:0.027871772, Val. MSE: 15.091385841, Time_Elapsed:41.7585 secs
+Epoch: 250/2000, Training NLL:0.026804152, Val. NLL:0.027381004, Val. MSE: 14.008276463, Time_Elapsed:51.9281 secs
+Epoch: 300/2000, Training NLL:0.026692088, Val. NLL:0.026967036, Val. MSE: 12.963258743, Time_Elapsed:62.2594 secs
+Epoch: 350/2000, Training NLL:0.026591583, Val. NLL:0.027111576, Val. MSE: 12.558586597, Time_Elapsed:72.4864 secs
+Epoch: 400/2000, Training NLL:0.026470179, Val. NLL:0.027368653, Val. MSE: 13.408254623, Time_Elapsed:82.6102 secs
+Epoch: 450/2000, Training NLL:0.026421946, Val. NLL:0.026075827, Val. MSE: 11.825068951, Time_Elapsed:93.0101 secs
+Epoch: 500/2000, Training NLL:0.026321345, Val. NLL:0.027263738, Val. MSE: 13.047245026, Time_Elapsed:103.3672 secs
+Epoch: 550/2000, Training NLL:0.026252830, Val. NLL:0.027018552, Val. MSE: 12.528635979, Time_Elapsed:113.6889 secs
+Epoch: 600/2000, Training NLL:0.026172332, Val. NLL:0.026695247, Val. MSE: 12.700737000, Time_Elapsed:124.0242 secs
+Epoch: 650/2000, Training NLL:0.026136324, Val. NLL:0.026691439, Val. MSE: 12.609987259, Time_Elapsed:134.1885 secs
+Epoch: 700/2000, Training NLL:0.026050253, Val. NLL:0.025891872, Val. MSE: 11.777611256, Time_Elapsed:144.6222 secs
+Epoch: 750/2000, Training NLL:0.026031714, Val. NLL:0.026682445, Val. MSE: 12.397894859, Time_Elapsed:154.8494 secs
+Epoch: 800/2000, Training NLL:0.025962470, Val. NLL:0.026471181, Val. MSE: 12.601986408, Time_Elapsed:165.2679 secs
+Epoch: 850/2000, Training NLL:0.025914056, Val. NLL:0.026229920, Val. MSE: 12.187781334, Time_Elapsed:175.5918 secs
+Epoch: 900/2000, Training NLL:0.025843143, Val. NLL:0.026467291, Val. MSE: 12.523203850, Time_Elapsed:185.7941 secs
+Epoch: 950/2000, Training NLL:0.025813964, Val. NLL:0.025738664, Val. MSE: 11.842041969, Time_Elapsed:196.1275 secs
+Epoch: 1000/2000, Training NLL:0.025766898, Val. NLL:0.026381474, Val. MSE: 12.790043831, Time_Elapsed:206.6998 secs
+Epoch: 1050/2000, Training NLL:0.025719578, Val. NLL:0.025592844, Val. MSE: 11.742915630, Time_Elapsed:216.8881 secs
+Epoch: 1100/2000, Training NLL:0.025654344, Val. NLL:0.026003012, Val. MSE: 12.489777565, Time_Elapsed:227.2401 secs
+Epoch: 1150/2000, Training NLL:0.025646226, Val. NLL:0.026873465, Val. MSE: 13.204725266, Time_Elapsed:237.4931 secs
+Epoch: 1200/2000, Training NLL:0.025565475, Val. NLL:0.025993051, Val. MSE: 12.123999119, Time_Elapsed:247.8697 secs
+Epoch: 1250/2000, Training NLL:0.025567424, Val. NLL:0.025618421, Val. MSE: 12.491038799, Time_Elapsed:258.1491 secs
+Epoch: 1300/2000, Training NLL:0.025505287, Val. NLL:0.026381313, Val. MSE: 12.799708843, Time_Elapsed:268.3105 secs
+Epoch: 1350/2000, Training NLL:0.025477877, Val. NLL:0.026358414, Val. MSE: 12.923954010, Time_Elapsed:279.3502 secs
+Epoch: 1400/2000, Training NLL:0.025443952, Val. NLL:0.025519702, Val. MSE: 12.458598137, Time_Elapsed:289.6814 secs
+Interrupted!! ...saving the model at epoch:1418
+------------------------------ Training ends --------------------------------- 
+
+------------------------------ Training begins --------------------------------- 
+
+Config: {'n_states': 16, 'n_obs': 16, 'mu_w': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_w': None, 'H': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'mu_x0': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'C_x0': array([[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]), 'batch_size': 64, 'rnn_type': 'gru', 'num_mixtures': 4, 'device': device(type='cuda', index=0), 'rnn_params_dict': {'gru': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': 4, 'n_hidden': 32, 'n_layers': 1, 'lr': 2e-05, 'num_epochs': 2000, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'rnn': {'model_type': 'gru', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}, 'lstm': {'model_type': 'lstm', 'input_size': 16, 'output_size': 16, 'num_mixtures': None, 'n_hidden': 40, 'n_layers': 2, 'lr': 0.001, 'num_epochs': 300, 'min_delta': 0.001, 'n_hidden_dense': 32, 'device': device(type='cuda', index=0)}}} 
+
+No. of trainable parameters: 10212
+
+Epoch: 1/2000, Training NLL:25.988266945, Val. NLL:26.740056992, Val. MSE: 14.953588009, Time_Elapsed:0.5163 secs
+Epoch: 50/2000, Training NLL:25.947764397, Val. NLL:26.213529587, Val. MSE: 14.348049164, Time_Elapsed:10.7687 secs
+Epoch: 100/2000, Training NLL:25.918100993, Val. NLL:26.772923470, Val. MSE: 14.344735622, Time_Elapsed:20.9839 secs
+Epoch: 150/2000, Training NLL:25.874521573, Val. NLL:26.393505096, Val. MSE: 14.463676453, Time_Elapsed:31.0670 secs
+Epoch: 200/2000, Training NLL:25.817825953, Val. NLL:26.754970551, Val. MSE: 15.090069294, Time_Elapsed:41.3390 secs
+Epoch: 250/2000, Training NLL:25.727878888, Val. NLL:26.282150269, Val. MSE: 14.003618240, Time_Elapsed:51.7094 secs
+Epoch: 300/2000, Training NLL:25.618273735, Val. NLL:25.882705688, Val. MSE: 12.954886913, Time_Elapsed:62.6927 secs
+Epoch: 350/2000, Training NLL:25.520995776, Val. NLL:26.020473480, Val. MSE: 12.550685883, Time_Elapsed:73.0846 secs
+Epoch: 400/2000, Training NLL:25.404696465, Val. NLL:26.268002510, Val. MSE: 13.402100086, Time_Elapsed:83.4927 secs
+Epoch: 450/2000, Training NLL:25.359030724, Val. NLL:25.026630402, Val. MSE: 11.828934193, Time_Elapsed:93.7798 secs
+Epoch: 500/2000, Training NLL:25.263026237, Val. NLL:26.168416977, Val. MSE: 13.050632954, Time_Elapsed:103.9940 secs
+Epoch: 550/2000, Training NLL:25.197546959, Val. NLL:25.932943344, Val. MSE: 12.533661842, Time_Elapsed:114.0908 secs
+Epoch: 600/2000, Training NLL:25.120387395, Val. NLL:25.622448921, Val. MSE: 12.702305794, Time_Elapsed:124.5679 secs
+Epoch: 650/2000, Training NLL:25.085857391, Val. NLL:25.618791580, Val. MSE: 12.611415386, Time_Elapsed:134.8599 secs
+Epoch: 700/2000, Training NLL:25.003229777, Val. NLL:24.851437569, Val. MSE: 11.779597282, Time_Elapsed:145.0301 secs
+Epoch: 750/2000, Training NLL:24.985441844, Val. NLL:25.610300064, Val. MSE: 12.395760059, Time_Elapsed:155.6688 secs
+Epoch: 800/2000, Training NLL:24.918955167, Val. NLL:25.408065796, Val. MSE: 12.597755432, Time_Elapsed:165.9629 secs
+Epoch: 850/2000, Training NLL:24.872472127, Val. NLL:25.176223755, Val. MSE: 12.184937477, Time_Elapsed:176.1534 secs
+Epoch: 900/2000, Training NLL:24.804402033, Val. NLL:25.404310226, Val. MSE: 12.519173145, Time_Elapsed:186.5709 secs
+Epoch: 950/2000, Training NLL:24.776410739, Val. NLL:24.704492569, Val. MSE: 11.835483551, Time_Elapsed:197.0047 secs
+Epoch: 1000/2000, Training NLL:24.731192589, Val. NLL:25.321947098, Val. MSE: 12.784230709, Time_Elapsed:207.2624 secs
+Epoch: 1050/2000, Training NLL:24.685757637, Val. NLL:24.564067841, Val. MSE: 11.738845825, Time_Elapsed:217.5388 secs
+Epoch: 1100/2000, Training NLL:24.623107274, Val. NLL:24.958130836, Val. MSE: 12.487216473, Time_Elapsed:228.1498 secs
+Epoch: 1150/2000, Training NLL:24.615309079, Val. NLL:25.793992996, Val. MSE: 13.199534893, Time_Elapsed:238.1842 secs
+Epoch: 1200/2000, Training NLL:24.537735939, Val. NLL:24.948806763, Val. MSE: 12.116267681, Time_Elapsed:248.5163 secs
+Epoch: 1250/2000, Training NLL:24.539586385, Val. NLL:24.589131355, Val. MSE: 12.484364510, Time_Elapsed:258.8858 secs
+Epoch: 1300/2000, Training NLL:24.479893684, Val. NLL:25.321226120, Val. MSE: 12.790996075, Time_Elapsed:269.2484 secs
+Epoch: 1350/2000, Training NLL:24.453561783, Val. NLL:25.299428940, Val. MSE: 12.918576717, Time_Elapsed:279.6019 secs
+Epoch: 1400/2000, Training NLL:24.420972824, Val. NLL:24.493619919, Val. MSE: 12.454161644, Time_Elapsed:289.9073 secs
+Epoch: 1450/2000, Training NLL:24.378851891, Val. NLL:25.109090805, Val. MSE: 13.060250759, Time_Elapsed:300.3241 secs
+Epoch: 1500/2000, Training NLL:24.343815486, Val. NLL:24.511435509, Val. MSE: 12.344982147, Time_Elapsed:310.7394 secs
+Epoch: 1550/2000, Training NLL:24.303408305, Val. NLL:24.827898026, Val. MSE: 13.069224358, Time_Elapsed:320.9444 secs
+Epoch: 1600/2000, Training NLL:24.251341820, Val. NLL:24.047068596, Val. MSE: 11.928657055, Time_Elapsed:331.1765 secs
+Epoch: 1650/2000, Training NLL:24.237340927, Val. NLL:24.519291878, Val. MSE: 12.989897728, Time_Elapsed:341.3063 secs
+Epoch: 1700/2000, Training NLL:24.206930161, Val. NLL:24.871994019, Val. MSE: 12.919749260, Time_Elapsed:351.5974 secs
+Epoch: 1750/2000, Training NLL:24.186030706, Val. NLL:24.978541374, Val. MSE: 13.271068573, Time_Elapsed:361.9457 secs
+Epoch: 1800/2000, Training NLL:24.141241074, Val. NLL:24.976345062, Val. MSE: 13.286357880, Time_Elapsed:372.1684 secs
+Epoch: 1850/2000, Training NLL:24.107179960, Val. NLL:24.418949127, Val. MSE: 12.727623940, Time_Elapsed:382.4129 secs
+Epoch: 1900/2000, Training NLL:24.081324577, Val. NLL:24.683794975, Val. MSE: 13.856586456, Time_Elapsed:392.6190 secs
+Epoch: 1950/2000, Training NLL:24.032567024, Val. NLL:24.309539795, Val. MSE: 13.069563389, Time_Elapsed:402.9303 secs
+Epoch: 2000/2000, Training NLL:24.037338575, Val. NLL:23.982561111, Val. MSE: 12.600451946, Time_Elapsed:413.0334 secs
+
+Saving the best model at epoch=None, with training loss=inf, validation loss=inf
+Saving last model as best...
+------------------------------ Training ends --------------------------------- 
+

@@ -301,10 +301,10 @@ if __name__ == "__main__":
     latent_dim = args.latent_dim
 
     # Testing parameters 
-    T_test = 40
+    T_test = 60
     N_test = 100
     N_train = 500
-    T_train = 40
+    T_train = 60
     #sigma_e2_dB_test = -10.0
     device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
     bias = None # By default should be positive, equal to 10.0
@@ -358,12 +358,12 @@ if __name__ == "__main__":
     model_file_saved_dict = {}
 
     for smnr_dB in smnr_dB_arr:
-        model_file_saved_dict["{}dB".format(smnr_dB)] = glob.glob(r"./models/*rotnist_danse_opt_*n_32_T_{}_N_{}_smnr_{}dB*/*best*".format(T_train, N_train, smnr_dB))[-1]
+        model_file_saved_dict["{}dB".format(smnr_dB)] = glob.glob(r"./models/*rotnist_danse_opt_*n_16_T_{}_N_{}_smnr_{}dB*/*best*".format(T_train, N_train, smnr_dB))[-1]
 
     test_data_file_dict = {}
     # Rename to test_data directory
     for smnr_dB in smnr_dB_arr:
-        test_data_file_dict["{}dB".format(smnr_dB)] = "./data/encoded_noise_data/test_data/test_sequence_m_32_n_32_rotnist_T_{}_N_{}_smnr_{}dB.pkl".format(T_test, N_test, smnr_dB)
+        test_data_file_dict["{}dB".format(smnr_dB)] = "./data/encoded_noise_data/test_data/test_sequence_m_16_n_16_rotnist_T_{}_N_{}_smnr_{}dB.pkl".format(T_test, N_test, smnr_dB)
     
     print("*"*100)
     print(model_file_saved_dict)
@@ -452,14 +452,14 @@ if __name__ == "__main__":
             savepath = f'./figs/rotnist_figs/{evaluation_mode}/reconstructed_images_danse_smnr_{int(smnr_dB)}dB.pdf'
             with PdfPages(savepath) as pdf:
                 keys = recon_img_dict.keys()
-                num_cols = 10  # Number of columns to display = setting to show 10 images
+                num_cols = 60  # Number of columns to display = setting to show 10 images
                 num_rows = 4  # Number of rows, showing origX, reconZ, danseXhat, lsXhat in each pdf
 
                 fig, axs = plt.subplots(num_rows, num_cols, figsize=(4 * num_cols, 4 * num_rows))
 
                 # Add X images at the top
                 for k in range(num_cols):
-                    original_img = X[0, k].cpu().view(28, 28)
+                    original_img = X[61, k].cpu().view(28, 28)
                     axs[0, k].imshow(original_img, cmap='gray')
                     axs[0, k].set_title(f'Original X {k}')
                     axs[0, k].axis('off')
@@ -476,7 +476,7 @@ if __name__ == "__main__":
                             dataZ_list.append(t_list)
 
                         for k in range(num_cols):
-                            decoded_img = dataZ_list[0][k]
+                            decoded_img = dataZ_list[61][k]
                             axs[i + 1, k].imshow(decoded_img.cpu().view(28, 28), cmap='gray')
                             axs[i + 1, k].set_title(f'reconZ {k}')
                             axs[i + 1, k].axis('off')
@@ -484,7 +484,7 @@ if __name__ == "__main__":
                     else:
                         for k in range(num_cols):
                             if key in [f"DANSE {str(smnr_dB)}", f"LS {str(smnr_dB)}"]:
-                                reconstructed_image = recon_img_dict[key][0][k].cpu().view(28, 28)
+                                reconstructed_image = recon_img_dict[key][61][k].cpu().view(28, 28)
                                 axs[i + 1, k].imshow(reconstructed_image, cmap='gray')
                                 axs[i + 1, k].set_title(f'{key} dB {k}')
                                 axs[i + 1, k].axis('off')

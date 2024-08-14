@@ -183,7 +183,7 @@ def prepare_MNIST_data(use_data_augmentation=True, T_train=None, N_train=None, T
             cur_img = Image.fromarray(array)
             gray_img = cur_img.convert("L")
             imwrite(DATADIR + "/test_images/" + f"{imnum}_{j}" + ".jpg", gray_img)
-            writer.writerow(["test_images/" + f"{imnum}_{j}" + ".jpg", train_labels[i]])
+            writer.writerow(["test_images/" + f"{imnum}_{j}" + ".jpg", test_labels[i]])
             if i%T_test == 0:
                 print(f"Generated {imnum} set of test images...")
 

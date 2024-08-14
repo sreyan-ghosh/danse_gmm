@@ -23,7 +23,7 @@ danse_mode="test_danse"
 model_type="ae"
 
 # n_obs and m_states
-latent_dim="32"
+latent_dim="16"
 
 if [ "$danse_mode" == "train_danse" ]; then
 

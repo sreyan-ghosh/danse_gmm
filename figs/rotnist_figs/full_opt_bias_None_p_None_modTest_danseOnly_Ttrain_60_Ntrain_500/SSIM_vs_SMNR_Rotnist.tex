@@ -7,7 +7,14 @@
 
 \begin{axis}[
 legend cell align={left},
-legend style={fill opacity=0.8, draw opacity=1, text opacity=1, draw=lightgray204},
+legend style={
+  fill opacity=0.8,
+  draw opacity=1,
+  text opacity=1,
+  at={(0.03,0.97)},
+  anchor=north west,
+  draw=lightgray204
+},
 tick align=outside,
 tick pos=left,
 x grid style={darkgray176},
@@ -18,7 +25,7 @@ xtick style={color=black},
 y grid style={darkgray176},
 ylabel={SSIM},
 ymajorgrids,
-ymin=0.141480065458714, ymax=0.864282157716966,
+ymin=0.138694056945443, ymax=0.864414824789026,
 ytick style={color=black}
 ]
 \path [draw=green01270, semithick]
@@ -38,20 +45,36 @@ ytick style={color=black}
 --(axis cs:10,0.831427517159772);
 
 \path [draw=blue, thick]
-(axis cs:-5,0.174334706015907)
---(axis cs:-5,0.382467443150152);
+(axis cs:-5,0.187148142463607)
+--(axis cs:-5,0.420402392142318);
 
 \path [draw=blue, thick]
-(axis cs:0,0.242151884565905)
---(axis cs:0,0.441748862037459);
+(axis cs:0,0.317753245863616)
+--(axis cs:0,0.554489128684345);
 
 \path [draw=blue, thick]
-(axis cs:5,0.410943071821049)
---(axis cs:5,0.667409740187948);
+(axis cs:5,0.487668341439267)
+--(axis cs:5,0.740663634274772);
 
 \path [draw=blue, thick]
-(axis cs:10,0.628589436888732)
---(axis cs:10,0.83003548935813);
+(axis cs:10,0.620419100600626)
+--(axis cs:10,0.829148529328346);
+
+\path [draw=red, thick]
+(axis cs:-5,0.171681364574697)
+--(axis cs:-5,0.358912766552828);
+
+\path [draw=red, thick]
+(axis cs:0,0.287904334365763)
+--(axis cs:0,0.512416117592191);
+
+\path [draw=red, thick]
+(axis cs:5,0.435646058962927)
+--(axis cs:5,0.649378126816361);
+
+\path [draw=red, thick]
+(axis cs:10,0.621393318962716)
+--(axis cs:10,0.805042272850883);
 
 \addplot [semithick, green01270, dash pattern=on 1pt off 3pt on 3pt off 3pt, mark=pentagon*, mark size=3, mark options={solid}]
 table {%
@@ -60,15 +83,23 @@ table {%
 5 0.618113947774697
 10 0.738799138565299
 };
-\addlegendentry{DANSE}
+\addlegendentry{DANSE GMM}
 \addplot [thick, blue, mark=asterisk, mark size=3, mark options={solid}]
 table {%
--5 0.278401074583029
-0 0.341950373301682
-5 0.539176406004499
-10 0.729312463123431
+-5 0.303775267302962
+0 0.436121187273981
+5 0.614165987857019
+10 0.724783814964486
 };
-\addlegendentry{DANSE}
+\addlegendentry{DANSE GMM}
+\addplot [thick, red, dashed, mark=diamond*, mark size=3, mark options={solid}]
+table {%
+-5 0.265297065563762
+0 0.400160225978977
+5 0.542512092889644
+10 0.7132177959068
+};
+\addlegendentry{DANSE GMM}
 \end{axis}
 
 \end{tikzpicture}

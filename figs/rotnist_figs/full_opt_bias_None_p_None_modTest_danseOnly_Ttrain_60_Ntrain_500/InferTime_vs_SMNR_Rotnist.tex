@@ -6,14 +6,7 @@
 
 \begin{axis}[
 legend cell align={left},
-legend style={
-  fill opacity=0.8,
-  draw opacity=1,
-  text opacity=1,
-  at={(0.03,0.97)},
-  anchor=north west,
-  draw=lightgray204
-},
+legend style={fill opacity=0.8, draw opacity=1, text opacity=1, draw=lightgray204},
 tick align=outside,
 tick pos=left,
 x grid style={darkgray176},
@@ -24,15 +17,15 @@ xtick style={color=black},
 y grid style={darkgray176},
 ylabel={Inference time (in s)},
 ymajorgrids,
-ymin=0.0662820190191269, ymax=0.0965772792696953,
+ymin=0.0187266554683447, ymax=0.0216272313147783,
 ytick style={color=black}
 ]
 \addplot [thick, blue, mark=*, mark size=3, mark options={solid}]
 table {%
--5 0.0923610143363476
-0 0.0676590763032436
-5 0.0950015634298325
-10 0.0952002219855785
+-5 0.0214702449738979
+0 0.0194656141102314
+5 0.0214953869581223
+10 0.0188584998250008
 };
 \addlegendentry{DANSE}
 \end{axis}

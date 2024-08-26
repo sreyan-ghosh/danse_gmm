@@ -33,7 +33,7 @@ Meeting 29/7
 - [x] Start working on GMM, create outline
 
 GMM Work
-- [ ] Modify train_test_split to account only for validation and train sequences (test not reqd)
+- [x] Modify train_test_split to account only for validation and train sequences (test not reqd)
 - [x] Modify `rnn_gmm.py` file to output 4dim triplets of (beta, mean, cov)
 - [x] Modify `danse_gmm.py` file with updated forward, prior, posterior and comp_pred funcs
 - [x] Add danse_gmm option to `parameters_opt.py` file and modify as required
@@ -43,10 +43,16 @@ Meeting 12/8
 - [x] Add the Cw before (see note in the file)
 - [x] Change beta calculations to log
 - [x] Move beta before mean and cov
-- [ ] Add danse_rotnist to test
+- [x] Add danse_rotnist to test
+
+Meeting 23/8
+- [ ] return posterior betas into log file
+- [ ] change naming structure for figs to include n_mix
+
+Future:
+- [ ] Test for a more controlled experiment with multivariate Gaussians as the underlying dist
 
 Things to try if nothing else works
 - Really short sequences (is it getting better with the longer sequences?)
 - Train on just one kind of number
 - Calculating the mse loss for the X instead by decoding within the training loop (maybe not)
-- 

@@ -21,6 +21,7 @@ def save_model(model, filepath):
     return None
 
 def push_model(nets, device='cpu'):
+    device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
     nets = nets.to(device=device)
     return nets
 
@@ -41,7 +42,7 @@ class DANSE(nn.Module):
 
         # Initializing the parameters of the measurement noise
         self.mu_w = self.push_to_device(mu_w)
-        self.C_w = self.push_to_device(C_w)
+        self.C_w = None
 
         # Initialize the observation model matrix 
         self.H = self.push_to_device(H)

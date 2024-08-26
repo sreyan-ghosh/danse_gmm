@@ -11,6 +11,7 @@ import math
 from torch.utils.data import DataLoader, Dataset
 import sys
 import os
+import re
 import matplotlib.pyplot as plt
 from torch.autograd import Variable
 from torch.autograd.functional import jacobian
@@ -25,7 +26,7 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 # Import for decoding:
 from src.rotnist_enc_dec import AE, decode_data
-
+from tests.test_danse_rotnist import test_danse_rotnist
 from utils.plot_functions import *
 from utils.utils_rotnist import generate_normal, dB_to_lin, lin_to_dB, mse_loss, nmse_loss, \
     mse_loss_dB, load_saved_dataset, save_dataset, nmse_loss_std, mse_loss_dB_std, NDArrayEncoder, partial_corrupt, \
@@ -34,6 +35,7 @@ from utils.utils_rotnist import generate_normal, dB_to_lin, lin_to_dB, mse_loss,
 from config.parameters_opt import get_parameters, A_fn, h_fn, f_lorenz_danse, f_lorenz_danse_ukf, delta_t, J_test, get_H_DANSE
 #from src.k_net import KalmanNetNN
 from src.danse_gmm import DANSE_GMM, push_model
+from src.danse_rotnist import DANSE
 import argparse
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -67,7 +69,7 @@ def recreate_latent_values(mean, covariance, device):
     return z_samples
 
 # traj_resultName = ['traj_lor_KNetFull_rq1030_T2000_NT100.pt']#,'partial_lor_r4.pt','partial_lor_r5.pt','partial_lor_r6.pt']
-def test_danse_rotnist(danse_model, saved_model_file, Y, Cw, device=None):
+def test_danse_gmm_rotnist(danse_model, saved_model_file, Y, Cw, device=None):
 
     danse_model.load_state_dict(torch.load(saved_model_file, map_location=device))
     danse_model = push_model(nets=danse_model, device=device)
@@ -177,28 +179,39 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
                                         n_obs=n, 
                                         device=device)
     
-    estimator_options = est_dict["danse_gmm"]
-    estimator_options['H'] = get_H_DANSE(type_=dataset_type, n_states=n, n_obs=m) # Get the sensing matrix from the model info
+    estimator_options_gmm = est_dict["danse_gmm"]
+    estimator_options = est_dict["danse"]
+    estimator_options_gmm['H'] = get_H_DANSE(type_=dataset_type, n_states=n, n_obs=m) # Get the sensing matrix from the model info
+    estimator_options['H'] = get_H_DANSE(type_=dataset_type, n_states=n, n_obs=m)
     
-    estimator_options["num_mixtures"] = n_mix # GMM Update: Added n_mix
+    estimator_options_gmm["num_mixtures"] = n_mix
     
-    danse_model = DANSE_GMM(**estimator_options)
+    danse_gmm_model = DANSE_GMM(**estimator_options_gmm)
+    danse_model = DANSE(**estimator_options)
 
     print("DANSE Model file: {}".format(model_file_saved))
 
     Z_estimated_pred = None
     Z_estimated_filtered = None
     Pk_estimated_filtered = None
+    danse_only_mod_fp = re.sub(r'_n_mix_\d+', '', model_file_saved)
+    danse_only_mod_fp = re.sub(r'_epoch_\d+', '_epoch_*', danse_only_mod_fp)
+    danse_model_file = glob.glob(danse_only_mod_fp)[-1]
 
     start_time_danse = timer()
     beta_estimated_pred, Z_estimated_pred, Pk_estimated_pred, \
-    betaZ_estimated_filtered, Z_estimated_filtered, Pk_estimated_filtered = test_danse_rotnist(danse_model=danse_model, 
+    betaZ_estimated_filtered_gmm, Z_estimated_filtered_gmm, Pk_estimated_filtered = test_danse_gmm_rotnist(danse_model=danse_gmm_model, 
                                                                                                 saved_model_file=model_file_saved,
                                                                                                 Y=Y,
                                                                                                 Cw=Cw_i,
                                                                                                 device=device)  
     
-    # z_samples = recreate_latent_values(Z_estimated_filtered, Pk_estimated_filtered, device)
+    Z_estimated_pred, Pk_estimated_pred, Z_estimated_filtered, Pk_estimated_filtered = test_danse_rotnist(danse_model=danse_model, 
+                                                                                                saved_model_file=danse_model_file,
+                                                                                                Y=Y,
+                                                                                                Cw=Cw_i,
+                                                                                                device=device)
+    post_mean_z_hat_gmm = Z_estimated_filtered_gmm
     post_mean_z_hat = Z_estimated_filtered
     time_elapsed_danse = timer() - start_time_danse
 
@@ -232,6 +245,17 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
     
     xhat_danse = torch.stack([torch.stack(t_list) for t_list in xhat_danse])
 
+    xhat_danse_gmm = []   
+    for num_sample in range(post_mean_z_hat_gmm.shape[0]):
+        t_list = []
+        for t_sample in range(post_mean_z_hat_gmm.shape[1]):
+            elem = post_mean_z_hat_gmm[num_sample, t_sample]
+            x_hat = decode_data(model, elem, device) # x_hat = 784
+            t_list.append(x_hat) 
+        xhat_danse_gmm.append(t_list) # xhat_arr len = 100
+    
+    xhat_danse_gmm = torch.stack([torch.stack(t_list) for t_list in xhat_danse_gmm])
+
     xhat_ls = []   
     for num_sample in range(Z_LS.shape[0]):
         t_list = []
@@ -254,6 +278,11 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
     nmse_danse_x = nmse_loss(X, xhat_danse)
     nmse_danse_x_std = nmse_loss_std(X, xhat_danse)
 
+    nmse_danse_gmm_z = nmse_loss(Z, post_mean_z_hat_gmm)
+    nmse_danse_gmm_z_std = nmse_loss_std(Z, post_mean_z_hat_gmm)
+    nmse_danse_gmm_x = nmse_loss(X, xhat_danse_gmm)
+    nmse_danse_gmm_x_std = nmse_loss_std(X, xhat_danse_gmm)
+
     # MSE
     mse_dB_ls_z = mse_loss_dB(Z, Z_LS)
     mse_dB_ls_z_std = mse_loss_dB_std(Z, Z_LS)
@@ -264,24 +293,38 @@ def test_rotnist(device=None, model_file_saved=None, test_data_file=None, test_l
     mse_dB_danse_z_std = mse_loss_dB_std(Z, post_mean_z_hat)
     mse_dB_danse_x = mse_loss_dB(X, xhat_danse)
     mse_dB_danse_x_std = mse_loss_dB_std(X, xhat_danse)
+
+    mse_dB_danse_gmm_z = mse_loss_dB(Z, post_mean_z_hat_gmm)
+    mse_dB_danse_gmm_z_std = mse_loss_dB_std(Z, post_mean_z_hat_gmm)
+    mse_dB_danse_gmm_x = mse_loss_dB(X, xhat_danse_gmm)
+    mse_dB_danse_gmm_x_std = mse_loss_dB_std(X, xhat_danse_gmm)
     
     # Log file print
     print("DANSE - MSE LOSS:",mse_dB_danse_x, "[dB]")
     print("DANSE - MSE STD:", mse_dB_danse_x_std, "[dB]")
+    print("DANSE GMM - MSE LOSS:",mse_dB_danse_gmm_x, "[dB]")
+    print("DANSE GMM- MSE STD:", mse_dB_danse_gmm_x_std, "[dB]")
 
     print("LS, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB]".format(N_test, nmse_ls_x, nmse_ls_x_std, mse_dB_ls_x, mse_dB_ls_x_std))
-    # print("danse (pred.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_pred_x, nmse_danse_pred_std, mse_dB_danse_pred, mse_dB_danse_pred_std, time_elapsed_danse))
-    print("danse (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_x, nmse_danse_x_std, mse_dB_danse_x, mse_dB_danse_x_std, time_elapsed_danse))
+    print("danse (only), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_x, nmse_danse_x_std, mse_dB_danse_x, mse_dB_danse_x_std, time_elapsed_danse))
+    print("danse (gmm), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_gmm_x, nmse_danse_gmm_x_std, mse_dB_danse_gmm_x, mse_dB_danse_gmm_x_std, time_elapsed_danse))
 
     # System console print
     sys.stdout = orig_stdout
     print("LS, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB]".format(N_test, nmse_ls_x, nmse_ls_x_std, mse_dB_ls_x, mse_dB_ls_x_std))
-    # print("danse (pred.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_pred_x, nmse_danse_pred_std, mse_dB_danse_pred, mse_dB_danse_pred_std, time_elapsed_danse))
-    print("danse (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_x, nmse_danse_x_std, mse_dB_danse_x, mse_dB_danse_x_std, time_elapsed_danse))
+    print("danse (only), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_x, nmse_danse_x_std, mse_dB_danse_x, mse_dB_danse_x_std, time_elapsed_danse))
+    print("danse (gmm), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_gmm_x, nmse_danse_gmm_x_std, mse_dB_danse_gmm_x, mse_dB_danse_gmm_x_std, time_elapsed_danse))
 
+    beta = betaZ_estimated_filtered_gmm[:,0,:]
+    plt.figure()
+    plt.plot(beta.permute(1,0).cpu().numpy())
+    plt.savefig('./figs/rotnist_figs/{}/betaplots_smnr_{}.pdf'.format(evaluation_mode, smnr_dB_test))
+    
     return nmse_danse_x, nmse_danse_x_std, nmse_ls_x, nmse_ls_x_std, nmse_ls_z, nmse_ls_z_std, nmse_danse_z, nmse_danse_z_std, \
         mse_dB_danse_x, mse_dB_danse_x_std, mse_dB_ls_x, mse_dB_ls_x_std, mse_dB_ls_z, mse_dB_ls_z_std, mse_dB_danse_z, mse_dB_danse_z_std,\
-        time_elapsed_danse, test_data_dict, xhat_ls, xhat_danse, X
+        nmse_danse_gmm_x, nmse_danse_gmm_x_std, nmse_danse_gmm_z, nmse_danse_gmm_z_std, \
+        mse_dB_danse_gmm_x, mse_dB_danse_gmm_x_std, mse_dB_danse_gmm_z, mse_dB_danse_gmm_z_std,\
+        time_elapsed_danse, test_data_dict, xhat_ls, xhat_danse, xhat_danse_gmm,X
 
 
 if __name__ == "__main__":
@@ -313,7 +356,7 @@ if __name__ == "__main__":
     N_test = 100
     N_train = 500
     T_train = 60
-    n_mix = 20
+    n_mix = 2
     
     #sigma_e2_dB_test = -10.0
     device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
@@ -342,15 +385,24 @@ if __name__ == "__main__":
     nmse_danse_x_std_arr = np.zeros((len(smnr_dB_arr,)))
     nmse_danse_z_std_arr = np.zeros((len(smnr_dB_arr,)))
 
+    nmse_danse_gmm_x_arr = np.zeros((len(smnr_dB_arr,)))
+    nmse_danse_gmm_z_arr = np.zeros((len(smnr_dB_arr,)))
+    nmse_danse_gmm_x_std_arr = np.zeros((len(smnr_dB_arr,)))
+    nmse_danse_gmm_z_std_arr = np.zeros((len(smnr_dB_arr,)))
+
     psnr_ls_arr = np.zeros((len(smnr_dB_arr,)))
     psnr_ls_std_arr = np.zeros((len(smnr_dB_arr,)))
     psnr_danse_arr = np.zeros((len(smnr_dB_arr,)))
     psnr_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
+    psnr_danse_gmm_arr = np.zeros((len(smnr_dB_arr,)))
+    psnr_danse_gmm_std_arr = np.zeros((len(smnr_dB_arr,)))
     
-    ssim_danse_arr = np.zeros((len(smnr_dB_arr,)))
-    ssim_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
     ssim_ls_arr = np.zeros((len(smnr_dB_arr,)))
     ssim_ls_std_arr = np.zeros((len(smnr_dB_arr,)))
+    ssim_danse_arr = np.zeros((len(smnr_dB_arr,)))
+    ssim_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
+    ssim_danse_gmm_arr = np.zeros((len(smnr_dB_arr,)))
+    ssim_danse_gmm_std_arr = np.zeros((len(smnr_dB_arr,)))
 
     mse_ls_x_arr = np.zeros((len(smnr_dB_arr,)))
     mse_ls_z_arr = np.zeros((len(smnr_dB_arr,)))
@@ -361,6 +413,11 @@ if __name__ == "__main__":
     mse_danse_z_arr = np.zeros((len(smnr_dB_arr,)))
     mse_danse_x_std_arr = np.zeros((len(smnr_dB_arr,)))
     mse_danse_z_std_arr = np.zeros((len(smnr_dB_arr,)))
+
+    mse_danse_gmm_x_arr = np.zeros((len(smnr_dB_arr,)))
+    mse_danse_gmm_z_arr = np.zeros((len(smnr_dB_arr,)))
+    mse_danse_gmm_x_std_arr = np.zeros((len(smnr_dB_arr,)))
+    mse_danse_gmm_z_std_arr = np.zeros((len(smnr_dB_arr,)))
 
     t_danse_arr = np.zeros((len(smnr_dB_arr,)))
     snr_arr = np.zeros((len(smnr_dB_arr,)))
@@ -400,13 +457,16 @@ if __name__ == "__main__":
 
         nmse_danse_x, nmse_danse_x_std, nmse_ls_x, nmse_ls_x_std, nmse_ls_z, nmse_ls_z_std, nmse_danse_z, nmse_danse_z_std, \
         mse_dB_danse_x, mse_dB_danse_x_std, mse_dB_ls_x, mse_dB_ls_x_std, mse_dB_ls_z, mse_dB_ls_z_std, mse_dB_danse_z, mse_dB_danse_z_std,\
-        time_elapsed_danse, test_data_dict_i, xhat_ls_i, xhat_danse_i, X = test_rotnist(device=device, 
+        nmse_danse_gmm_x, nmse_danse_gmm_x_std, nmse_danse_gmm_z, nmse_danse_gmm_z_std, \
+        mse_dB_danse_gmm_x, mse_dB_danse_gmm_x_std, mse_dB_danse_gmm_z, mse_dB_danse_gmm_z_std,\
+        time_elapsed_danse, test_data_dict_i, xhat_ls_i, xhat_danse_i, xhat_danse_gmm_i, X = test_rotnist(device=device, 
         model_file_saved=model_file_saved_i, test_data_file=test_data_file_i, test_logfile=test_logfile, 
         evaluation_mode=evaluation_mode, bias=bias, p=p)
 
         recon_img_dict = dict()
         recon_img_dict["dataZ"] = test_data_dict_i["Z"]
         recon_img_dict[f"DANSE {str(smnr_dB)}"] = xhat_danse_i
+        recon_img_dict[f"DANSE GMM {str(smnr_dB)}"] = xhat_danse_gmm_i
         recon_img_dict[f"LS {str(smnr_dB)}"] = xhat_ls_i
 
         # PSNR and SSIM
@@ -415,11 +475,19 @@ if __name__ == "__main__":
         psnr_danse_arr[i] = psnr_danse_i
         psnr_danse_std_i = psnr_loss_std(X, xhat_danse_i)
         psnr_danse_std_arr[i] = psnr_danse_std_i
+        psnr_danse_gmm_i = psnr_loss(X, xhat_danse_gmm_i)
+        psnr_danse_gmm_arr[i] = psnr_danse_gmm_i
+        psnr_danse_gmm_std_i = psnr_loss_std(X, xhat_danse_gmm_i)
+        psnr_danse_gmm_std_arr[i] = psnr_danse_gmm_std_i
 
         ssim_mean_danse_i, ssim_values_danse_i = ssim_loss(X, xhat_danse_i)
         ssim_danse_arr[i] = ssim_mean_danse_i
         ssim_danse_std_i = ssim_loss_std(X, xhat_danse_i)
         ssim_danse_std_arr[i] = ssim_danse_std_i
+        ssim_mean_danse_gmm_i, ssim_values_danse_gmm_i = ssim_loss(X, xhat_danse_gmm_i)
+        ssim_danse_gmm_arr[i] = ssim_mean_danse_gmm_i
+        ssim_danse_gmm_std_i = ssim_loss_std(X, xhat_danse_gmm_i)
+        ssim_danse_gmm_std_arr[i] = ssim_danse_gmm_std_i
         
         psnr_ls_i = psnr_loss(X, xhat_ls_i)
         psnr_ls_arr[i] = psnr_ls_i
@@ -442,6 +510,11 @@ if __name__ == "__main__":
         nmse_danse_z_std_arr[i] = nmse_danse_z_std.item()
         nmse_danse_x_arr[i] = nmse_danse_x.item()
         nmse_danse_x_std_arr[i] = nmse_danse_x_std.item()
+
+        nmse_danse_gmm_z_arr[i] = nmse_danse_gmm_z.item()
+        nmse_danse_gmm_z_std_arr[i] = nmse_danse_gmm_z_std.item()
+        nmse_danse_gmm_x_arr[i] = nmse_danse_gmm_x.item()
+        nmse_danse_gmm_x_std_arr[i] = nmse_danse_gmm_x_std.item()
         
         # Store the MSE values and std devs of the MSE values (in dB)
         mse_ls_z_arr[i] = mse_dB_ls_z.item()
@@ -454,22 +527,27 @@ if __name__ == "__main__":
         mse_danse_x_arr[i] = mse_dB_danse_x.item()
         mse_danse_x_std_arr[i] = mse_dB_danse_x_std.item()
 
+        mse_danse_gmm_z_arr[i] = mse_dB_danse_gmm_z.item()
+        mse_danse_gmm_z_std_arr[i] = mse_dB_danse_gmm_z_std.item()
+        mse_danse_gmm_x_arr[i] = mse_dB_danse_gmm_x.item()
+        mse_danse_gmm_x_std_arr[i] = mse_dB_danse_gmm_x_std.item()
+
         # Store the inference times
         t_danse_arr[i] = time_elapsed_danse
     
-    # Need to change plotting logic to accommodate origX, reconZ, danseXhat, lsXhat in one file for each SMNR
+    # Need to change plotting logic to accommodate danse plots in addition to danse gmm
         with torch.no_grad():
             savepath = f'./figs/rotnist_figs/{evaluation_mode}/reconstructed_images_danse_smnr_{int(smnr_dB)}dB.pdf'
             with PdfPages(savepath) as pdf:
                 keys = recon_img_dict.keys()
                 num_cols = 60  # Number of columns to display = setting to show 10 images
-                num_rows = 4  # Number of rows, showing origX, reconZ, danseXhat, lsXhat in each pdf
-
+                num_rows = 5  # Number of rows, showing origX, reconZ, danseXhat, danseGmmXhat, lsXhat in each pdf
+                figidx = 1
                 fig, axs = plt.subplots(num_rows, num_cols, figsize=(4 * num_cols, 4 * num_rows))
 
                 # Add X images at the top
                 for k in range(num_cols):
-                    original_img = X[0, k].cpu().view(28, 28)
+                    original_img = X[figidx, k].cpu().view(28, 28)
                     axs[0, k].imshow(original_img, cmap='gray')
                     axs[0, k].set_title(f'Original X {k}')
                     axs[0, k].axis('off')
@@ -486,15 +564,15 @@ if __name__ == "__main__":
                             dataZ_list.append(t_list)
 
                         for k in range(num_cols):
-                            decoded_img = dataZ_list[0][k]
+                            decoded_img = dataZ_list[figidx][k]
                             axs[i + 1, k].imshow(decoded_img.cpu().view(28, 28), cmap='gray')
                             axs[i + 1, k].set_title(f'reconZ {k}')
                             axs[i + 1, k].axis('off')
 
                     else:
                         for k in range(num_cols):
-                            if key in [f"DANSE {str(smnr_dB)}", f"LS {str(smnr_dB)}"]:
-                                reconstructed_image = recon_img_dict[key][0][k].cpu().view(28, 28)
+                            if key in [f"DANSE GMM {str(smnr_dB)}", f"DANSE {str(smnr_dB)}", f"LS {str(smnr_dB)}"]:
+                                reconstructed_image = recon_img_dict[key][figidx][k].cpu().view(28, 28)
                                 axs[i + 1, k].imshow(reconstructed_image, cmap='gray')
                                 axs[i + 1, k].set_title(f'{key} dB {k}')
                                 axs[i + 1, k].axis('off')
@@ -508,31 +586,43 @@ if __name__ == "__main__":
 
     test_stats['DANSE_mean_nmse_x'] = nmse_danse_x_arr
     test_stats['DANSE_mean_nmse_z'] = nmse_danse_z_arr
+    test_stats['DANSE_GMM_mean_nmse_x'] = nmse_danse_gmm_x_arr
+    test_stats['DANSE_GMM_mean_nmse_z'] = nmse_danse_gmm_z_arr
     test_stats['LS_mean_nmse_x'] = nmse_ls_x_arr
     test_stats['LS_mean_nmse_z'] = nmse_ls_z_arr
     
     test_stats['DANSE_std_nmse_x'] = nmse_danse_x_std_arr
     test_stats['DANSE_std_nmse_z'] = nmse_danse_z_std_arr
+    test_stats['DANSE_GMM_std_nmse_x'] = nmse_danse_gmm_x_std_arr
+    test_stats['DANSE_GMM_std_nmse_z'] = nmse_danse_gmm_z_std_arr
     test_stats['LS_std_nmse_x'] = nmse_ls_x_std_arr
     test_stats['LS_std_nmse_z'] = nmse_ls_z_std_arr
 
     test_stats["DANSE_mean_psnr"] = psnr_danse_arr
     test_stats["DANSE_std_psnr"] = psnr_danse_std_arr
+    test_stats["DANSE_GMM_mean_psnr"] = psnr_danse_gmm_arr
+    test_stats["DANSE_GMM_std_psnr"] = psnr_danse_gmm_std_arr
     test_stats["LS_mean_psnr"] = psnr_ls_arr
     test_stats["LS_std_psnr"] = psnr_ls_std_arr
     
     test_stats["DANSE_mean_ssim"] = ssim_danse_arr
     test_stats["DANSE_std_ssim"] = ssim_danse_std_arr
+    test_stats["DANSE_GMM_mean_ssim"] = ssim_danse_gmm_arr
+    test_stats["DANSE_GMM_std_ssim"] = ssim_danse_gmm_std_arr
     test_stats["LS_mean_ssim"] = ssim_ls_arr
     test_stats["LS_std_ssim"] = ssim_ls_std_arr
 
     test_stats['DANSE_mean_mse_x'] = mse_danse_x_arr
     test_stats['DANSE_mean_mse_z'] = mse_danse_z_arr
+    test_stats['DANSE_GMM_mean_mse_x'] = mse_danse_gmm_x_arr
+    test_stats['DANSE_GMM_mean_mse_z'] = mse_danse_gmm_z_arr
     test_stats['LS_mean_mse_x'] = mse_ls_x_arr
     test_stats['LS_mean_mse_z'] = mse_ls_z_arr
     
     test_stats['DANSE_std_mse_x'] = mse_danse_x_std_arr
-    test_stats['DANSE_std_mse_z'] = mse_danse_z_std_arr    
+    test_stats['DANSE_std_mse_z'] = mse_danse_z_std_arr
+    test_stats['DANSE_GMM_std_mse_x'] = mse_danse_gmm_x_std_arr
+    test_stats['DANSE_GMM_std_mse_z'] = mse_danse_gmm_z_std_arr   
     test_stats['LS_std_mse_x'] = mse_ls_x_std_arr    
     test_stats['LS_std_mse_z'] = mse_ls_z_std_arr
     
@@ -548,6 +638,7 @@ if __name__ == "__main__":
     plt.figure()
     plt.errorbar(smnr_dB_arr, nmse_ls_x_arr, fmt='gp-.', yerr=nmse_ls_x_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, nmse_danse_x_arr, fmt='b*-', yerr=nmse_danse_x_std_arr, linewidth=2.0, label="DANSE")
+    plt.errorbar(smnr_dB_arr, nmse_danse_gmm_x_arr, fmt='rd--', yerr=nmse_danse_gmm_x_std_arr, linewidth=2.0, label="DANSE GMM")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('NMSE (in dB)')
     plt.grid(True)
@@ -561,6 +652,7 @@ if __name__ == "__main__":
     plt.figure()
     plt.errorbar(smnr_dB_arr, nmse_ls_z_arr, fmt='gp-.', yerr=nmse_ls_z_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, nmse_danse_z_arr, fmt='b*-', yerr=nmse_danse_z_std_arr, linewidth=2.0, label="DANSE")
+    plt.errorbar(smnr_dB_arr, nmse_danse_gmm_z_arr, fmt='rd--', yerr=nmse_danse_gmm_z_std_arr, linewidth=2.0, label="DANSE GMM")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('NMSE (in dB)')
     plt.grid(True)
@@ -575,6 +667,7 @@ if __name__ == "__main__":
     plt.figure()
     plt.errorbar(smnr_dB_arr, psnr_ls_arr, fmt='gp-.', yerr=psnr_ls_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, psnr_danse_arr, fmt='b*-', yerr=psnr_danse_std_arr, linewidth=2.0, label="DANSE")
+    plt.errorbar(smnr_dB_arr, psnr_danse_gmm_arr, fmt='rd--', yerr=psnr_danse_gmm_std_arr, linewidth=2.0, label="DANSE GMM")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('PSNR (in dB)')
     plt.grid(True)
@@ -589,6 +682,7 @@ if __name__ == "__main__":
     plt.figure()
     plt.errorbar(smnr_dB_arr, ssim_ls_arr, fmt='gp-.', yerr=ssim_ls_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, ssim_danse_arr, fmt='b*-', yerr=ssim_danse_std_arr, linewidth=2.0, label="DANSE")
+    plt.errorbar(smnr_dB_arr, ssim_danse_gmm_arr, fmt='rd--', yerr=ssim_danse_gmm_std_arr, linewidth=2.0, label="DANSE GMM")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('SSIM')
     plt.grid(True)
@@ -613,6 +707,7 @@ if __name__ == "__main__":
     plt.figure()
     plt.errorbar(smnr_dB_arr, mse_ls_x_arr, fmt='gp-.', yerr=mse_ls_x_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, mse_danse_x_arr, fmt='b*-', yerr=mse_danse_x_std_arr, linewidth=2.0, label="DANSE")
+    plt.errorbar(smnr_dB_arr, mse_danse_gmm_x_arr, fmt='rd--', yerr=mse_danse_gmm_x_std_arr, linewidth=2.0, label="DANSE GMM")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('MSE (in dB)')
     plt.grid(True)
@@ -625,6 +720,7 @@ if __name__ == "__main__":
     plt.figure()
     plt.errorbar(smnr_dB_arr, mse_ls_z_arr, fmt='gp-.', yerr=mse_ls_z_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, mse_danse_z_arr, fmt='b*-', yerr=mse_danse_z_std_arr, linewidth=2.0, label="DANSE")
+    plt.errorbar(smnr_dB_arr, mse_danse_gmm_z_arr, fmt='rd--', yerr=mse_danse_gmm_z_std_arr, linewidth=2.0, label="DANSE GMM")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('MSE (in dB)')
     plt.grid(True)

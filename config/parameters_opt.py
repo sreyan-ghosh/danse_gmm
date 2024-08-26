@@ -504,12 +504,12 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
                     "model_type":"gru",
                     "input_size":n_obs,
                     "output_size":n_states,
-                    "n_hidden":32, # OG: 40 64
+                    "n_hidden":128, # OG: 40 64
                     "n_layers":1,
                     "lr":2e-5, # OG: 1e-4 1e-5
                     "num_epochs":2000,
                     "min_delta":1e-2, # OG: 5e-2
-                    "n_hidden_dense":32, # OG: 64
+                    "n_hidden_dense":64, # OG: 64
                     "device":device
                 },
                 "rnn":{

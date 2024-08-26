@@ -38,20 +38,36 @@ ytick style={color=black}
 --(axis cs:10,-4.48130488395691);
 
 \path [draw=blue, thick]
-(axis cs:-5,-2.14660632610321)
---(axis cs:-5,-0.269586682319641);
+(axis cs:-5,-1.74937891960144)
+--(axis cs:-5,0.415022611618042);
 
 \path [draw=blue, thick]
-(axis cs:0,-2.79575085639954)
---(axis cs:0,-1.0540988445282);
+(axis cs:0,-3.23383688926697)
+--(axis cs:0,-1.05128121376038);
 
 \path [draw=blue, thick]
-(axis cs:5,-4.71098172664642)
---(axis cs:5,-2.69212877750397);
+(axis cs:5,-5.38337981700897)
+--(axis cs:5,-2.55940544605255);
 
 \path [draw=blue, thick]
-(axis cs:10,-7.74502301216125)
---(axis cs:10,-4.54230570793152);
+(axis cs:10,-7.48742890357971)
+--(axis cs:10,-4.33350348472595);
+
+\path [draw=red, thick]
+(axis cs:-5,-2.1040934920311)
+--(axis cs:-5,-0.665947020053864);
+
+\path [draw=red, thick]
+(axis cs:0,-3.2252961397171)
+--(axis cs:0,-1.16246783733368);
+
+\path [draw=red, thick]
+(axis cs:5,-4.56942993402481)
+--(axis cs:5,-2.78156226873398);
+
+\path [draw=red, thick]
+(axis cs:10,-7.29245209693909)
+--(axis cs:10,-4.42111563682556);
 
 \addplot [semithick, green01270, dash pattern=on 1pt off 3pt on 3pt off 3pt, mark=pentagon*, mark size=3, mark options={solid}]
 table {%
@@ -60,15 +76,23 @@ table {%
 5 -4.02422618865967
 10 -6.15761470794678
 };
-\addlegendentry{DANSE}
+\addlegendentry{DANSE GMM}
 \addplot [thick, blue, mark=asterisk, mark size=3, mark options={solid}]
 table {%
--5 -1.20809650421143
-0 -1.92492485046387
-5 -3.7015552520752
-10 -6.14366436004639
+-5 -0.667178153991699
+0 -2.14255905151367
+5 -3.97139263153076
+10 -5.91046619415283
 };
-\addlegendentry{DANSE}
+\addlegendentry{DANSE GMM}
+\addplot [thick, red, dashed, mark=diamond*, mark size=3, mark options={solid}]
+table {%
+-5 -1.38502025604248
+0 -2.19388198852539
+5 -3.67549610137939
+10 -5.85678386688232
+};
+\addlegendentry{DANSE GMM}
 \end{axis}
 
 \end{tikzpicture}

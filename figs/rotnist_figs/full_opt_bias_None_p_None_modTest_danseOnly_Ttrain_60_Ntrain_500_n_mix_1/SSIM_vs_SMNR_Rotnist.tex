@@ -1,0 +1,105 @@
+% This file was created with tikzplotlib v0.10.1.
+\begin{tikzpicture}
+
+\definecolor{darkgray176}{RGB}{176,176,176}
+\definecolor{green01270}{RGB}{0,127,0}
+\definecolor{lightgray204}{RGB}{204,204,204}
+
+\begin{axis}[
+legend cell align={left},
+legend style={
+  fill opacity=0.8,
+  draw opacity=1,
+  text opacity=1,
+  at={(0.03,0.97)},
+  anchor=north west,
+  draw=lightgray204
+},
+tick align=outside,
+tick pos=left,
+x grid style={darkgray176},
+xlabel={SMNR (in dB)},
+xmajorgrids,
+xmin=-5.75, xmax=10.75,
+xtick style={color=black},
+y grid style={darkgray176},
+ylabel={SSIM},
+ymajorgrids,
+ymin=0.137151103371518, ymax=0.864488298768737,
+ytick style={color=black}
+]
+\path [draw=green01270, semithick]
+(axis cs:-5,0.191991350925828)
+--(axis cs:-5,0.454580257461487);
+
+\path [draw=green01270, semithick]
+(axis cs:0,0.332903845586324)
+--(axis cs:0,0.584753430056367);
+
+\path [draw=green01270, semithick]
+(axis cs:5,0.505140681217269)
+--(axis cs:5,0.731087214332126);
+
+\path [draw=green01270, semithick]
+(axis cs:10,0.646170759970826)
+--(axis cs:10,0.831427517159772);
+
+\path [draw=blue, thick]
+(axis cs:-5,0.187148142463607)
+--(axis cs:-5,0.420402392142318);
+
+\path [draw=blue, thick]
+(axis cs:0,0.317753245863616)
+--(axis cs:0,0.554489128684345);
+
+\path [draw=blue, thick]
+(axis cs:5,0.487668341439267)
+--(axis cs:5,0.740663634274772);
+
+\path [draw=blue, thick]
+(axis cs:10,0.620419100600626)
+--(axis cs:10,0.829148529328346);
+
+\path [draw=red, thick]
+(axis cs:-5,0.170211884980482)
+--(axis cs:-5,0.361089752351168);
+
+\path [draw=red, thick]
+(axis cs:0,0.260015210775188)
+--(axis cs:0,0.468110072430013);
+
+\path [draw=red, thick]
+(axis cs:5,0.425358440521119)
+--(axis cs:5,0.633339269985637);
+
+\path [draw=red, thick]
+(axis cs:10,0.628552243108347)
+--(axis cs:10,0.815555837696789);
+
+\addplot [semithick, green01270, dash pattern=on 1pt off 3pt on 3pt off 3pt, mark=pentagon*, mark size=3, mark options={solid}]
+table {%
+-5 0.323285804193658
+0 0.458828637821346
+5 0.618113947774697
+10 0.738799138565299
+};
+\addlegendentry{DANSE GMM}
+\addplot [thick, blue, mark=asterisk, mark size=3, mark options={solid}]
+table {%
+-5 0.303775267302962
+0 0.436121187273981
+5 0.614165987857019
+10 0.724783814964486
+};
+\addlegendentry{DANSE GMM}
+\addplot [thick, red, dashed, mark=diamond*, mark size=3, mark options={solid}]
+table {%
+-5 0.265650818665825
+0 0.3640626416026
+5 0.529348855253378
+10 0.722054040402568
+};
+\addlegendentry{DANSE GMM}
+\end{axis}
+
+\end{tikzpicture}

@@ -20,7 +20,7 @@ n_states=16
 n_obs=16
 
 # Number of mixtures
-n_mix=20
+n_mix=2
 
 # dataset_type defines the type of dynamical system, the general terminology, e.g. for the Lorenz 63 system, 
 # the type is LorenzSSM, similarly for Chen attractor we have ChenSSM.
